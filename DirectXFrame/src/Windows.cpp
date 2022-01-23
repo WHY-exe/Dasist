@@ -1,6 +1,6 @@
 #include "Windows.h"
 
-Window::Window(std::wstring szWinClass, std::wstring szWinTitle, int nWidth, int nHeight)
+Window::Window(std::wstring szWinClass, std::wstring szWinTitle, int nWidth, int nHeight) noexcept
 	:
 	m_szWinClass(szWinClass),
 	m_hIns(GetModuleHandle(nullptr))
@@ -13,7 +13,7 @@ Window::~Window()
 	UnregisterClass(m_szWinClass.c_str(), m_hIns);
 	DestroyWindow(m_hWnd);
 }
-const UINT Window::GetTerminatedParam() const
+const UINT Window::GetTerminatedParam() const noexcept
 {
 	return m_uRetParam;
 }

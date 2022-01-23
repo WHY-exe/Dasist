@@ -17,10 +17,10 @@ public:
 		std::wstring szWinClass, 
 		std::wstring szWinTitle, 
 		int nWidth, int nHeight
-	);
+	) noexcept;
 	~Window();
 	UINT RunWindow();
-	const UINT GetTerminatedParam() const;
+	const UINT GetTerminatedParam() const noexcept;
 	LRESULT MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 private:
 	static LRESULT WINAPI MsgHandlerSetUp(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

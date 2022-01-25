@@ -24,9 +24,16 @@
     <ClCompile Include="src\Windows.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Console.h" />
     <ClInclude Include="src\Windows.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="res\DirectXFrame.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\icon\vector.ico" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

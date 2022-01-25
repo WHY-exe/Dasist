@@ -1,4 +1,5 @@
 #include "Windows.h"
+#include "resource.h"
 #include <sstream>
 Window::Window(std::wstring szWinClass, std::wstring szWinTitle, int nWidth, int nHeight)
 	:
@@ -27,12 +28,21 @@ void Window::InitWinClass()
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = m_hIns;
-	wcex.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+	wcex.hIcon = static_cast<HICON>(LoadImage(
+		m_hIns, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 64, 64, 0
+	));
+	wcex.hIconSm = static_cast<HICON>(LoadImage(
+		m_hIns, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 48, 48, 0
+	));
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = nullptr;
 	wcex.lpszMenuName = nullptr;
 	wcex.lpszClassName = m_szWinClass.c_str();
-
+	
+	if (!wcex.hIcon || !wcex.hIconSm)
+	{
+		throw WND_LAST_EXCEPT();
+	}
 	if (!RegisterClassEx(&wcex))
 	{
 		throw WND_LAST_EXCEPT();

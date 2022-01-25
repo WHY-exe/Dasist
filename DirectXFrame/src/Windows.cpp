@@ -29,10 +29,10 @@ void Window::InitWinClass()
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = m_hIns;
 	wcex.hIcon = static_cast<HICON>(LoadImage(
-		m_hIns, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 64, 64, 0
+		m_hIns, MAKEINTRESOURCE(IDI_ICON2), IMAGE_ICON, 32, 32, 0
 	));
 	wcex.hIconSm = static_cast<HICON>(LoadImage(
-		m_hIns, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 48, 48, 0
+		m_hIns, MAKEINTRESOURCE(IDI_ICON2), IMAGE_ICON, 16, 16, 0
 	));
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = nullptr;

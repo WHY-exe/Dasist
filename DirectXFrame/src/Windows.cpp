@@ -1,5 +1,5 @@
 #include "Windows.h"
-
+#include <sstream>
 Window::Window(std::wstring szWinClass, std::wstring szWinTitle, int nWidth, int nHeight) noexcept
 	:
 	m_szWinClass(szWinClass),
@@ -11,9 +11,8 @@ Window::Window(std::wstring szWinClass, std::wstring szWinTitle, int nWidth, int
 Window::~Window()
 {
 	UnregisterClass(m_szWinClass.c_str(), m_hIns);
-	DestroyWindow(m_hWnd);
 }
-const UINT Window::GetTerminatedParam() const noexcept
+UINT Window::GetTerminatedParam() const noexcept
 {
 	return m_uRetParam;
 }
@@ -53,7 +52,6 @@ void Window::InitWindow(int nWidth, int nHeight, std::wstring szWinTitile)
 		m_hIns,
 		NULL
 	);
-	/*SetWindowLongPtr(this->m_hWnd, GWLP_WNDPROC, &Window::MsgHandler);*/
 	// show window
 	ShowWindow(this->m_hWnd, SW_NORMAL);
 	UpdateWindow(this->m_hWnd);
@@ -119,7 +117,54 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_CLOSE:
 		PostQuitMessage(0);
-		return 0;
+		break;
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+Window::WindowsException::WindowsException(int nLine, const char* szFile, HRESULT ErrorCode)
+	:
+	Exception(nLine, szFile),
+	m_ErrorCode(ErrorCode)
+{
+}
+
+const char* Window::WindowsException::what() const noexcept
+{
+	std::ostringstream oss;
+	oss << GetType() << std::endl
+		<< "[ErrorCode]:" << GetErrorCode() << std::endl
+		<< "[Description]:" << TranslateErrorCode(m_ErrorCode) << std::endl
+		<< GetInfoString();
+	WhatInfoBuffer = oss.str();
+	return WhatInfoBuffer.c_str();
+}
+
+const char* Window::WindowsException::GetType() const noexcept
+{
+	return "Windows Exception";
+}
+
+std::string Window::WindowsException::TranslateErrorCode(HRESULT ErrorCode)
+{
+	char* pMsgBuffer = nullptr;
+	DWORD nMsgLen = FormatMessageA(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS ,
+		nullptr, ErrorCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		reinterpret_cast<LPSTR>(&pMsgBuffer), 0, nullptr 
+	);
+	if (nMsgLen == 0)
+	{
+		return "undefine error code";
+	}
+	std::string szResult = pMsgBuffer;
+	LocalFree(pMsgBuffer);
+	return szResult;
+}
+
+HRESULT Window::WindowsException::GetErrorCode() const noexcept
+{
+	return m_ErrorCode;
 }

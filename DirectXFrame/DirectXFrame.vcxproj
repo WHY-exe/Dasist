@@ -19,12 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\WinMain.cpp" />
     <ClCompile Include="src\Windows.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Console.h" />
     <ClInclude Include="src\Windows.h" />
   </ItemGroup>

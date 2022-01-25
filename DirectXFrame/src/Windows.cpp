@@ -1,16 +1,18 @@
 #include "Windows.h"
 #include <sstream>
-Window::Window(std::wstring szWinClass, std::wstring szWinTitle, int nWidth, int nHeight) noexcept
+Window::Window(std::wstring szWinClass, std::wstring szWinTitle, int nWidth, int nHeight)
 	:
 	m_szWinClass(szWinClass),
 	m_hIns(GetModuleHandle(nullptr))
 {
 	this->InitWinClass();
 	this->InitWindow(nWidth, nHeight, szWinTitle);
+	
 }
 Window::~Window()
 {
 	UnregisterClass(m_szWinClass.c_str(), m_hIns);
+	DestroyWindow(m_hWnd);
 }
 UINT Window::GetTerminatedParam() const noexcept
 {
@@ -31,12 +33,18 @@ void Window::InitWinClass()
 	wcex.lpszMenuName = nullptr;
 	wcex.lpszClassName = m_szWinClass.c_str();
 
-	RegisterClassEx(&wcex);
+	if (!RegisterClassEx(&wcex))
+	{
+		throw WND_LAST_EXCEPT();
+	}
 }
 void Window::InitWindow(int nWidth, int nHeight, std::wstring szWinTitile)
 {
 	RECT rectWindow = { 0, 0, nWidth, nHeight };
-	AdjustWindowRect(&rectWindow, NULL, FALSE);
+	if (!AdjustWindowRect(&rectWindow, NULL, FALSE))
+	{
+		throw WND_LAST_EXCEPT();
+	}
 	this->m_hWnd = CreateWindowEx(
 		NULL,
 		m_szWinClass.c_str(),
@@ -52,12 +60,17 @@ void Window::InitWindow(int nWidth, int nHeight, std::wstring szWinTitile)
 		m_hIns,
 		NULL
 	);
+	if (this->m_hWnd == nullptr)
+	{
+		throw WND_LAST_EXCEPT();
+	}
 	// show window
 	ShowWindow(this->m_hWnd, SW_NORMAL);
 	UpdateWindow(this->m_hWnd);
 }
 UINT Window::RunWindow()
 {
+	
 	MSG msg = { 0 };
 
 	if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -117,19 +130,19 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_CLOSE:
 		PostQuitMessage(0);
-		break;
+		return 0;
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-Window::WindowsException::WindowsException(int nLine, const char* szFile, HRESULT ErrorCode)
+Window::WindowException::WindowException(int nLine, const char* szFile, HRESULT ErrorCode)
 	:
 	Exception(nLine, szFile),
 	m_ErrorCode(ErrorCode)
 {
 }
 
-const char* Window::WindowsException::what() const noexcept
+const char* Window::WindowException::what() const noexcept
 {
 	std::ostringstream oss;
 	oss << GetType() << std::endl
@@ -140,12 +153,12 @@ const char* Window::WindowsException::what() const noexcept
 	return WhatInfoBuffer.c_str();
 }
 
-const char* Window::WindowsException::GetType() const noexcept
+const char* Window::WindowException::GetType() const noexcept
 {
 	return "Windows Exception";
 }
 
-std::string Window::WindowsException::TranslateErrorCode(HRESULT ErrorCode)
+std::string Window::WindowException::TranslateErrorCode(HRESULT ErrorCode)
 {
 	char* pMsgBuffer = nullptr;
 	DWORD nMsgLen = FormatMessageA(
@@ -164,7 +177,7 @@ std::string Window::WindowsException::TranslateErrorCode(HRESULT ErrorCode)
 	return szResult;
 }
 
-HRESULT Window::WindowsException::GetErrorCode() const noexcept
+HRESULT Window::WindowException::GetErrorCode() const noexcept
 {
 	return m_ErrorCode;
 }

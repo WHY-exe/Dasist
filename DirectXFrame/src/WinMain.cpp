@@ -8,19 +8,19 @@ int WINAPI WinMain(
 	_In_ int nShowCmd
 )
 {
-	int ret = 0;
+	// 添加控制台窗口
+	ADD_CONSOLE();
+	int ret = -1;
 	try
 	{
-		// 添加控制台窗口
-		ADD_CONSOLE();
+		
 		Window window(L"DirectXFrameWork", L"Title", 500, 500);
 		UINT msg = window.RunWindow();
 		while (msg != WM_QUIT)
 		{
 			msg = window.RunWindow();
 		}
-		// 关闭控制台
-		FREE_CONSOLE();
+		
 		ret = window.GetTerminatedParam();
 	}
 	catch (const Exception& e)
@@ -30,13 +30,17 @@ int WINAPI WinMain(
 	catch (const std::exception& e)
 	{
 		std::cout
-			<< "Std Exception" << std::endl
-			<< "[Description]:" << e.what() << std::endl;
+			<< "Standar Error" << std::endl
+			<< e.what();
 	}
 	catch (...)
 	{
-		std::cout << "UnKnowException" << std::endl;
+		std::cout
+			<< "Unknow exception" << std::endl
+			<< "No detail available" << std::endl;
 	}
+	// 关闭控制台
+	FREE_CONSOLE();
 	return ret;
 }
 

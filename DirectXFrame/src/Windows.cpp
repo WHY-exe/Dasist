@@ -4,11 +4,11 @@
 Window::Window(std::wstring szWinClass, std::wstring szWinTitle, int nWidth, int nHeight)
 	:
 	m_szWinClass(szWinClass),
-	m_hIns(GetModuleHandle(nullptr))
+	m_hIns(GetModuleHandle(nullptr)),
+	kbd()
 {
 	this->InitWinClass();
 	this->InitWindow(nWidth, nHeight, szWinTitle);
-	
 }
 Window::~Window()
 {
@@ -21,6 +21,7 @@ UINT Window::GetTerminatedParam() const noexcept
 }
 void Window::InitWinClass()
 {
+	kbd.OnKeyDown(20);
 	WNDCLASSEX wcex = { 0 };
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
@@ -68,7 +69,7 @@ void Window::InitWindow(int nWidth, int nHeight, std::wstring szWinTitile)
 		rectWindow.bottom - rectWindow.top,
 		NULL, NULL,
 		m_hIns,
-		NULL
+		this
 	);
 	if (this->m_hWnd == nullptr)
 	{
@@ -80,14 +81,13 @@ void Window::InitWindow(int nWidth, int nHeight, std::wstring szWinTitile)
 }
 UINT Window::RunWindow()
 {
-	
 	MSG msg = { 0 };
-
 	if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+	
 	if (msg.message == WM_QUIT)
 	{
 		m_uRetParam = msg.wParam;
@@ -103,6 +103,10 @@ LRESULT WINAPI Window::MsgHandlerSetUp(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		const CREATESTRUCT* const pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
 		// 获取实例化对象的指针(调用CreateWindow时的最后一个参数)
 		Window* const pWin = static_cast<Window*>(pCreate->lpCreateParams);
+		if (!pWin)
+		{
+			throw WND_LAST_EXCEPT();
+		}
 		// 将实例化的对象的指针与windows系统相关联
 		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWin));
 		// 将原始WinProc函数由MsgHandlerSetUp替换为MsgHandlerCall
@@ -123,24 +127,36 @@ LRESULT WINAPI Window::MsgHandlerCall(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-
 	switch (uMsg)
 	{
 	case WM_CREATE:
 		std::cout << "Window is created successfully" << std::endl;
 		break;
-	case WM_CHAR:
-		std::cout << static_cast<char>(wParam) << std::endl;
+
+	case WM_KILLFOCUS:
+		kbd.ClearState();
 		break;
+	// 键盘消息
+	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
-		if (wParam == VK_ESCAPE)
-		{
-			DestroyWindow(hWnd);
+		if(!(lParam & 0x40000000) || kbd.AutoRepeatIsEnable())
+		{ 
+			kbd.OnKeyDown(static_cast<unsigned char>(wParam));
+			std::cout << wParam << std::endl;
 		}
 		break;
+	case WM_SYSKEYUP:
+	case WM_CHAR:
+		kbd.OnChar(static_cast<unsigned char>(wParam));
+		break;
+	case WM_KEYUP:
+		kbd.OnKeyUp(static_cast<unsigned char>(wParam));
+		break;
+	 
 	case WM_CLOSE:
 		PostQuitMessage(0);
 		return 0;
+	
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }

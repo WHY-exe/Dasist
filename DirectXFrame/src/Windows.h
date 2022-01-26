@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include "Console.h"
 #include "Exception.h"
-
+#include "Keyboard.h"
 class Window
 {
 public:
@@ -26,6 +26,8 @@ private:
 	void InitWinClass();
 	void InitWindow(int nWidth, int nHeight, std::wstring szWinTitile);
 public:
+	Window(const Window&) = delete;
+	Window& operator=(const Window&) = delete;
 	Window(
 		std::wstring szWinClass, 
 		std::wstring szWinTitle, 
@@ -34,10 +36,12 @@ public:
 	~Window();
 	UINT RunWindow();
 	UINT GetTerminatedParam() const noexcept;
-	LRESULT MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+public:
+	Keyboard kbd;
 private:
 	static LRESULT WINAPI MsgHandlerSetUp(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	static LRESULT WINAPI MsgHandlerCall(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
 
 #ifdef _DEBUG

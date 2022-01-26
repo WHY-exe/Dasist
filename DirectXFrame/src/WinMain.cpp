@@ -18,7 +18,11 @@ int WINAPI WinMain(
 		UINT msg = window.RunWindow();
 		while (msg != WM_QUIT)
 		{
-			msg = window.RunWindow();
+			msg = window.RunWindow();	
+			if (window.kbd.KeyIsPressed(VK_UP))
+			{
+				std::cout << "Space is pressed" << std::endl;
+			}		
 		}
 		
 		ret = window.GetTerminatedParam();

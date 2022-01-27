@@ -22,10 +22,7 @@ void Window::SetWindowTitle(std::wstring szTitle)
 		throw WND_LAST_EXCEPT();
 	}
 }
-UINT Window::GetTerminatedParam() const noexcept
-{
-	return m_uRetParam;
-}
+
 void Window::InitWinClass()
 {
 	kbd.OnKeyDown(20);
@@ -86,21 +83,36 @@ void Window::InitWindow(std::wstring szWinTitile)
 	ShowWindow(this->m_hWnd, SW_NORMAL);
 	UpdateWindow(this->m_hWnd);
 }
-UINT Window::RunWindow()
+std::optional<UINT> Window::RunWindow() 
 {
 	MSG msg = { 0 };
-	if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+
+	while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
+		if (msg.message == WM_QUIT)
+		{
+			return msg.wParam;
+		}
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-	
-	if (msg.message == WM_QUIT)
-	{
-		m_uRetParam = msg.wParam;
-	}
-	return msg.message;
+	return {};
 }
+
+//Window::Terminate Window::RunWindow()
+//{
+//	MSG msg = { 0 };
+//	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+//	{
+//		if (msg.message == WM_QUIT)
+//		{
+//			return {true, msg.wParam};
+//		}
+//		TranslateMessage(&msg);
+//		DispatchMessage(&msg);
+//	}
+//	return {};
+//}
 
 LRESULT WINAPI Window::MsgHandlerSetUp(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {

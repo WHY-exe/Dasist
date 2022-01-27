@@ -1,12 +1,25 @@
 #pragma once
 #include <string>
 #include <Windows.h>
+#include <optional>
 // #include "Console.h"
 #include "Exception.h"
 #include "Keyboard.h"
 #include "Mouse.h"
 class Window
 {
+//public:
+//	struct Terminate
+//	{
+//		bool m_bTerminated = false;
+//		UINT m_uRetParam = 0;
+//		Terminate() = default;
+//		Terminate(bool bTerminated, UINT uRetParam)
+//			:
+//			m_bTerminated(bTerminated),
+//			m_uRetParam(uRetParam)
+//		{};
+//	};
 public:
 	class WindowException :public Exception
 	{
@@ -22,7 +35,6 @@ public:
 private:
 	HWND m_hWnd = nullptr;
 	HINSTANCE m_hIns;
-	UINT m_uRetParam;
 	int m_nWidth, m_nHeight;
 	std::wstring m_szWinClass;
 	void InitWinClass();
@@ -37,8 +49,9 @@ public:
 	);
 	~Window();
 	void SetWindowTitle(std::wstring szTitle);
-	UINT RunWindow();
-	UINT GetTerminatedParam() const noexcept;
+	// c++17 required
+	static std::optional<UINT> RunWindow();
+	//static Window::Terminate RunWindow();
 public:
 	Keyboard kbd;
 	Mouse mouse;

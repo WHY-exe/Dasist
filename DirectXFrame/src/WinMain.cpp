@@ -1,5 +1,5 @@
 #include "Windows.h"
-
+#include <sstream>
 // standar win32 windows program
 int WINAPI WinMain(
 	_In_ HINSTANCE hInstance,
@@ -9,42 +9,60 @@ int WINAPI WinMain(
 )
 {
 	// 添加控制台窗口
-	ADD_CONSOLE();
+	// ADD_CONSOLE();
 	int ret = -1;
 	try
 	{
-		
-		Window window(L"DirectXFrameWork", L"Title", 500, 500);
-		UINT msg = window.RunWindow();
-		while (msg != WM_QUIT)
+		Window wnd(L"DirectXFrameWork", L"Title", 500, 500);
+		for (UINT msg = wnd.RunWindow(); msg != WM_QUIT; msg = wnd.RunWindow())
 		{
-			msg = window.RunWindow();	
-			if (window.kbd.KeyIsPressed(VK_UP))
+			// mouse testing code
+			while (!wnd.mouse.IsEmpty())
 			{
-				std::cout << "Space is pressed" << std::endl;
-			}		
+				const auto e = wnd.mouse.ReadEvent();
+				if (e.m_status == Mouse::Event::Status::Move)
+				{
+					std::wostringstream oss;
+					POINTS mouse_pt = wnd.mouse.GetMousePt();
+					oss << L"mouse pos:(" << mouse_pt.x << L"," << mouse_pt.y << L")";
+					wnd.SetWindowTitle(oss.str());
+				}
+				if (e.m_status == Mouse::Event::Status::WheelDown)
+				{
+					std::wostringstream oss;
+					int wheel_delta = wnd.mouse.GetWheelDelta();
+					oss << L"Down:" << wheel_delta/120;
+					wnd.SetWindowTitle(oss.str());
+				}
+				if (e.m_status == Mouse::Event::Status::WheelUp)
+				{
+					std::wostringstream oss;
+					int wheel_delta = wnd.mouse.GetWheelDelta();
+					oss << L"Up:" << wheel_delta/120;
+					wnd.SetWindowTitle(oss.str());
+				}
+				if (e.m_status == Mouse::Event::Status::Leave)
+				{
+					wnd.SetWindowTitle(L"Gone");
+				}
+			}
 		}
-		
-		ret = window.GetTerminatedParam();
+		ret = wnd.GetTerminatedParam();
 	}
 	catch (const Exception& e)
 	{
-		std::cout << e.what();
+		MessageBoxA(nullptr, e.what(), e.GetType(), MB_OKCANCEL | MB_ICONASTERISK);
 	}
 	catch (const std::exception& e)
 	{
-		std::cout
-			<< "Standar Error" << std::endl
-			<< e.what();
+		MessageBoxA(nullptr, e.what(), "Standar Error", MB_OKCANCEL | MB_ICONASTERISK);
 	}
 	catch (...)
 	{
-		std::cout
-			<< "Unknow exception" << std::endl
-			<< "No detail available" << std::endl;
+		MessageBoxA(nullptr, "No available information", "UnKnown Error", MB_OKCANCEL | MB_ICONASTERISK);
 	}
 	// 关闭控制台
-	FREE_CONSOLE();
+	// FREE_CONSOLE();
 	return ret;
 }
 

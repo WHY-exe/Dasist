@@ -35,7 +35,7 @@ bool Keyboard::KeyIsPressed(unsigned char uKeyCode) const noexcept
 void Keyboard::OnKeyDown(unsigned char uKeyCode) noexcept
 {	
 	m_arrKeyState[uKeyCode] = true;
-	m_qKeyBuffer.push(Keyboard::Event(uKeyCode, Keyboard::Event::Status::PRESSED));
+	m_qKeyBuffer.push(Event(uKeyCode, Event::Status::PRESSED));
 	BufferContorl(m_qKeyBuffer);
 }
 

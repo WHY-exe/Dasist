@@ -5,15 +5,22 @@ Window::Window(std::wstring szWinClass, std::wstring szWinTitle, int nWidth, int
 	:
 	m_szWinClass(szWinClass),
 	m_hIns(GetModuleHandle(nullptr)),
-	kbd()
+	m_nWidth(nWidth), m_nHeight(nHeight)
 {
 	this->InitWinClass();
-	this->InitWindow(nWidth, nHeight, szWinTitle);
+	this->InitWindow(szWinTitle);
 }
 Window::~Window()
 {
 	UnregisterClass(m_szWinClass.c_str(), m_hIns);
 	DestroyWindow(m_hWnd);
+}
+void Window::SetWindowTitle(std::wstring szTitle)
+{
+	if (!SetWindowText(m_hWnd, szTitle.c_str()))
+	{
+		throw WND_LAST_EXCEPT();
+	}
 }
 UINT Window::GetTerminatedParam() const noexcept
 {
@@ -49,10 +56,10 @@ void Window::InitWinClass()
 		throw WND_LAST_EXCEPT();
 	}
 }
-void Window::InitWindow(int nWidth, int nHeight, std::wstring szWinTitile)
+void Window::InitWindow(std::wstring szWinTitile)
 {
-	RECT rectWindow = { 0, 0, nWidth, nHeight };
-	if (!AdjustWindowRect(&rectWindow, NULL, FALSE))
+	RECT rectWindow = { 0, 0, m_nWidth, m_nHeight };
+	if (!AdjustWindowRect(&rectWindow, WS_OVERLAPPEDWINDOW, FALSE))
 	{
 		throw WND_LAST_EXCEPT();
 	}
@@ -69,7 +76,7 @@ void Window::InitWindow(int nWidth, int nHeight, std::wstring szWinTitile)
 		rectWindow.bottom - rectWindow.top,
 		NULL, NULL,
 		m_hIns,
-		this
+		this // 在这个封装中，最后一个参数一定得是this！！！
 	);
 	if (this->m_hWnd == nullptr)
 	{
@@ -110,7 +117,7 @@ LRESULT WINAPI Window::MsgHandlerSetUp(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		// 将实例化的对象的指针与windows系统相关联
 		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWin));
 		// 将原始WinProc函数由MsgHandlerSetUp替换为MsgHandlerCall
-		// 在第一次调用结束后，之后的每一个消息处理都由MsgHandlerCall处理
+		// 在WM_NCCREATE调用结束后，之后的每一个消息处理都由MsgHandlerCall处理
 		SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(&Window::MsgHandlerCall));
 		return pWin->MsgHandler(hWnd, uMsg, wParam, lParam);
 	}
@@ -129,20 +136,73 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
-	case WM_CREATE:
-		std::cout << "Window is created successfully" << std::endl;
-		break;
-
 	case WM_KILLFOCUS:
 		kbd.ClearState();
 		break;
-	// 键盘消息
+	/****************** 鼠标消息 ******************/
+	case WM_LBUTTONDOWN:
+	{
+		mouse.OnLButtonDown(lParam);
+		break;
+	}	
+	case WM_LBUTTONUP:
+	{
+		mouse.OnLButtonUp(lParam);
+		break;
+	}
+	case WM_RBUTTONDOWN:
+	{
+		mouse.OnRButtonDown(lParam);
+		break;
+	}
+	case WM_RBUTTONUP:
+	{
+		mouse.OnRButtonUp(lParam);
+		break;
+	}
+	case WM_MOUSEMOVE:
+	{
+		POINTS pt = MAKEPOINTS(lParam);
+		if (pt.x > 0 && pt.y > 0 && pt.x <= m_nWidth && pt.y <= m_nHeight)
+		{
+			mouse.OnMouseMove(lParam);
+			if (!mouse.IsInWindow())
+			{
+				SetCapture(m_hWnd);
+				mouse.OnMouseEnter();
+			}
+		}
+		else
+		{
+			// 如果鼠标左键或右键处于点击状态
+			if (wParam & (MK_LBUTTON | MK_RBUTTON))
+			{
+				mouse.OnMouseMove(lParam);
+			}
+			else
+			{
+				ReleaseCapture();
+				mouse.OnMouseLeave();
+			}
+		}
+		break;
+	}
+
+	case WM_MOUSEWHEEL:
+	{
+		mouse.OnMouseWheel(wParam);
+		break;
+	}
+	/****************** 鼠标消息 ******************/
+
+	/****************** 键盘消息 ******************/
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
+		// 禁用autorepeat
 		if(!(lParam & 0x40000000) || kbd.AutoRepeatIsEnable())
 		{ 
 			kbd.OnKeyDown(static_cast<unsigned char>(wParam));
-			std::cout << wParam << std::endl;
+			//std::cout << wParam << std::endl;
 		}
 		break;
 	case WM_SYSKEYUP:
@@ -152,7 +212,7 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_KEYUP:
 		kbd.OnKeyUp(static_cast<unsigned char>(wParam));
 		break;
-	 
+	/****************** 键盘消息 ******************/
 	case WM_CLOSE:
 		PostQuitMessage(0);
 		return 0;

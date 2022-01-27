@@ -1,9 +1,10 @@
 #pragma once
 #include <string>
 #include <Windows.h>
-#include "Console.h"
+// #include "Console.h"
 #include "Exception.h"
 #include "Keyboard.h"
+#include "Mouse.h"
 class Window
 {
 public:
@@ -22,9 +23,10 @@ private:
 	HWND m_hWnd = nullptr;
 	HINSTANCE m_hIns;
 	UINT m_uRetParam;
+	int m_nWidth, m_nHeight;
 	std::wstring m_szWinClass;
 	void InitWinClass();
-	void InitWindow(int nWidth, int nHeight, std::wstring szWinTitile);
+	void InitWindow(std::wstring szWinTitile);
 public:
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
@@ -34,10 +36,12 @@ public:
 		int nWidth, int nHeight
 	);
 	~Window();
+	void SetWindowTitle(std::wstring szTitle);
 	UINT RunWindow();
 	UINT GetTerminatedParam() const noexcept;
 public:
 	Keyboard kbd;
+	Mouse mouse;
 private:
 	static LRESULT WINAPI MsgHandlerSetUp(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	static LRESULT WINAPI MsgHandlerCall(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

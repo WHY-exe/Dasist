@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include <Windows.h>
+#include "InitWin.h"
 #ifdef _DEBUG
 #define ADD_CONSOLE() \
 	AllocConsole(); \

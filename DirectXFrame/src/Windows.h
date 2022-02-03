@@ -1,25 +1,15 @@
 #pragma once
+#include "InitWin.h"
 #include <string>
-#include <Windows.h>
 #include <optional>
+#include <memory>
 // #include "Console.h"
+#include "Graphics.h"
 #include "Exception.h"
 #include "Keyboard.h"
 #include "Mouse.h"
 class Window
 {
-//public:
-//	struct Terminate
-//	{
-//		bool m_bTerminated = false;
-//		UINT m_uRetParam = 0;
-//		Terminate() = default;
-//		Terminate(bool bTerminated, UINT uRetParam)
-//			:
-//			m_bTerminated(bTerminated),
-//			m_uRetParam(uRetParam)
-//		{};
-//	};
 public:
 	class WindowException :public Exception
 	{
@@ -51,7 +41,7 @@ public:
 	void SetWindowTitle(std::wstring szTitle);
 	// c++17 required
 	static std::optional<UINT> RunWindow();
-	//static Window::Terminate RunWindow();
+	Graphics& GetpGfx();
 public:
 	Keyboard kbd;
 	Mouse mouse;
@@ -59,6 +49,8 @@ private:
 	static LRESULT WINAPI MsgHandlerSetUp(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	static LRESULT WINAPI MsgHandlerCall(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+private:
+	std::unique_ptr<Graphics> m_pGfx;
 };
 
 #ifdef _DEBUG

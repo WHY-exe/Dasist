@@ -82,6 +82,8 @@ void Window::InitWindow(std::wstring szWinTitile)
 	// show window
 	ShowWindow(this->m_hWnd, SW_NORMAL);
 	UpdateWindow(this->m_hWnd);
+	// init graphics object
+	m_pGfx = std::make_unique<Graphics>(m_hWnd);
 }
 std::optional<UINT> Window::RunWindow() 
 {
@@ -99,20 +101,11 @@ std::optional<UINT> Window::RunWindow()
 	return {};
 }
 
-//Window::Terminate Window::RunWindow()
-//{
-//	MSG msg = { 0 };
-//	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-//	{
-//		if (msg.message == WM_QUIT)
-//		{
-//			return {true, msg.wParam};
-//		}
-//		TranslateMessage(&msg);
-//		DispatchMessage(&msg);
-//	}
-//	return {};
-//}
+Graphics& Window::GetpGfx()
+{
+	return *m_pGfx;
+}
+
 
 LRESULT WINAPI Window::MsgHandlerSetUp(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {

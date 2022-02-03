@@ -16,19 +16,16 @@ int App::Run()
 		{
 			return *ecode;
 		}
-		//Window::Terminate ter = Window::RunWindow();
-		//if (ter.m_bTerminated)
-		//{
-		//	return ter.m_uRetParam;
-		//}
 		DoLogic();
 	}
 }
 
 void App::DoLogic()
 {
-	const float peek = timer.Peek();
-	std::wostringstream oss;
-	oss << L"Time Since Window is Created:" << std::fixed << std::setprecision(1) << peek;
-	m_wnd.SetWindowTitle(oss.str());
+	m_wnd.GetpGfx().ClearBuffer(0, 0, 1, 1);
+	if (m_wnd.kbd.KeyIsPressed(VK_UP))
+	{
+		m_wnd.GetpGfx().ClearBuffer(1, 0, 1, 1);
+	}
+	m_wnd.GetpGfx().EndFrame();
 }

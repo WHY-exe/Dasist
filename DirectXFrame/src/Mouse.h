@@ -1,5 +1,5 @@
 #pragma once
-#include <Windows.h>
+#include "InitWin.h"
 #include <queue>
 class Mouse
 {

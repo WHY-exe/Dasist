@@ -4,10 +4,10 @@
 #include <optional>
 #include <memory>
 // #include "Console.h"
-#include "Graphics.h"
 #include "Exception.h"
 #include "Keyboard.h"
 #include "Mouse.h"
+#include "Graphics.h"
 class Window
 {
 public:

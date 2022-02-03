@@ -3,7 +3,7 @@
 #include "Exception.h"
 #include "DxgiInfoManager.h"
 #include <string>
-#include <sstream>
+#include <wrl.h>
 #include <d3d11.h>
 class Graphics
 {
@@ -26,15 +26,15 @@ private:
 #ifndef NDEBUG
 	DxgiInfoManager infoManager;
 #endif
-	ID3D11Device* m_pDevice = nullptr;
-	IDXGISwapChain* m_pSwapChain = nullptr;
-	ID3D11DeviceContext* m_pContext = nullptr;
-	ID3D11RenderTargetView* m_pView = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11Device>			m_pDevice;
+	Microsoft::WRL::ComPtr<IDXGISwapChain>			m_pSwapChain;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		m_pContext;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_pView;
 public:
 	Graphics(HWND hWnd);
 	Graphics(const Graphics& gfx) = delete;
 	Graphics& operator=(const Graphics& gfx) = delete;
-	~Graphics();
+	~Graphics() = default;
 	void EndFrame();
 	void ClearBuffer(float r, float g, float b, float a);
 

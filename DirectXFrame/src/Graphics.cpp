@@ -1,4 +1,5 @@
 #include "Graphics.h"
+#include <sstream>
 // link the library
 #pragma comment(lib, "d3d11.lib")
 
@@ -56,14 +57,13 @@ Graphics::Graphics(HWND hWnd)
         nullptr,
         &m_pContext
     ));
-    ID3D11Resource* pBackResource = nullptr;
-    GFX_THROW_INFO(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), reinterpret_cast<void**>(&pBackResource)));
+    Microsoft::WRL::ComPtr<ID3D11Resource> pBackResource;
+    GFX_THROW_INFO(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), &pBackResource));
     GFX_THROW_INFO(m_pDevice->CreateRenderTargetView(
-        pBackResource,
+        pBackResource.Get(),
         nullptr,
         &m_pView
     ));
-    pBackResource->Release();
 }
 
 void Graphics::EndFrame()
@@ -75,28 +75,9 @@ void Graphics::EndFrame()
 void Graphics::ClearBuffer(float r, float g, float b, float a)
 {
     const float color[4] = {r, g, b, a};
-    m_pContext->ClearRenderTargetView(m_pView, color);
+    m_pContext->ClearRenderTargetView(m_pView.Get(), color);
 }
 
-Graphics::~Graphics()
-{   
-    if (m_pView)
-    {
-        m_pView->Release();
-    }
-    if (m_pSwapChain)
-    {
-        m_pSwapChain->Release();
-    }
-    if (m_pContext)
-    {
-        m_pContext->Release();
-    }
-    if (m_pDevice)
-    {
-        m_pDevice->Release();
-    }
-}
 
 Graphics::GfxExcepion::GfxExcepion(int nLine, const char* szFile, HRESULT hr, std::vector<std::string> v_szMsg)
     :

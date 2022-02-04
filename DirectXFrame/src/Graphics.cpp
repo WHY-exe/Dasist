@@ -1,4 +1,4 @@
-#include "Graphics.h"
+#include "Windows.h"
 #include <sstream>
 // link the library
 #pragma comment(lib, "d3d11.lib")
@@ -11,8 +11,9 @@
     if (FAILED(hr = hrcall))\
         infoManager.Set();\
      GFX_THORW_CALL(hrcall)
+#define GFX_DEVICE_REMOVED_CALL(hrcall) throw Graphics::GfxExcepion( __LINE__, __FILE__, (hrcall), infoManager.GetMessages())
 #else
-#define GFX_THROW_CALL(hrcall) GFX_CALL(hrcall)
+#define GFX_THROW_INFO(hrcall) GFX_CALL(hrcall)
 #endif // 
 
 
@@ -68,8 +69,21 @@ Graphics::Graphics(HWND hWnd)
 
 void Graphics::EndFrame()
 {
-    HRESULT hr = S_OK;
-    GFX_THROW_INFO(m_pSwapChain->Present(1u, 0u));
+    HRESULT hr = 0;
+#ifndef NDEBUG
+    infoManager.Set();
+#endif
+    if (FAILED(hr = m_pSwapChain->Present(1u, 0u)))
+    {
+        if (hr == DXGI_ERROR_DEVICE_REMOVED)
+        {
+            GFX_DEVICE_REMOVED_CALL(m_pDevice->GetDeviceRemovedReason());
+        }
+        else
+        {
+            GFX_THROW_INFO(hr);
+        }
+    }
 }
 
 void Graphics::ClearBuffer(float r, float g, float b, float a)

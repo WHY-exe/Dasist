@@ -2,9 +2,8 @@
 #include "InitWin.h"
 #include "Exception.h"
 #include "DxgiInfoManager.h"
-#include <string>
-#include <wrl.h>
 #include <d3d11.h>
+
 class Graphics
 {
 public:
@@ -44,3 +43,4 @@ public:
 #define GFX_CALL(hrcall)\
 	if(FAILED(hr = hrcall))\
 		throw Graphics::GfxExcepion( __LINE__, __FILE__, hr)
+

@@ -1,7 +1,4 @@
-#include "DxgiInfoManager.h"
-#include <dxgidebug.h>
 #include "Windows.h"
-#include "Graphics.h"
 #pragma comment(lib, "dxguid.lib")
 DxgiInfoManager::DxgiInfoManager()
 {
@@ -23,16 +20,8 @@ DxgiInfoManager::DxgiInfoManager()
 	}
 	HRESULT hr;
 	// call the function, fill the info queue
-	GFX_CALL(DxgiGetDebugInterface(__uuidof(IDXGIInfoQueue), reinterpret_cast<void**>(&m_pDxgiInfoQueue)));
+	GFX_CALL(DxgiGetDebugInterface(__uuidof(IDXGIInfoQueue), &m_pDxgiInfoQueue));
 
-}
-
-DxgiInfoManager::~DxgiInfoManager()
-{
-	if (m_pDxgiInfoQueue)
-	{
-		m_pDxgiInfoQueue->Release();
-	}
 }
 
 void DxgiInfoManager::Set() noexcept

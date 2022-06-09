@@ -4,22 +4,11 @@
 #include "Exception.h"
 #include "Keyboard.h"
 #include "Mouse.h"
+
 #include <optional>
 #include <memory>
 class Window
 {
-public:
-	class WindowException :public Exception
-	{
-	public:
-		WindowException(int nLine, const char* szFile, HRESULT ErrorCode);
-		const char* what() const noexcept override;
-		virtual const char* GetType() const noexcept override;
-		static std::string TranslateErrorCode(HRESULT ErrorCode);
-		HRESULT GetErrorCode() const noexcept;
-	private:
-		HRESULT m_ErrorCode;
-	};
 private:
 	HWND m_hWnd = nullptr;
 	HINSTANCE m_hIns;
@@ -50,13 +39,5 @@ private:
 private:
 	std::unique_ptr<Graphics> m_pGfx;
 };
-
-#ifdef _DEBUG
-#define WND_EXCEPT(error_code) Window::WindowException(__LINE__, __FILE__, error_code)
-#define WND_LAST_EXCEPT() Window::WindowException(__LINE__, __FILE__, GetLastError())
-#else
-#define WND_EXCEPT(error_code)
-#define WND_LAST_EXCEPT()
-#endif // !_DEBUG
 
 

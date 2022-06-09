@@ -16,6 +16,5 @@ public:
 protected:
 	// in order to be modified in what function
 	mutable std::string WhatInfoBuffer;
-
 };
 

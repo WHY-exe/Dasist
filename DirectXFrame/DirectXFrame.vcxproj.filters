@@ -18,7 +18,7 @@
     <ClCompile Include="src\WinMain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\Windows.cpp">
+    <ClCompile Include="src\Window.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Exception.cpp">
@@ -42,12 +42,15 @@
     <ClCompile Include="src\DxgiInfoManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\WinException.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Console.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\Windows.h">
+    <ClInclude Include="src\Window.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\Exception.h">
@@ -75,6 +78,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\DxgiInfoManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WinException.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\String2WString.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

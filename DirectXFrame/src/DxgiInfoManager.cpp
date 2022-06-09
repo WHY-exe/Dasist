@@ -1,4 +1,6 @@
-#include "Windows.h"
+#include "DxgiInfoManager.h"
+#include "WinException.h"
+#include <memory>
 #pragma comment(lib, "dxguid.lib")
 DxgiInfoManager::DxgiInfoManager()
 {
@@ -18,10 +20,9 @@ DxgiInfoManager::DxgiInfoManager()
 	{
 		throw WND_LAST_EXCEPT();
 	}
-	HRESULT hr;
-	// call the function, fill the info queue
-	GFX_CALL(DxgiGetDebugInterface(__uuidof(IDXGIInfoQueue), &m_pDxgiInfoQueue));
 
+	// call the function, fill the info queue
+	WND_CALL(DxgiGetDebugInterface(__uuidof(IDXGIInfoQueue), &m_pDxgiInfoQueue));
 }
 
 void DxgiInfoManager::Set() noexcept
@@ -38,14 +39,13 @@ std::vector<std::string> DxgiInfoManager::GetMessages() const
 	for (auto i = next; i < end; i++)
 	{
 		SIZE_T ulMsgLen = 0;
-		HRESULT hr;
 		// get the meassage of index i
-		GFX_CALL(m_pDxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, nullptr, &ulMsgLen));
+		WND_CALL(m_pDxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, nullptr, &ulMsgLen));
 		// allocate the memory for the message
 		auto bytes = std::make_unique<std::byte[]>(ulMsgLen);
 		auto pMessage = reinterpret_cast<DXGI_INFO_QUEUE_MESSAGE*>(bytes.get());
 		// fill the memory with message in the queue at index i
-		GFX_CALL(m_pDxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, pMessage, &ulMsgLen));
+		WND_CALL(m_pDxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, pMessage, &ulMsgLen));
 		v_szMsg.emplace_back(pMessage->pDescription);
 	}
 	return v_szMsg;

@@ -1,4 +1,5 @@
-#include "Windows.h"
+#include "Window.h"
+#include "WinException.h"
 #include "resource.h"
 #include <sstream>
 Window::Window(std::wstring szWinClass, std::wstring szWinTitle, int nWidth, int nHeight)
@@ -226,49 +227,3 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-Window::WindowException::WindowException(int nLine, const char* szFile, HRESULT ErrorCode)
-	:
-	Exception(nLine, szFile),
-	m_ErrorCode(ErrorCode)
-{
-}
-
-const char* Window::WindowException::what() const noexcept
-{
-	std::ostringstream oss;
-	oss << GetType() << std::endl
-		<< "[ErrorCode]:" << GetErrorCode() << std::endl
-		<< "[Description]:" << TranslateErrorCode(m_ErrorCode) << std::endl
-		<< GetInfoString();
-	WhatInfoBuffer = oss.str();
-	return WhatInfoBuffer.c_str();
-}
-
-const char* Window::WindowException::GetType() const noexcept
-{
-	return "Windows Exception";
-}
-
-std::string Window::WindowException::TranslateErrorCode(HRESULT ErrorCode)
-{
-	char* pMsgBuffer = nullptr;
-	DWORD nMsgLen = FormatMessageA(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER |
-		FORMAT_MESSAGE_FROM_SYSTEM |
-		FORMAT_MESSAGE_IGNORE_INSERTS ,
-		nullptr, ErrorCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		reinterpret_cast<LPSTR>(&pMsgBuffer), 0, nullptr 
-	);
-	if (nMsgLen == 0)
-	{
-		return "undefine error code";
-	}
-	std::string szResult = pMsgBuffer;
-	LocalFree(pMsgBuffer);
-	return szResult;
-}
-
-HRESULT Window::WindowException::GetErrorCode() const noexcept
-{
-	return m_ErrorCode;
-}

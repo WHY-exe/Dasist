@@ -1,19 +1,37 @@
-#include "Windows.h"
+#include "Graphics.h"
 #include <sstream>
 // link the library
 #pragma comment(lib, "d3d11.lib")
 
 #ifndef NDEBUG
-#define GFX_THORW_CALL(hrcall)\
+#define INIT_GFX_EXCEPTION\
+    HRESULT hr = S_OK
+#define GFX_THORW(hrcall)\
 	if(FAILED(hr = hrcall))\
 		throw Graphics::GfxExcepion( __LINE__, __FILE__, hr, infoManager.GetMessages())
 #define GFX_THROW_INFO(hrcall)\
     if (FAILED(hr = hrcall))\
         infoManager.Set();\
-     GFX_THORW_CALL(hrcall)
+     GFX_THORW(hr)
 #define GFX_DEVICE_REMOVED_CALL(hrcall) throw Graphics::GfxExcepion( __LINE__, __FILE__, (hrcall), infoManager.GetMessages())
+#define GFX_THROW_INFO_ONLY(call)\
+    infoManager.Set();\
+    (call);\
+    {\
+        auto v = infoManager.GetMessage();\
+        if (!v.empty())\
+        {\
+            throw Graphics::GfxInfoOnlyException(__LINE__, __FILE__, v);\
+        }\
+    }
 #else
-#define GFX_THROW_INFO(hrcall) GFX_CALL(hrcall)
+#define INIT_GFX_EXCEPTION\
+    HRESULT hr = S_OK
+#define GFX_THORW(hrcall)\
+	if(FAILED(hr = hrcall))\
+		throw Graphics::GfxExcepion( __LINE__, __FILE__, hrcall\)
+#define GFX_THROW_INFO(hrcall) GFX_THORW(hrcall)
+#define GFX_THROW_INFO_ONLY(call) call
 #endif // 
 
 
@@ -38,12 +56,13 @@ Graphics::Graphics(HWND hWnd)
     sd.Windowed = TRUE;
     sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
     sd.Flags = 0;
-    // create device and swap chain
+    // determine wether it is on debug mod
     unsigned int swapChainCreateFlags = 0u;
 #ifndef NDEBUG
     swapChainCreateFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif // !NDEBUG
-    HRESULT hr = S_OK;
+    // create device and swap chain
+    INIT_GFX_EXCEPTION;
     GFX_THROW_INFO(D3D11CreateDeviceAndSwapChain(
         nullptr,
         D3D_DRIVER_TYPE_HARDWARE,
@@ -67,9 +86,14 @@ Graphics::Graphics(HWND hWnd)
     ));
 }
 
+void Graphics::DrawTestTriangle()
+{
+
+}
+
 void Graphics::EndFrame()
 {
-    HRESULT hr = 0;
+    INIT_GFX_EXCEPTION;
 #ifndef NDEBUG
     infoManager.Set();
 #endif
@@ -95,8 +119,7 @@ void Graphics::ClearBuffer(float r, float g, float b, float a)
 
 Graphics::GfxExcepion::GfxExcepion(int nLine, const char* szFile, HRESULT hr, std::vector<std::string> v_szMsg)
     :
-    Exception(nLine, szFile),
-    m_hr(hr)
+    WinException(nLine, szFile, hr)
 {
     for (const auto& info:v_szMsg)
     {
@@ -107,8 +130,7 @@ Graphics::GfxExcepion::GfxExcepion(int nLine, const char* szFile, HRESULT hr, st
 
 Graphics::GfxExcepion::GfxExcepion(int nLine, const char* szFile, HRESULT hr)
     :
-    Exception(nLine, szFile),
-    m_hr(hr)
+    WinException(nLine, szFile, hr)
 {
 }
 
@@ -117,7 +139,7 @@ const char* Graphics::GfxExcepion::what() const noexcept
     std::ostringstream oss;
     oss << GetType() << std::endl
         << "[Error Code]:0x" << std::hex << GetErrorCode() << std::endl
-        << "[Description]:" << TransferErrorCode(m_hr) << std::endl 
+        << "[Description]:" << TranslateErrorCode(m_ErrorCode) << std::endl
         << GetInfoString() << std::endl
 #ifndef NDEBUG
         << "[DxErrInfo]:" << GetErrorInfo()
@@ -129,33 +151,46 @@ const char* Graphics::GfxExcepion::what() const noexcept
 
 const char* Graphics::GfxExcepion::GetType() const noexcept
 {
-    return "Direx3D Exception";
-}
-
-HRESULT Graphics::GfxExcepion::GetErrorCode() const noexcept
-{
-    return m_hr;
-}
-
-std::string Graphics::GfxExcepion::TransferErrorCode(HRESULT hr)
-{
-    char* szMsgErr;
-    unsigned int uMsgLen = FormatMessageA(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER |
-        FORMAT_MESSAGE_FROM_SYSTEM |
-        FORMAT_MESSAGE_IGNORE_INSERTS,
-        nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        reinterpret_cast<LPSTR>(&szMsgErr), 0, nullptr
-    );
-    if (uMsgLen == 0)
-    {
-        return "undefine error code";
-    }
-    std::string szResult = szMsgErr;
-    return szResult;
+    return "Direct3D Exception";
 }
 
 std::string Graphics::GfxExcepion::GetErrorInfo() const noexcept
 {
     return m_info;
 }
+
+Graphics::GfxInfoOnlyException::GfxInfoOnlyException(int nLine, const char* szFile, std::vector<std::string>& v_szInfo)
+    :
+    Exception(nLine, szFile)
+{
+    for (const auto& i : v_szInfo)
+    {
+        m_szInfo += i;
+        m_szInfo.push_back('\n');
+    }
+    if (!m_szInfo.empty())
+    {
+        m_szInfo.pop_back();
+    }
+}
+
+const char* Graphics::GfxInfoOnlyException::what() const noexcept
+{
+    std::ostringstream oss;
+    oss << GetType() << std::endl
+        << "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl
+        << GetInfoString();
+    WhatInfoBuffer = oss.str();
+    return WhatInfoBuffer.c_str();
+}
+
+const char* Graphics::GfxInfoOnlyException::GetType() const noexcept
+{
+    return "Graphics Info Exception";
+}
+
+std::string Graphics::GfxInfoOnlyException::GetErrorInfo() const noexcept
+{
+    return m_szInfo;
+}
+

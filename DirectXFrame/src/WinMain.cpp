@@ -1,5 +1,7 @@
 #include "App.h"
 #include <sstream>
+#include "String2WString.h"
+
 // standar win32 windows program
 int WINAPI WinMain(
 	_In_ HINSTANCE hInstance,
@@ -16,15 +18,18 @@ int WINAPI WinMain(
 	}
 	catch (const Exception& e)
 	{
-		MessageBoxA(nullptr, e.what(), e.GetType(), MB_OKCANCEL | MB_ICONASTERISK);
+		const std::wstring output_msg = String2WString(std::string(e.what()));
+		const std::wstring output_type = String2WString(std::string(e.GetType()));
+		MessageBox(nullptr, output_msg.c_str(), output_type.c_str(), MB_OKCANCEL | MB_ICONASTERISK);
 	}
 	catch (const std::exception& e)
 	{
-		MessageBoxA(nullptr, e.what(), "Standar Error", MB_OKCANCEL | MB_ICONASTERISK);
+		const std::wstring output_msg = String2WString(std::string(e.what()));
+		MessageBox(nullptr, output_msg.c_str(), L"Standar Error", MB_OKCANCEL | MB_ICONASTERISK);
 	}
 	catch (...)
 	{
-		MessageBoxA(nullptr, "No available information", "UnKnown Error", MB_OKCANCEL | MB_ICONASTERISK);
+		MessageBox(nullptr, L"No available information", L"UnKnown Error", MB_OKCANCEL | MB_ICONASTERISK);
 	}
 	// ¹Ø±Õ¿ØÖÆÌ¨
 	// FREE_CONSOLE();

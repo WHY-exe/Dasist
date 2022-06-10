@@ -29,7 +29,7 @@ public:
 		std::string m_szInfo;
 	};
 public:
-	Graphics(HWND hWnd);
+	Graphics(HWND hWnd, int nWinWidth, int nWinHeight);
 	Graphics(const Graphics& gfx) = delete;
 	Graphics& operator=(const Graphics& gfx) = delete;
 	~Graphics() = default;
@@ -44,7 +44,9 @@ private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>			m_pSwapChain;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		m_pContext;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_pView;
-
+public:
+	int m_nWinWidth;
+	int m_nWinHeight;
 };
 
 

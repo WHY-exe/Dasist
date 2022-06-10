@@ -6,10 +6,11 @@ Window::Window(std::wstring szWinClass, std::wstring szWinTitle, int nWidth, int
 	:
 	m_szWinClass(szWinClass),
 	m_hIns(GetModuleHandle(nullptr)),
-	m_nWidth(nWidth), m_nHeight(nHeight)
+	m_nWidth(nWidth),
+	m_nHeight(nHeight)
 {
 	this->InitWinClass();
-	this->InitWindow(szWinTitle);
+	this->InitWindow(szWinTitle, nWidth, nHeight);
 }
 Window::~Window()
 {
@@ -54,9 +55,9 @@ void Window::InitWinClass()
 		throw WND_LAST_EXCEPT();
 	}
 }
-void Window::InitWindow(std::wstring szWinTitile)
+void Window::InitWindow(std::wstring szWinTitile, int nWidth, int nHeight)
 {
-	RECT rectWindow = { 0, 0, m_nWidth, m_nHeight };
+	RECT rectWindow = { 0, 0, nWidth, nHeight };
 	if (!AdjustWindowRect(&rectWindow, WS_OVERLAPPEDWINDOW, FALSE))
 	{
 		throw WND_LAST_EXCEPT();
@@ -84,7 +85,7 @@ void Window::InitWindow(std::wstring szWinTitile)
 	ShowWindow(this->m_hWnd, SW_NORMAL);
 	UpdateWindow(this->m_hWnd);
 	// init graphics object
-	m_pGfx = std::make_unique<Graphics>(m_hWnd);
+	m_pGfx = std::make_unique<Graphics>(m_hWnd, nWidth, nHeight);
 }
 std::optional<UINT> Window::RunWindow() 
 {

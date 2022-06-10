@@ -22,5 +22,6 @@ int App::Run()
 
 void App::DoLogic()
 {
+	m_wnd.GetpGfx().ClearBuffer(0.0f, 0.0f, 1.0f, 1.0f);
 	m_wnd.GetpGfx().DrawTestTriangle();
 }

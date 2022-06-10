@@ -28,14 +28,6 @@ public:
 	private:
 		std::string m_szInfo;
 	};
-private:
-#ifndef NDEBUG
-	DxgiInfoManager infoManager;
-#endif
-	Microsoft::WRL::ComPtr<ID3D11Device>			m_pDevice;
-	Microsoft::WRL::ComPtr<IDXGISwapChain>			m_pSwapChain;
-	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		m_pContext;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_pView;
 public:
 	Graphics(HWND hWnd);
 	Graphics(const Graphics& gfx) = delete;
@@ -44,6 +36,14 @@ public:
 	void DrawTestTriangle();
 	void EndFrame();
 	void ClearBuffer(float r, float g, float b, float a);
+private:
+#ifndef NDEBUG
+	DxgiInfoManager infoManager;
+#endif
+	Microsoft::WRL::ComPtr<ID3D11Device>			m_pDevice;
+	Microsoft::WRL::ComPtr<IDXGISwapChain>			m_pSwapChain;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		m_pContext;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_pView;
 
 };
 

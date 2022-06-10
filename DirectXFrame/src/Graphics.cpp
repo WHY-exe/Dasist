@@ -1,8 +1,9 @@
 #include "Graphics.h"
 #include <sstream>
+#include <d3dcompiler.h>
 // link the library
 #pragma comment(lib, "d3d11.lib")
-
+#pragma comment(lib, "d3dcompiler.lib")
 #ifndef NDEBUG
 #define INIT_GFX_EXCEPTION\
     HRESULT hr = S_OK
@@ -18,7 +19,7 @@
     infoManager.Set();\
     (call);\
     {\
-        auto v = infoManager.GetMessage();\
+        auto v = infoManager.GetMessages();\
         if (!v.empty())\
         {\
             throw Graphics::GfxInfoOnlyException(__LINE__, __FILE__, v);\
@@ -37,7 +38,7 @@
 
 Graphics::Graphics(HWND hWnd)
 {
-    // create a reference device
+    // create a swap chain descripter
     DXGI_SWAP_CHAIN_DESC sd = {};
     sd.BufferCount = 1;
     sd.BufferDesc.Width = 0;
@@ -79,6 +80,7 @@ Graphics::Graphics(HWND hWnd)
     ));
     Microsoft::WRL::ComPtr<ID3D11Resource> pBackResource;
     GFX_THROW_INFO(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), &pBackResource));
+
     GFX_THROW_INFO(m_pDevice->CreateRenderTargetView(
         pBackResource.Get(),
         nullptr,
@@ -88,7 +90,54 @@ Graphics::Graphics(HWND hWnd)
 
 void Graphics::DrawTestTriangle()
 {
+    INIT_GFX_EXCEPTION;
+    struct Vertex
+    {
+        float x;
+        float y;
+    };
 
+    const Vertex vertices[] = {
+        {0.0f, 0.5f},
+        {-0.5f, -0.5f},
+        {0.5f, -0.5f}
+    };
+    // let's say it is creating vertex buffer
+    Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
+    D3D11_BUFFER_DESC bd = {};
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.CPUAccessFlags = 0u;
+    bd.MiscFlags = 0u;
+    bd.ByteWidth = sizeof(vertices);
+    bd.StructureByteStride = sizeof(Vertex);
+    D3D11_SUBRESOURCE_DATA sd = {};
+    sd.pSysMem = vertices;
+
+    GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&bd, &sd, &pVertexBuffer));
+    // bind the vertex buffer to the pipeline
+    const UINT stride = sizeof(Vertex);
+    const UINT offset = 0u;
+    m_pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
+    
+    // the blob that hold the shader information
+    Microsoft::WRL::ComPtr<ID3DBlob> pBlob;
+    // create vertex shader
+    Microsoft::WRL::ComPtr<ID3D11VertexShader> pVertexShader;
+    GFX_THROW_INFO(D3DReadFileToBlob(L"cso\\VertexShader.cso", &pBlob));
+    GFX_THROW_INFO(m_pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader));
+    // bind vertex shader to the pipeline
+    m_pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
+    // create pixel shader
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> pPixelShader;
+    GFX_THROW_INFO(D3DReadFileToBlob(L"cso\\PixelShader.cso", &pBlob));
+    GFX_THROW_INFO(m_pDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pPixelShader));
+    // bind the Pixel shader to the pipeline
+    m_pContext->PSSetShader(pPixelShader.Get(), nullptr, 0u);
+    
+
+
+    GFX_THROW_INFO_ONLY(m_pContext->Draw(sizeof(vertices), 0u));
 }
 
 void Graphics::EndFrame()

@@ -22,10 +22,5 @@ int App::Run()
 
 void App::DoLogic()
 {
-	m_wnd.GetpGfx().ClearBuffer(0, 0, 1, 1);
-	if (m_wnd.kbd.KeyIsPressed(VK_UP))
-	{
-		m_wnd.GetpGfx().ClearBuffer(1, 0, 1, 1);
-	}
-	m_wnd.GetpGfx().EndFrame();
+	m_wnd.GetpGfx().DrawTestTriangle();
 }

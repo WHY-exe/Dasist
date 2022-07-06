@@ -37,6 +37,8 @@ public:
 	void EndFrame();
 	void ClearBuffer(float r, float g, float b, float a);
 private:
+	void CreateVertexBuffer();
+private:
 #ifndef NDEBUG
 	DxgiInfoManager infoManager;
 #endif
@@ -44,6 +46,9 @@ private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>			m_pSwapChain;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		m_pContext;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_pView;
+private:
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pIndexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pVertexBuffer;
 public:
 	int m_nWinWidth;
 	int m_nWinHeight;

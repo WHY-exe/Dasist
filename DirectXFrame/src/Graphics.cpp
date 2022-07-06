@@ -98,34 +98,61 @@ void Graphics::DrawTestTriangle()
     INIT_GFX_EXCEPTION;
     struct Vertex
     {
-        float x;
-        float y;
-    };
+        struct {
+            float x;
+            float y;
+        } pos;
+        struct {
+            unsigned char r;
+            unsigned char g; 
+            unsigned char b; 
+            unsigned char a;
 
-    const Vertex vertices[] = {
-        {0.0f, 0.5f},
-        {0.5f, -0.5f},
-        {-0.5f, -0.5f},
+        } color;
     };
     // let's say it is creating vertex buffer
-    Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
-    D3D11_BUFFER_DESC bd = {};
-    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.CPUAccessFlags = 0u;
-    bd.MiscFlags = 0u;
-    bd.ByteWidth = sizeof(vertices);
-    bd.StructureByteStride = sizeof(Vertex);
-    D3D11_SUBRESOURCE_DATA sd = {};
-    sd.pSysMem = vertices;
-
-    GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&bd, &sd, &pVertexBuffer));
-    // bind the vertex buffer to the pipeline
-    const UINT stride = sizeof(Vertex);
-    const UINT offset = 0u;
-    m_pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
-
+    const Vertex vertices[] = {
+        {0.5f, 0.5f, 255, 0, 0},
+        {0.5f, -0.5f, 0, 255, 0},
+        {-0.5f, -0.5f, 255, 0, 255},
+        {-0.5f, 0.5f, 255, 255, 0}
+    };
     
+    Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
+    // buffer description
+    D3D11_BUFFER_DESC vbbd = {};
+    vbbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    vbbd.Usage = D3D11_USAGE_DEFAULT;
+    vbbd.CPUAccessFlags = 0u;
+    vbbd.MiscFlags = 0u;
+    vbbd.ByteWidth = sizeof(vertices);
+    vbbd.StructureByteStride = sizeof(Vertex);
+    D3D11_SUBRESOURCE_DATA sdVerts = {};
+    sdVerts.pSysMem = vertices;
+    GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&vbbd, &sdVerts, &pVertexBuffer));
+    // bind the vertex buffer to the pipeline
+    const UINT vbstride = sizeof(Vertex);
+    const UINT vboffset = 0u;
+    m_pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &vbstride, &vboffset);
+
+    // create index buffer
+    const UINT indices[] = {
+        0, 1, 2,
+        0, 2, 3
+    };
+    Microsoft::WRL::ComPtr<ID3D11Buffer> pIndexBuffer;
+    D3D11_BUFFER_DESC ibbd = {};
+    ibbd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    ibbd.Usage = D3D11_USAGE_DEFAULT;
+    ibbd.CPUAccessFlags = 0u;
+    ibbd.ByteWidth = sizeof(indices);
+    ibbd.StructureByteStride = sizeof(UINT);
+    D3D11_SUBRESOURCE_DATA sdIdics = {};
+    sdIdics.pSysMem = indices;
+
+    GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&ibbd, &sdIdics, &pIndexBuffer));
+    m_pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
+
     // the blob that hold the shader information
     Microsoft::WRL::ComPtr<ID3DBlob> pBlob;
     // create pixel shader
@@ -144,9 +171,10 @@ void Graphics::DrawTestTriangle()
     m_pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
     // create the layout of vertex buffer 
     Microsoft::WRL::ComPtr<ID3D11InputLayout> pInputLayout;
+    // the data that will be passed to the shaders
     D3D11_INPUT_ELEMENT_DESC ied[] = {
-        {"Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-        
+        {"Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        {"Color", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 8u, D3D11_INPUT_PER_VERTEX_DATA, 0},
     };
     GFX_THROW_INFO(m_pDevice->CreateInputLayout(
         ied, (UINT)std::size(ied),
@@ -169,7 +197,7 @@ void Graphics::DrawTestTriangle()
     // bind the view port to the pipeline
     m_pContext->RSSetViewports(1u, &vp);
     // draw the triangle
-    GFX_THROW_INFO_ONLY(m_pContext->Draw((UINT)std::size(vertices), 0u));
+    GFX_THROW_INFO_ONLY(m_pContext->DrawIndexed((UINT)std::size(indices), 0u, 0u));
 }
 
 void Graphics::EndFrame()
@@ -196,7 +224,6 @@ void Graphics::ClearBuffer(float r, float g, float b, float a)
     const float color[4] = {r, g, b, a};
     m_pContext->ClearRenderTargetView(m_pView.Get(), color);
 }
-
 
 Graphics::GfxExcepion::GfxExcepion(int nLine, const char* szFile, HRESULT hr, std::vector<std::string> v_szMsg)
     :

@@ -33,7 +33,7 @@ public:
 	Graphics(const Graphics& gfx) = delete;
 	Graphics& operator=(const Graphics& gfx) = delete;
 	~Graphics() = default;
-	void DrawTestTriangle();
+	void DrawTestTriangle(float angle);
 	void EndFrame();
 	void ClearBuffer(float r, float g, float b, float a);
 private:

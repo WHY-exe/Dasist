@@ -1,6 +1,7 @@
 #include "Graphics.h"
 #include <sstream>
 #include <d3dcompiler.h>
+#include <cmath>
 // link the library
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
@@ -93,7 +94,7 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
 
 
 
-void Graphics::DrawTestTriangle()
+void Graphics::DrawTestTriangle(float angle)
 {
     INIT_GFX_EXCEPTION;
     struct Vertex
@@ -117,7 +118,38 @@ void Graphics::DrawTestTriangle()
         {-0.5f, -0.5f, 255, 0, 255},
         {-0.5f, 0.5f, 255, 255, 0}
     };
-    
+    // const buffer that will be passed to the shader
+    struct ConstantBuffer
+    {
+        struct {
+            float elements[4][4];
+        } tranformation;
+    };
+    const ConstantBuffer cb =
+    {
+        {
+            std::cos(angle),  std::sin(angle), 0.0f, 0.0f,
+            (m_nWinWidth / m_nWinHeight) * -std::sin(angle), (m_nWinWidth / m_nWinHeight)* std::cos(angle), 0.0f, 0.0f,
+            0.0f,             0.0f,            1.0f, 0.0f,
+            0.0f,             0.0f,            0.0f, 1.0f
+        }
+    };
+
+    Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
+    D3D11_BUFFER_DESC cbbd = {};
+    cbbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbbd.Usage = D3D11_USAGE_DYNAMIC;
+    cbbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    cbbd.MiscFlags = 0u;
+    cbbd.ByteWidth = sizeof(cb);
+    cbbd.StructureByteStride = 0u;
+    D3D11_SUBRESOURCE_DATA sdcb = {};
+    sdcb.pSysMem = &cb;
+    GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&cbbd, &sdcb, &pConstantBuffer));
+
+    m_pContext->VSSetConstantBuffers(0u, 1u, pConstantBuffer.GetAddressOf());
+
+
     Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
     // buffer description
     D3D11_BUFFER_DESC vbbd = {};

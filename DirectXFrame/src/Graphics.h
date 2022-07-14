@@ -3,7 +3,19 @@
 #include "WinException.h"
 #include "DxgiInfoManager.h"
 #include <d3d11.h>
+#include <DirectXMath.h>
 
+struct Vertex
+{
+	DirectX::XMFLOAT2 pos;
+	struct
+	{
+		unsigned char r;
+		unsigned char g;
+		unsigned char b;
+		unsigned char a;
+	}color;
+};
 class Graphics
 {
 public:
@@ -33,11 +45,14 @@ public:
 	Graphics(const Graphics& gfx) = delete;
 	Graphics& operator=(const Graphics& gfx) = delete;
 	~Graphics() = default;
-	void DrawTestTriangle(float angle);
+	void DrawTestTriangle(float angle, float x, float y);
 	void EndFrame();
 	void ClearBuffer(float r, float g, float b, float a);
 private:
-	void CreateVertexBuffer();
+	static constexpr UINT indices[] = {
+		0, 1, 2,
+		0, 2, 3
+	};
 private:
 #ifndef NDEBUG
 	DxgiInfoManager infoManager;
@@ -49,6 +64,7 @@ private:
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pIndexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pVertexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pConstantBuffer;
 public:
 	int m_nWinWidth;
 	int m_nWinHeight;

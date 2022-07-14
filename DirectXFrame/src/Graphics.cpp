@@ -2,6 +2,10 @@
 #include <sstream>
 #include <d3dcompiler.h>
 #include <cmath>
+#include <DirectXMath.h>
+
+namespace DX = DirectX;
+
 // link the library
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
@@ -90,67 +94,14 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
         nullptr,
         &m_pView
     ));
-}
 
-
-
-void Graphics::DrawTestTriangle(float angle)
-{
-    INIT_GFX_EXCEPTION;
-    struct Vertex
-    {
-        struct {
-            float x;
-            float y;
-        } pos;
-        struct {
-            unsigned char r;
-            unsigned char g; 
-            unsigned char b; 
-            unsigned char a;
-
-        } color;
-    };
     // let's say it is creating vertex buffer
-    const Vertex vertices[] = {
-        {0.5f, 0.5f, 255, 0, 0},
-        {0.5f, -0.5f, 0, 255, 0},
-        {-0.5f, -0.5f, 255, 0, 255},
-        {-0.5f, 0.5f, 255, 255, 0}
+    const Vertex vertices[] = {                            
+        {{(0.5f),   0.5f}, { 255, 0  , 0  , 1}},
+        {{(0.5f) , -0.5f}, { 0  , 255, 0  , 1}},
+        {{(-0.5f), -0.5f}, { 255, 0  , 255, 1}},
+        {{(-0.5f),  0.5f}, { 255, 255, 0  , 1}}
     };
-    // const buffer that will be passed to the shader
-    struct ConstantBuffer
-    {
-        struct {
-            float elements[4][4];
-        } tranformation;
-    };
-    const ConstantBuffer cb =
-    {
-        {
-            std::cos(angle),  std::sin(angle), 0.0f, 0.0f,
-            (m_nWinWidth / m_nWinHeight) * -std::sin(angle), (m_nWinWidth / m_nWinHeight)* std::cos(angle), 0.0f, 0.0f,
-            0.0f,             0.0f,            1.0f, 0.0f,
-            0.0f,             0.0f,            0.0f, 1.0f
-        }
-    };
-
-    Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
-    D3D11_BUFFER_DESC cbbd = {};
-    cbbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    cbbd.Usage = D3D11_USAGE_DYNAMIC;
-    cbbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    cbbd.MiscFlags = 0u;
-    cbbd.ByteWidth = sizeof(cb);
-    cbbd.StructureByteStride = 0u;
-    D3D11_SUBRESOURCE_DATA sdcb = {};
-    sdcb.pSysMem = &cb;
-    GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&cbbd, &sdcb, &pConstantBuffer));
-
-    m_pContext->VSSetConstantBuffers(0u, 1u, pConstantBuffer.GetAddressOf());
-
-
-    Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
     // buffer description
     D3D11_BUFFER_DESC vbbd = {};
     vbbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -161,18 +112,13 @@ void Graphics::DrawTestTriangle(float angle)
     vbbd.StructureByteStride = sizeof(Vertex);
     D3D11_SUBRESOURCE_DATA sdVerts = {};
     sdVerts.pSysMem = vertices;
-    GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&vbbd, &sdVerts, &pVertexBuffer));
+    GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&vbbd, &sdVerts, &m_pVertexBuffer));
     // bind the vertex buffer to the pipeline
     const UINT vbstride = sizeof(Vertex);
     const UINT vboffset = 0u;
-    m_pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &vbstride, &vboffset);
+    m_pContext->IASetVertexBuffers(0u, 1u, m_pVertexBuffer.GetAddressOf(), &vbstride, &vboffset);
 
     // create index buffer
-    const UINT indices[] = {
-        0, 1, 2,
-        0, 2, 3
-    };
-    Microsoft::WRL::ComPtr<ID3D11Buffer> pIndexBuffer;
     D3D11_BUFFER_DESC ibbd = {};
     ibbd.BindFlags = D3D11_BIND_INDEX_BUFFER;
     ibbd.Usage = D3D11_USAGE_DEFAULT;
@@ -182,8 +128,46 @@ void Graphics::DrawTestTriangle(float angle)
     D3D11_SUBRESOURCE_DATA sdIdics = {};
     sdIdics.pSysMem = indices;
 
-    GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&ibbd, &sdIdics, &pIndexBuffer));
-    m_pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
+    GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&ibbd, &sdIdics, &m_pIndexBuffer));
+    m_pContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
+
+}
+
+
+
+void Graphics::DrawTestTriangle(float angle, float x, float y)
+{
+    INIT_GFX_EXCEPTION;
+    // const buffer that will be passed to the shader
+    struct ConstantBuffer
+    {
+        struct {
+            DX::XMMATRIX transform;
+        } tranformation;
+    };
+    const ConstantBuffer cb =
+    {
+        {
+           DX::XMMatrixTranspose(
+               DX::XMMatrixRotationZ(angle) * 
+               DX::XMMatrixScaling((float)m_nWinHeight / (float)m_nWinWidth, 1.0f, 0.0f) *
+               DX::XMMatrixTranslation(x, y, 0.0f)
+           )
+        }
+    };
+
+    D3D11_BUFFER_DESC cbbd = {};
+    cbbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbbd.Usage = D3D11_USAGE_DYNAMIC;
+    cbbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    cbbd.MiscFlags = 0u;
+    cbbd.ByteWidth = sizeof(cb);
+    cbbd.StructureByteStride = 0u;
+    D3D11_SUBRESOURCE_DATA sdcb = {};
+    sdcb.pSysMem = &cb;
+    GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&cbbd, &sdcb, &m_pConstantBuffer));
+
+    m_pContext->VSSetConstantBuffers(0u, 1u, m_pConstantBuffer.GetAddressOf());
 
     // the blob that hold the shader information
     Microsoft::WRL::ComPtr<ID3DBlob> pBlob;

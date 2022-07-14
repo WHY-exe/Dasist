@@ -89,6 +89,9 @@
     <ClInclude Include="src\String2WString.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\OBJ_Loader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\DirectXFrame.rc">

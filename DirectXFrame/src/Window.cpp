@@ -2,7 +2,7 @@
 #include "WinException.h"
 #include "resource.h"
 #include <sstream>
-Window::Window(std::wstring szWinClass, std::wstring szWinTitle, int nWidth, int nHeight)
+Window::Window(std::wstring szWinTitle, int nWidth, int nHeight, std::wstring szWinClass)
 	:
 	m_szWinClass(szWinClass),
 	m_hIns(GetModuleHandle(nullptr)),
@@ -106,6 +106,16 @@ std::optional<UINT> Window::RunWindow()
 Graphics& Window::GetpGfx()
 {
 	return *m_pGfx;
+}
+
+int Window::GetWindowWidth() const
+{
+	return m_nWidth;
+}
+
+int Window::GetWindowHeight() const
+{
+	return m_nHeight;
 }
 
 

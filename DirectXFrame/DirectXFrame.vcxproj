@@ -37,6 +37,7 @@
     <ClInclude Include="src\InitWin.h" />
     <ClInclude Include="src\Mouse.h" />
     <ClInclude Include="src\Keyboard.h" />
+    <ClInclude Include="src\OBJ_Loader.h" />
     <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Console.h" />

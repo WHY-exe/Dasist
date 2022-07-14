@@ -13,15 +13,18 @@ public:
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
 	Window(
-		std::wstring szWinClass, 
 		std::wstring szWinTitle, 
-		int nWidth, int nHeight
+		int nWidth, int nHeight,
+		std::wstring szWinClass = L"DirectXFrameWork"
 	);
 	~Window();
 	void SetWindowTitle(std::wstring szTitle);
 	// c++17 required
 	static std::optional<UINT> RunWindow();
 	Graphics& GetpGfx();
+public:
+	int GetWindowWidth() const;
+	int GetWindowHeight() const;
 public:
 	Keyboard kbd;
 	Mouse mouse;

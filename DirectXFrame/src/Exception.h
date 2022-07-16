@@ -3,9 +3,7 @@
 #include <string>
 class Exception: public std::exception
 {
-private:
-	int m_nLine;
-	std::string m_szFile;
+
 public:
 	Exception(int nLine, const char* szFile);
 	const char* what() const noexcept override;
@@ -16,5 +14,8 @@ public:
 protected:
 	// in order to be modified in what function
 	mutable std::string WhatInfoBuffer;
+private:
+	int m_nLine;
+	std::string m_szFile;
 };
 

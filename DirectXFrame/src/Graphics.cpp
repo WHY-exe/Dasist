@@ -3,7 +3,7 @@
 #include <d3dcompiler.h>
 #include <cmath>
 #include <DirectXMath.h>
-
+#include "Model.h"
 namespace DX = DirectX;
 
 // link the library
@@ -43,8 +43,8 @@ namespace DX = DirectX;
 
 Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
     :
-    m_nWinWidth(nWinWidth),
-    m_nWinHeight(nWinHeight)
+    WinWidth(nWinWidth),
+    WinHeight(nWinHeight)
 {
     // create a swap chain descripter
     DXGI_SWAP_CHAIN_DESC sd = {};
@@ -96,25 +96,21 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
     ));
 
     // let's say it is creating vertex buffer
-    const Vertex vertices[] = {                            
-        {{(0.5f),   0.5f}, { 255, 0  , 0  , 1}},
-        {{(0.5f) , -0.5f}, { 0  , 255, 0  , 1}},
-        {{(-0.5f), -0.5f}, { 255, 0  , 255, 1}},
-        {{(-0.5f),  0.5f}, { 255, 255, 0  , 1}}
-    };
+    Model cube("obj\\cube.obj");
+    m_indices_len = cube.GetIndices().size();
     // buffer description
     D3D11_BUFFER_DESC vbbd = {};
     vbbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     vbbd.Usage = D3D11_USAGE_DEFAULT;
     vbbd.CPUAccessFlags = 0u;
     vbbd.MiscFlags = 0u;
-    vbbd.ByteWidth = sizeof(vertices);
-    vbbd.StructureByteStride = sizeof(Vertex);
+    vbbd.ByteWidth = cube.GetVertices().size() * sizeof(objl::Vertex);
+    vbbd.StructureByteStride = sizeof(objl::Vertex);
     D3D11_SUBRESOURCE_DATA sdVerts = {};
-    sdVerts.pSysMem = vertices;
+    sdVerts.pSysMem = cube.GetVertices().data();
     GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&vbbd, &sdVerts, &m_pVertexBuffer));
     // bind the vertex buffer to the pipeline
-    const UINT vbstride = sizeof(Vertex);
+    const UINT vbstride = sizeof(objl::Vertex);
     const UINT vboffset = 0u;
     m_pContext->IASetVertexBuffers(0u, 1u, m_pVertexBuffer.GetAddressOf(), &vbstride, &vboffset);
 
@@ -123,14 +119,43 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
     ibbd.BindFlags = D3D11_BIND_INDEX_BUFFER;
     ibbd.Usage = D3D11_USAGE_DEFAULT;
     ibbd.CPUAccessFlags = 0u;
-    ibbd.ByteWidth = sizeof(indices);
+    ibbd.ByteWidth = cube.GetIndices().size() * sizeof(UINT);
     ibbd.StructureByteStride = sizeof(UINT);
     D3D11_SUBRESOURCE_DATA sdIdics = {};
-    sdIdics.pSysMem = indices;
+    sdIdics.pSysMem = cube.GetIndices().data();
 
     GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&ibbd, &sdIdics, &m_pIndexBuffer));
     m_pContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
 
+    // the blob that hold the shader information
+    Microsoft::WRL::ComPtr<ID3DBlob> pBlob;
+    // create pixel shader
+    GFX_THROW_INFO(D3DReadFileToBlob(L"cso\\PixelShader.cso", &pBlob));
+    GFX_THROW_INFO(m_pDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &m_pPixelShader));
+    // bind the Pixel shader to the pipeline
+    m_pContext->PSSetShader(m_pPixelShader.Get(), nullptr, 0u);
+    // bind render target view after the pixel shader
+    m_pContext->OMSetRenderTargets(1u, m_pView.GetAddressOf(), nullptr);
+    // create vertex shader
+    GFX_THROW_INFO(D3DReadFileToBlob(L"cso\\VertexShader.cso", &pBlob));
+    GFX_THROW_INFO(m_pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &m_pVertexShader));
+    // bind vertex shader to the pipeline
+    m_pContext->VSSetShader(m_pVertexShader.Get(), nullptr, 0u);
+    // create the layout of vertex buffer 
+    Microsoft::WRL::ComPtr<ID3D11InputLayout> pInputLayout;
+    // the data that will be passed to the shaders
+    D3D11_INPUT_ELEMENT_DESC ied[] = {
+        {"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        {"Norm", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12u, D3D11_INPUT_PER_VERTEX_DATA, 0},
+    };
+    GFX_THROW_INFO(m_pDevice->CreateInputLayout(
+        ied, (UINT)std::size(ied),
+        pBlob->GetBufferPointer(),
+        pBlob->GetBufferSize(),
+        &pInputLayout
+    ));
+    // bind vertex layout
+    m_pContext->IASetInputLayout(pInputLayout.Get());
 }
 
 
@@ -150,11 +175,49 @@ void Graphics::DrawTestTriangle(float angle, float x, float y)
         {
            DX::XMMatrixTranspose(
                DX::XMMatrixRotationZ(angle) * 
-               DX::XMMatrixScaling((float)m_nWinHeight / (float)m_nWinWidth, 1.0f, 0.0f) *
+               DX::XMMatrixRotationX(angle) *
+               DX::XMMatrixScaling((float)WinHeight / (float)WinWidth, 1.0f, 0.0f) *
                DX::XMMatrixTranslation(x, y, 0.0f)
            )
         }
     };
+    struct ConstantBuffer2
+    {
+        struct
+        {
+            float r;
+            float g;
+            float b;
+            float a;
+        } face_colors[6];
+    };
+    const ConstantBuffer2 cb2 =
+    {
+        {
+            {1.0f,0.0f,1.0f},
+            {1.0f,0.0f,0.0f},
+            {0.0f,1.0f,0.0f},
+            {0.0f,0.0f,1.0f},
+            {1.0f,1.0f,0.0f},
+            {0.0f,1.0f,1.0f},
+        }
+    };
+    Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer2;
+    D3D11_BUFFER_DESC cbd2;
+    cbd2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbd2.Usage = D3D11_USAGE_DEFAULT;
+    cbd2.CPUAccessFlags = 0u;
+    cbd2.MiscFlags = 0u;
+    cbd2.ByteWidth = sizeof(cb2);
+    cbd2.StructureByteStride = 0u;
+    D3D11_SUBRESOURCE_DATA csd2 = {};
+    csd2.pSysMem = &cb2;
+    GFX_THROW_INFO(m_pDevice->CreateBuffer(&cbd2, &csd2, &pConstantBuffer2));
+
+    // bind constant buffer to pixel shader
+    m_pContext->PSSetConstantBuffers(0u, 1u, pConstantBuffer2.GetAddressOf());
+
+
 
     D3D11_BUFFER_DESC cbbd = {};
     cbbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -168,44 +231,12 @@ void Graphics::DrawTestTriangle(float angle, float x, float y)
     GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&cbbd, &sdcb, &m_pConstantBuffer));
 
     m_pContext->VSSetConstantBuffers(0u, 1u, m_pConstantBuffer.GetAddressOf());
-
-    // the blob that hold the shader information
-    Microsoft::WRL::ComPtr<ID3DBlob> pBlob;
-    // create pixel shader
-    Microsoft::WRL::ComPtr<ID3D11PixelShader> pPixelShader;
-    GFX_THROW_INFO(D3DReadFileToBlob(L"cso\\PixelShader.cso", &pBlob));
-    GFX_THROW_INFO(m_pDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pPixelShader));
-    // bind the Pixel shader to the pipeline
-    m_pContext->PSSetShader(pPixelShader.Get(), nullptr, 0u);
-    // bind render target view after the pixel shader
-    m_pContext->OMSetRenderTargets(1u, m_pView.GetAddressOf(), nullptr);
-    // create vertex shader
-    Microsoft::WRL::ComPtr<ID3D11VertexShader> pVertexShader;
-    GFX_THROW_INFO(D3DReadFileToBlob(L"cso\\VertexShader.cso", &pBlob));
-    GFX_THROW_INFO(m_pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader));
-    // bind vertex shader to the pipeline
-    m_pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
-    // create the layout of vertex buffer 
-    Microsoft::WRL::ComPtr<ID3D11InputLayout> pInputLayout;
-    // the data that will be passed to the shaders
-    D3D11_INPUT_ELEMENT_DESC ied[] = {
-        {"Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        {"Color", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 8u, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    };
-    GFX_THROW_INFO(m_pDevice->CreateInputLayout(
-        ied, (UINT)std::size(ied),
-        pBlob->GetBufferPointer(),
-        pBlob->GetBufferSize(),
-        &pInputLayout
-    ));
-    // bind vertex layout
-    m_pContext->IASetInputLayout(pInputLayout.Get());
     // set primitive topology to triangle list
     m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     // configure viewport
     D3D11_VIEWPORT vp = {};
-    vp.Width = (float)m_nWinWidth;
-    vp.Height = (float)m_nWinHeight;
+    vp.Width = (float)WinWidth;
+    vp.Height = (float)WinHeight;
     vp.MinDepth = 0;
     vp.MaxDepth = 1;
     vp.TopLeftX = 0;
@@ -213,7 +244,7 @@ void Graphics::DrawTestTriangle(float angle, float x, float y)
     // bind the view port to the pipeline
     m_pContext->RSSetViewports(1u, &vp);
     // draw the triangle
-    GFX_THROW_INFO_ONLY(m_pContext->DrawIndexed((UINT)std::size(indices), 0u, 0u));
+    GFX_THROW_INFO_ONLY(m_pContext->DrawIndexed(m_indices_len, 0u, 0u));
 }
 
 void Graphics::EndFrame()

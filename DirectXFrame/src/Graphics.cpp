@@ -92,7 +92,7 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
     GFX_THROW_INFO(m_pDevice->CreateRenderTargetView(
         pBackResource.Get(),
         nullptr,
-        &m_pView
+        &m_pTarget
     ));
 
     // let's say it is creating vertex buffer
@@ -135,7 +135,7 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
     // bind the Pixel shader to the pipeline
     m_pContext->PSSetShader(m_pPixelShader.Get(), nullptr, 0u);
     // bind render target view after the pixel shader
-    m_pContext->OMSetRenderTargets(1u, m_pView.GetAddressOf(), nullptr);
+    m_pContext->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), nullptr);
     // create vertex shader
     GFX_THROW_INFO(D3DReadFileToBlob(L"cso\\VertexShader.cso", &pBlob));
     GFX_THROW_INFO(m_pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &m_pVertexShader));
@@ -156,6 +156,42 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
     ));
     // bind vertex layout
     m_pContext->IASetInputLayout(pInputLayout.Get());
+
+    // set the z-buffer
+    // 1. create depth stencil state 
+    D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+    dsDesc.DepthEnable = TRUE;
+    dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> pDSState;
+    GFX_THROW_INFO(m_pDevice->CreateDepthStencilState(&dsDesc, pDSState.GetAddressOf()));
+
+    m_pContext->OMSetDepthStencilState(pDSState.Get(), 1u);
+    // 2. create depth sencil texture
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthStencil;
+    D3D11_TEXTURE2D_DESC depthDesc = {};
+    depthDesc.Width = WinWidth;
+    depthDesc.Height = WinHeight;
+    depthDesc.MipLevels = 1u;
+    depthDesc.ArraySize = 1u;
+    depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    depthDesc.SampleDesc.Count = 1u;
+    depthDesc.SampleDesc.Quality = 0u;
+    depthDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    GFX_THROW_INFO(m_pDevice->CreateTexture2D(&depthDesc, nullptr, &pDepthStencil));
+
+    // 3. create view of depth stensil texture
+    D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+    dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    dsvDesc.Texture2D.MipSlice = 0u;
+    GFX_THROW_INFO(m_pDevice->CreateDepthStencilView(
+        pDepthStencil.Get(), &dsvDesc, &m_pDSV
+    ));
+
+    // 4. bind depth stensil view to OM
+    m_pContext->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), m_pDSV.Get());
 }
 
 
@@ -176,11 +212,25 @@ void Graphics::DrawTestTriangle(float angle, float x, float y)
            DX::XMMatrixTranspose(
                DX::XMMatrixRotationZ(angle) * 
                DX::XMMatrixRotationX(angle) *
-               DX::XMMatrixScaling((float)WinHeight / (float)WinWidth, 1.0f, 0.0f) *
-               DX::XMMatrixTranslation(x, y, 0.0f)
+               DX::XMMatrixTranslation(x,0.0f,4.0f)*
+               DX::XMMatrixPerspectiveLH(1.0f, float(WinHeight) / float(WinWidth),0.5f,10.0f)
            )
         }
     };
+
+    D3D11_BUFFER_DESC cbbd = {};
+    cbbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbbd.Usage = D3D11_USAGE_DYNAMIC;
+    cbbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    cbbd.MiscFlags = 0u;
+    cbbd.ByteWidth = sizeof(cb);
+    cbbd.StructureByteStride = 0u;
+    D3D11_SUBRESOURCE_DATA sdcb = {};
+    sdcb.pSysMem = &cb;
+    GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&cbbd, &sdcb, &m_pConstantBuffer));
+
+    m_pContext->VSSetConstantBuffers(0u, 1u, m_pConstantBuffer.GetAddressOf());
+
     struct ConstantBuffer2
     {
         struct
@@ -217,20 +267,6 @@ void Graphics::DrawTestTriangle(float angle, float x, float y)
     // bind constant buffer to pixel shader
     m_pContext->PSSetConstantBuffers(0u, 1u, pConstantBuffer2.GetAddressOf());
 
-
-
-    D3D11_BUFFER_DESC cbbd = {};
-    cbbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    cbbd.Usage = D3D11_USAGE_DYNAMIC;
-    cbbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    cbbd.MiscFlags = 0u;
-    cbbd.ByteWidth = sizeof(cb);
-    cbbd.StructureByteStride = 0u;
-    D3D11_SUBRESOURCE_DATA sdcb = {};
-    sdcb.pSysMem = &cb;
-    GFX_THROW_INFO_ONLY(m_pDevice->CreateBuffer(&cbbd, &sdcb, &m_pConstantBuffer));
-
-    m_pContext->VSSetConstantBuffers(0u, 1u, m_pConstantBuffer.GetAddressOf());
     // set primitive topology to triangle list
     m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     // configure viewport
@@ -269,7 +305,8 @@ void Graphics::EndFrame()
 void Graphics::ClearBuffer(float r, float g, float b, float a)
 {
     const float color[4] = {r, g, b, a};
-    m_pContext->ClearRenderTargetView(m_pView.Get(), color);
+    m_pContext->ClearRenderTargetView(m_pTarget.Get(), color);
+    m_pContext->ClearDepthStencilView(m_pDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 }
 
 Graphics::GfxExcepion::GfxExcepion(int nLine, const char* szFile, HRESULT hr, std::vector<std::string> v_szMsg)

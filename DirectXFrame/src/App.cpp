@@ -28,5 +28,10 @@ void App::DoLogic()
 		(float)m_wnd.mouse.GetMousePt().x / ((float)m_wnd.GetWindowWidth() / 2) - 1.0f,
 		-((float)m_wnd.mouse.GetMousePt().y / ((float)m_wnd.GetWindowHeight() / 2) - 1.0f)
 	);
+	m_wnd.GetpGfx().DrawTestTriangle(
+		-timer.Peek(),
+		0.0f,
+		0.0f
+	);
 	m_wnd.GetpGfx().EndFrame();
 }

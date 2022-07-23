@@ -45,7 +45,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Device>			m_pDevice;
 	Microsoft::WRL::ComPtr<IDXGISwapChain>			m_pSwapChain;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		m_pContext;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_pView;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_pTarget;
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pIndexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pVertexBuffer;
@@ -53,6 +53,7 @@ private:
 private:
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pPixelShader;
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_pVertexShader;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_pDSV;
 public:
 	int WinWidth;
 	int WinHeight;

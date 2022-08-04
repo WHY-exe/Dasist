@@ -19,6 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Box.cpp" />
+    <ClCompile Include="src\Drawable.cpp" />
+    <ClCompile Include="src\PixelShader.cpp" />
+    <ClCompile Include="src\InputLayout.cpp" />
+    <ClCompile Include="src\IndexBuffer.cpp" />
+    <ClCompile Include="src\Bindable.cpp" />
     <ClCompile Include="src\DxgiInfoManager.cpp" />
     <ClCompile Include="src\Graphics.cpp" />
     <ClCompile Include="src\App.cpp" />
@@ -29,8 +35,20 @@
     <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\WinException.cpp" />
+    <ClCompile Include="src\VertexBuffer.cpp" />
+    <ClCompile Include="src\VertexShader.cpp" />
+    <ClCompile Include="src\Topology.cpp" />
+    <ClCompile Include="src\TransformCbuf.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Box.h" />
+    <ClInclude Include="src\Drawable.h" />
+    <ClInclude Include="src\PixelShader.h" />
+    <ClInclude Include="src\InputLayout.h" />
+    <ClInclude Include="src\ConstantBuffer.h" />
+    <ClInclude Include="src\IndexBuffer.h" />
+    <ClInclude Include="src\Bindable.h" />
+    <ClInclude Include="src\GfxThrowMacro.h" />
     <ClInclude Include="src\DxgiInfoManager.h" />
     <ClInclude Include="src\Graphics.h" />
     <ClInclude Include="src\App.h" />
@@ -51,6 +69,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="src\String2WString.h" />
+    <ClInclude Include="src\VertexBuffer.h" />
+    <ClInclude Include="src\VertexShader.h" />
+    <ClInclude Include="src\Topology.h" />
+    <ClInclude Include="src\TransformCbuf.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\DirectXFrame.rc" />

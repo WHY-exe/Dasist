@@ -16,6 +16,12 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{8b432477-48cd-4910-9afc-080e109bd86e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Bindable">
+      <UniqueIdentifier>{4e0ca36a-6665-4270-9367-d73d7a14bea5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drawable">
+      <UniqueIdentifier>{3d1fedd7-f0e0-47b1-98d2-8b9b9eb49212}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\WinMain.cpp">
@@ -47,6 +53,36 @@
     </ClCompile>
     <ClCompile Include="src\WinException.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Bindable.cpp">
+      <Filter>Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IndexBuffer.cpp">
+      <Filter>Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VertexBuffer.cpp">
+      <Filter>Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InputLayout.cpp">
+      <Filter>Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VertexShader.cpp">
+      <Filter>Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PixelShader.cpp">
+      <Filter>Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Drawable.cpp">
+      <Filter>Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Topology.cpp">
+      <Filter>Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TransformCbuf.cpp">
+      <Filter>Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Box.cpp">
+      <Filter>Drawable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +130,42 @@
     </ClInclude>
     <ClInclude Include="src\Model.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GfxThrowMacro.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Bindable.h">
+      <Filter>Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IndexBuffer.h">
+      <Filter>Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexBuffer.h">
+      <Filter>Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConstantBuffer.h">
+      <Filter>Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\InputLayout.h">
+      <Filter>Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexShader.h">
+      <Filter>Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PixelShader.h">
+      <Filter>Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Drawable.h">
+      <Filter>Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Topology.h">
+      <Filter>Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TransformCbuf.h">
+      <Filter>Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Box.h">
+      <Filter>Drawable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

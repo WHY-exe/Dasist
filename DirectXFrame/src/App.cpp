@@ -1,10 +1,13 @@
 #include "App.h"
 #include <sstream>
 #include <iomanip>
+#include "Box.h"
 App::App()
 	:
-	m_wnd(L"WindowTitle", 700, 500)
+	m_wnd(L"WindowTitle", 700, 500),
+	box(m_wnd.GetpGfx())
 {
+	m_wnd.GetpGfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, (float)m_wnd.GetWindowHeight() / (float)m_wnd.GetWindowWidth(), 0.5f, 10.0f));
 }
 
 int App::Run()
@@ -22,16 +25,8 @@ int App::Run()
 
 void App::DoLogic()
 {
-	m_wnd.GetpGfx().ClearBuffer(0.0f, 0.0f, 1.0f, 1.0f);
-	m_wnd.GetpGfx().DrawTestTriangle(
-		timer.Peek(),
-		(float)m_wnd.mouse.GetMousePt().x / ((float)m_wnd.GetWindowWidth() / 2) - 1.0f,
-		-((float)m_wnd.mouse.GetMousePt().y / ((float)m_wnd.GetWindowHeight() / 2) - 1.0f)
-	);
-	m_wnd.GetpGfx().DrawTestTriangle(
-		-timer.Peek(),
-		0.0f,
-		0.0f
-	);
+	m_wnd.GetpGfx().ClearBuffer(0.0f, 0.0f, 0.0f, 1.0f);
+	box.Update(timer.Peek());
+	box.Draw(m_wnd.GetpGfx());
 	m_wnd.GetpGfx().EndFrame();
 }

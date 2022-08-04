@@ -3,10 +3,11 @@
 #include "WinException.h"
 #include "DxgiInfoManager.h"
 #include <d3d11.h>
-
+#include <DirectXMath.h>
 
 class Graphics
 {
+	friend class Bindable;
 public:
 	class GfxExcepion :public WinException
 	{
@@ -34,11 +35,13 @@ public:
 	Graphics(const Graphics& gfx) = delete;
 	Graphics& operator=(const Graphics& gfx) = delete;
 	~Graphics() = default;
-	void DrawTestTriangle(float angle, float x, float y);
+	void DrawIndexed(UINT index_count);
+	void SetProjection(DirectX::FXMMATRIX proj) noexcept;
+	DirectX::XMMATRIX GetProjection() const noexcept;
 	void EndFrame();
 	void ClearBuffer(float r, float g, float b, float a);
 private:
-	size_t m_indices_len;
+	DirectX::XMMATRIX m_projection;
 #ifndef NDEBUG
 	DxgiInfoManager infoManager;
 #endif
@@ -46,14 +49,7 @@ private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>			m_pSwapChain;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		m_pContext;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_pTarget;
-private:
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pIndexBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pVertexBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pConstantBuffer;
-private:
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pPixelShader;
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_pVertexShader;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_pDSV;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>  m_pDSV;
 public:
 	int WinWidth;
 	int WinHeight;

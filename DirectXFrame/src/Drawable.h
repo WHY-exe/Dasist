@@ -5,6 +5,8 @@
 #include <DirectXMath.h>
 class Drawable
 {
+	template <class T>
+	friend class DrawableBase;
 public:
 	Drawable() = default;
 	Drawable(const Drawable&) = delete;
@@ -14,6 +16,8 @@ public:
 	void AddBind(std::unique_ptr<Bindable> bind) noexcept;
 	void AddIndexBuffer(std::unique_ptr<IndexBuffer> ibuf) noexcept;
 	virtual ~Drawable() = default;
+protected:
+	virtual const std::vector<std::unique_ptr<Bindable>>& GetStaticBinds() const noexcept = 0;
 private:
 	const IndexBuffer* m_pIndexBuffer = nullptr;
 	std::vector<std::unique_ptr<Bindable>> m_binds;

@@ -167,6 +167,9 @@
     <ClInclude Include="src\Box.h">
       <Filter>Drawable</Filter>
     </ClInclude>
+    <ClInclude Include="src\DrawableBase.h">
+      <Filter>Drawable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\DirectXFrame.rc">

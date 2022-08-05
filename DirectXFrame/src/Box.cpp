@@ -10,62 +10,70 @@
 #include <memory>
 Box::Box(Graphics& gfx)
 {
-	Model cube("obj\\cube.obj");
-
-	AddBind(std::make_unique<VertexBuffer>(gfx, cube.GetVertices()));
-
-	AddIndexBuffer(std::make_unique<IndexBuffer>(gfx, cube.GetIndices()));
-
-	std::vector<D3D11_INPUT_ELEMENT_DESC> ied = {
-		{"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{"Norm", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12u, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	};
-	auto pvs = std::make_unique<VertexShader>(gfx, L"cso\\VertexShader.cso");
-	auto pvsbc = pvs->GetByteCode();
-	AddBind(std::move(pvs));
-
-	AddBind(std::make_unique<PixelShader>(gfx, L"cso\\PixelShader.cso"));
-
-	struct PSConstantBuffer
+	if (!IsStaticInitialized())
 	{
-		struct
+		Model cube("obj\\cube.obj");
+
+		AddStaticBind(std::make_unique<VertexBuffer>(gfx, cube.GetVertices()));
+
+		AddStaticIndexBuffer(std::make_unique<IndexBuffer>(gfx, cube.GetIndices()));
+
+		std::vector<D3D11_INPUT_ELEMENT_DESC> ied = {
+			{"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{"Norm", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12u, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		};
+		auto pvs = std::make_unique<VertexShader>(gfx, L"cso\\VertexShader.cso");
+		auto pvsbc = pvs->GetByteCode();
+		AddStaticBind(std::move(pvs));
+
+		AddStaticBind(std::make_unique<PixelShader>(gfx, L"cso\\PixelShader.cso"));
+
+		struct PSConstantBuffer
 		{
-			float r;
-			float g;
-			float b;
-			float a;
-		} face_colors[6];
-	};
-	const PSConstantBuffer pscb =
+			struct
+			{
+				float r;
+				float g;
+				float b;
+				float a;
+			} face_colors[6];
+		};
+		const PSConstantBuffer pscb =
+		{
+			{
+				{1.0f,0.0f,1.0f},
+				{1.0f,0.0f,0.0f},
+				{0.0f,1.0f,0.0f},
+				{0.0f,0.0f,1.0f},
+				{1.0f,1.0f,0.0f},
+				{0.0f,1.0f,1.0f},
+			}
+		};
+		AddStaticBind(std::make_unique<PixelConstantBuffer<PSConstantBuffer>>(gfx, pscb));
+
+		AddStaticBind(std::make_unique<InputLayout>(gfx, ied, pvsbc));
+
+		AddStaticBind(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+	}
+	else
 	{
-		{
-			{1.0f,0.0f,1.0f},
-			{1.0f,0.0f,0.0f},
-			{0.0f,1.0f,0.0f},
-			{0.0f,0.0f,1.0f},
-			{1.0f,1.0f,0.0f},
-			{0.0f,1.0f,1.0f},
-		}
-	};
-	AddBind(std::make_unique<PixelConstantBuffer<PSConstantBuffer>>(gfx, pscb));
-
-	AddBind(std::make_unique<InputLayout>(gfx, ied, pvsbc));
-
-	AddBind(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+		SetIndexfromStatic();
+	}
 
 	AddBind(std::make_unique<TransformCbuf>(gfx, *this));
 }
 
 void Box::Update(float dt) noexcept
 {
-	r_roll_speed = dt;
-	x_roll_speed = dt;
+	z_roll = dt * z_rot_speed;
+	x_roll = dt * x_rot_speed;
+	y_roll = dt * y_rot_speed;
 }
 
 DirectX::XMMATRIX Box::GetTransformXM() const noexcept
 {
-	return DirectX::XMMatrixRotationZ(r_roll_speed) *
-		DirectX::XMMatrixRotationX(x_roll_speed) *
-		DirectX::XMMatrixTranslation(0.0f, 0.0f, 4.0f);
-
+	return DirectX::XMMatrixRotationZ(z_roll) *
+		DirectX::XMMatrixRotationY(y_roll) *
+		DirectX::XMMatrixRotationX(x_roll) *
+		DirectX::XMMatrixTranslation(m_pos_x, m_pos_y, m_pos_z);
 }

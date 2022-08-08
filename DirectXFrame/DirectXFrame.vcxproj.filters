@@ -9,10 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="资源文件">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Shader">
       <UniqueIdentifier>{8b432477-48cd-4910-9afc-080e109bd86e}</UniqueIdentifier>
     </Filter>
@@ -21,6 +17,12 @@
     </Filter>
     <Filter Include="Drawable">
       <UniqueIdentifier>{3d1fedd7-f0e0-47b1-98d2-8b9b9eb49212}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="第三方库">
+      <UniqueIdentifier>{ddc2bb1b-9252-4550-881a-e42ad52207f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res">
+      <UniqueIdentifier>{77bcfea0-0818-43fc-9aa6-faa8762d4839}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +86,18 @@
     <ClCompile Include="src\Box.cpp">
       <Filter>Drawable</Filter>
     </ClCompile>
+    <ClCompile Include="src\Surface.cpp">
+      <Filter>Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Plane.cpp">
+      <Filter>Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Sampler.cpp">
+      <Filter>Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Console.h">
@@ -123,9 +137,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\String2WString.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OBJ_Loader.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\Model.h">
@@ -170,16 +181,24 @@
     <ClInclude Include="src\DrawableBase.h">
       <Filter>Drawable</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="res\DirectXFrame.rc">
-      <Filter>资源文件</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="res\icon\icon1.ico">
-      <Filter>资源文件</Filter>
-    </Image>
+    <ClInclude Include="src\header_lib\stb\stb_image.h">
+      <Filter>第三方库</Filter>
+    </ClInclude>
+    <ClInclude Include="src\header_lib\OBJ_Loader.h">
+      <Filter>第三方库</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Surface.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Sampler.h">
+      <Filter>Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Texture.h">
+      <Filter>Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Plane.h">
+      <Filter>Drawable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\VertexShader.hlsl">
@@ -188,5 +207,21 @@
     <FxCompile Include="shader\PixelShader.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="shader\TexVS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\TexPS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\DirectXFrame.aps">
+      <Filter>res</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="res\DirectXFrame.rc">
+      <Filter>res</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

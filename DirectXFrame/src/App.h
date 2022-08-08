@@ -8,7 +8,8 @@ private:
 	Window m_wnd;
 	void DoLogic();
 	Timer timer;
-	Box box;
+	Box box1;
+	Box box2;
 public:
 	App();
 	int Run();

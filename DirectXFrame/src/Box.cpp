@@ -7,6 +7,9 @@
 #include "ConstantBuffer.h"
 #include "Topology.h"
 #include "TransformCbuf.h"
+#include "Surface.h"
+#include "Texture.h"
+#include "Sampler.h"
 #include <memory>
 Box::Box(Graphics& gfx)
 {
@@ -16,40 +19,22 @@ Box::Box(Graphics& gfx)
 
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, cube.GetVertices()));
 
+		AddStaticBind(std::make_unique<Texture>(gfx, Surface("./images/wood.png")));
+
+		AddStaticBind(std::make_unique<Sampler>(gfx));
+
 		AddStaticIndexBuffer(std::make_unique<IndexBuffer>(gfx, cube.GetIndices()));
 
 		std::vector<D3D11_INPUT_ELEMENT_DESC> ied = {
-			{"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{"Norm", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12u, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{ "Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "PosNorm", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12u, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TexCoord", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24u, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 		};
-		auto pvs = std::make_unique<VertexShader>(gfx, L"cso\\VertexShader.cso");
+		auto pvs = std::make_unique<VertexShader>(gfx, L"cso\\TexVS.cso");
 		auto pvsbc = pvs->GetByteCode();
 		AddStaticBind(std::move(pvs));
 
-		AddStaticBind(std::make_unique<PixelShader>(gfx, L"cso\\PixelShader.cso"));
-
-		struct PSConstantBuffer
-		{
-			struct
-			{
-				float r;
-				float g;
-				float b;
-				float a;
-			} face_colors[6];
-		};
-		const PSConstantBuffer pscb =
-		{
-			{
-				{1.0f,0.0f,1.0f},
-				{1.0f,0.0f,0.0f},
-				{0.0f,1.0f,0.0f},
-				{0.0f,0.0f,1.0f},
-				{1.0f,1.0f,0.0f},
-				{0.0f,1.0f,1.0f},
-			}
-		};
-		AddStaticBind(std::make_unique<PixelConstantBuffer<PSConstantBuffer>>(gfx, pscb));
+		AddStaticBind(std::make_unique<PixelShader>(gfx, L"cso\\TexPS.cso"));
 
 		AddStaticBind(std::make_unique<InputLayout>(gfx, ied, pvsbc));
 
@@ -68,6 +53,20 @@ void Box::Update(float dt) noexcept
 	z_roll = dt * z_rot_speed;
 	x_roll = dt * x_rot_speed;
 	y_roll = dt * y_rot_speed;
+}
+
+void Box::SetPosition(float x, float y, float z)
+{
+	m_pos_x = x;
+	m_pos_y = y;
+	m_pos_z = z;
+}
+
+void Box::SetRotSpeed(float x_srot, float y_srot, float z_srot)
+{
+	x_rot_speed	= x_srot;
+	y_rot_speed	= y_srot;
+	z_rot_speed	= z_srot;
 }
 
 DirectX::XMMATRIX Box::GetTransformXM() const noexcept

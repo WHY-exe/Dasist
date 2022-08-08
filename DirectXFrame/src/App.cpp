@@ -2,12 +2,22 @@
 #include <sstream>
 #include <iomanip>
 #include "Box.h"
+#include "Surface.h"
 App::App()
 	:
 	m_wnd(L"WindowTitle", 700, 500),
-	box(m_wnd.GetpGfx())
+	box1(m_wnd.GetpGfx()),
+	box2(m_wnd.GetpGfx())
 {
-	m_wnd.GetpGfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, (float)m_wnd.GetWindowHeight() / (float)m_wnd.GetWindowWidth(), 0.5f, 10.0f));
+	m_wnd.GetpGfx().SetProjection(
+		DirectX::XMMatrixPerspectiveLH(
+			1.0f, (float)m_wnd.GetWindowHeight() / (float)m_wnd.GetWindowWidth(), 
+			0.5f, 10.0f
+		));
+	box1.SetPosition(1.0f, 1.0f, 4.0f);
+	box2.SetPosition(0.0f, 0.0f, 3.0f);
+	box1.SetRotSpeed(0.0f, 0.0f, 0.0f);
+	box2.SetRotSpeed(-1.0f, 1.0f, 3.0f);
 }
 
 int App::Run()
@@ -26,7 +36,9 @@ int App::Run()
 void App::DoLogic()
 {
 	m_wnd.GetpGfx().ClearBuffer(0.0f, 0.0f, 0.0f, 1.0f);
-	box.Update(timer.Peek());
-	box.Draw(m_wnd.GetpGfx());
+	box1.Update(timer.Peek());
+	box1.Draw(m_wnd.GetpGfx());
+	box2.Update(timer.Peek());
+	box2.Draw(m_wnd.GetpGfx());
 	m_wnd.GetpGfx().EndFrame();
 }

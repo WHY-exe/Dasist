@@ -129,7 +129,7 @@ LRESULT WINAPI Window::MsgHandlerSetUp(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 {
 	if (uMsg == WM_NCCREATE)
 	{
-		// 获取CreateWindow()API返回的CREATESTRUCT
+		// 获取CreateWindow()API返回的CREATESTRUCT（即this）
 		const CREATESTRUCT* const pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
 		// 获取实例化对象的指针(调用CreateWindow时的最后一个参数)
 		Window* const pWin = static_cast<Window*>(pCreate->lpCreateParams);
@@ -137,7 +137,7 @@ LRESULT WINAPI Window::MsgHandlerSetUp(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		{
 			throw WND_LAST_EXCEPT();
 		}
-		// 将实例化的对象的指针与windows系统相关联
+		// 将实例化的对象的指针与窗口实例相关联
 		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWin));
 		// 将原始WinProc函数由MsgHandlerSetUp替换为MsgHandlerCall
 		// 在WM_NCCREATE调用结束后，之后的每一个消息处理都由MsgHandlerCall处理
@@ -149,7 +149,7 @@ LRESULT WINAPI Window::MsgHandlerSetUp(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 
 LRESULT WINAPI Window::MsgHandlerCall(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	// 获取与windows关联的数据（实例化的对象指针）
+	// 获取与窗口实例关联的数据（实例化的对象指针）
 	Window* const pWin = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 	// 将消息交由每一个实例对象的MsgHandler处理
 	return pWin->MsgHandler(hWnd, uMsg, wParam, lParam);
@@ -236,7 +236,7 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		kbd.OnKeyUp(static_cast<unsigned char>(wParam));
 		break;
 	/****************** 键盘消息 ******************/
-	// 
+	/************** 窗口大小改变消息 **************/
 	case WM_SIZE:
 		m_nWidth = LOWORD(lParam);
 		m_nHeight= HIWORD(lParam);
@@ -249,13 +249,11 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				)
 			);
 		}
-		
 		break;
+	/************** 窗口大小改变消息 **************/
 	case WM_CLOSE:
 		PostQuitMessage(0);
 		return 0;
-
-
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }

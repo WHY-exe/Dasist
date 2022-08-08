@@ -86,9 +86,6 @@
     <ClCompile Include="src\Box.cpp">
       <Filter>Drawable</Filter>
     </ClCompile>
-    <ClCompile Include="src\Surface.cpp">
-      <Filter>Bindable</Filter>
-    </ClCompile>
     <ClCompile Include="src\Texture.cpp">
       <Filter>Bindable</Filter>
     </ClCompile>
@@ -97,6 +94,9 @@
     </ClCompile>
     <ClCompile Include="src\Sampler.cpp">
       <Filter>Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Surface.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

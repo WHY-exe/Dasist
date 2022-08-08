@@ -86,6 +86,12 @@ void Window::InitWindow(std::wstring szWinTitile, int nWidth, int nHeight)
 	UpdateWindow(this->m_hWnd);
 	// init graphics object
 	m_pGfx = std::make_unique<Graphics>(m_hWnd, nWidth, nHeight);
+	m_pGfx->SetProjection(
+		DirectX::XMMatrixPerspectiveLH(
+			1.0f, (float)m_nHeight / (float)m_nWidth,
+			0.5f, 10.0f
+		)
+	);
 }
 std::optional<UINT> Window::RunWindow() 
 {
@@ -230,10 +236,26 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		kbd.OnKeyUp(static_cast<unsigned char>(wParam));
 		break;
 	/****************** ¼üÅÌÏûÏ¢ ******************/
+	// 
+	case WM_SIZE:
+		m_nWidth = LOWORD(lParam);
+		m_nHeight= HIWORD(lParam);
+		if (this->m_pGfx.get())
+		{
+			this->m_pGfx->SetProjection(
+				DirectX::XMMatrixPerspectiveLH(
+					1.0f, (float)m_nHeight / (float)m_nWidth,
+					0.5f, 10.0f
+				)
+			);
+		}
+		
+		break;
 	case WM_CLOSE:
 		PostQuitMessage(0);
 		return 0;
-	
+
+
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }

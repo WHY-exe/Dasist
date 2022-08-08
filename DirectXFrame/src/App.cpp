@@ -9,11 +9,7 @@ App::App()
 	box1(m_wnd.GetpGfx()),
 	box2(m_wnd.GetpGfx())
 {
-	m_wnd.GetpGfx().SetProjection(
-		DirectX::XMMatrixPerspectiveLH(
-			1.0f, (float)m_wnd.GetWindowHeight() / (float)m_wnd.GetWindowWidth(), 
-			0.5f, 10.0f
-		));
+	
 	box1.SetPosition(1.0f, 1.0f, 4.0f);
 	box2.SetPosition(0.0f, 0.0f, 3.0f);
 	box1.SetRotSpeed(0.0f, 0.0f, 0.0f);

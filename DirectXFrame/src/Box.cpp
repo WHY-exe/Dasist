@@ -19,7 +19,7 @@ Box::Box(Graphics& gfx)
 
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, cube.GetVertices()));
 
-		AddStaticBind(std::make_unique<Texture>(gfx, Surface("./images/wood.png")));
+		AddStaticBind(std::make_unique<Texture>(gfx, Surface("./images/box.png")));
 
 		AddStaticBind(std::make_unique<Sampler>(gfx));
 

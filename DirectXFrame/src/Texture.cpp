@@ -17,7 +17,7 @@ Texture::Texture(Graphics& gfx, const Surface& s)
 	texDesc.MiscFlags = 0;
 	D3D11_SUBRESOURCE_DATA sd = {};
 	sd.pSysMem = s.GetBufferPtr();
-	sd.SysMemPitch = s.GetWidth() * sizeof(Surface::Color);
+	sd.SysMemPitch = s.GetWidth() * 4;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTex;
 	GFX_THROW_INFO(
 		GetDevice(gfx)->CreateTexture2D(

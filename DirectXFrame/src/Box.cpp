@@ -75,8 +75,7 @@ void Box::SpwanControlWindow()
 
 DirectX::XMMATRIX Box::GetTransformXM() const noexcept
 {
-	return DirectX::XMMatrixRotationZ(z_roll) *
-		DirectX::XMMatrixRotationY(y_roll) *
-		DirectX::XMMatrixRotationX(x_roll) *
+	return
+		DirectX::XMMatrixRotationRollPitchYaw(x_roll, y_roll, z_roll) *
 		DirectX::XMMatrixTranslation(m_pos_x, m_pos_y, m_pos_z);
 }

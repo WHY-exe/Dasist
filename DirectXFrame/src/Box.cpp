@@ -10,8 +10,11 @@
 #include "Surface.h"
 #include "Texture.h"
 #include "Sampler.h"
+#include "imgui.h"
 #include <memory>
-Box::Box(Graphics& gfx)
+Box::Box(Graphics& gfx, UINT box_id)
+	:
+	m_box_id(box_id)
 {
 	if (!IsStaticInitialized())
 	{
@@ -50,23 +53,24 @@ Box::Box(Graphics& gfx)
 
 void Box::Update(float dt) noexcept
 {
-	z_roll = dt * z_rot_speed;
-	x_roll = dt * x_rot_speed;
-	y_roll = dt * y_rot_speed;
 }
 
-void Box::SetPosition(float x, float y, float z)
+void Box::SpwanControlWindow()
 {
-	m_pos_x = x;
-	m_pos_y = y;
-	m_pos_z = z;
-}
-
-void Box::SetRotSpeed(float x_srot, float y_srot, float z_srot)
-{
-	x_rot_speed	= x_srot;
-	y_rot_speed	= y_srot;
-	z_rot_speed	= z_srot;
+	std::stringstream ss;
+	ss << "Box" << m_box_id;
+	if (ImGui::Begin(ss.str().c_str()))
+	{
+		ImGui::Text("Position");
+		ImGui::SliderAngle("X", &m_pos_x, -1000.0f, 1000.0f, "%.1f");
+		ImGui::SliderAngle("Y", &m_pos_y, -1000.0f, 1000.0f, "%.1f");
+		ImGui::SliderAngle("Z", &m_pos_z, -1000.0f, 1000.0f, "%.1f");
+		ImGui::Text("Angle");
+		ImGui::SliderAngle("AngleX", &x_roll, -180.0f, 180.0f, "%.1f");
+		ImGui::SliderAngle("AngleY", &y_roll, -180.0f, 180.0f, "%.1f");
+		ImGui::SliderAngle("AngleZ", &z_roll, -180.0f, 180.0f, "%.1f");
+	}
+	ImGui::End();
 }
 
 DirectX::XMMATRIX Box::GetTransformXM() const noexcept

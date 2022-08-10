@@ -98,6 +98,33 @@
     <ClCompile Include="src\Surface.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_widgets.cpp">
+      <Filter>第三方库</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_tables.cpp">
+      <Filter>第三方库</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_impl_win32.cpp">
+      <Filter>第三方库</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_impl_dx11.cpp">
+      <Filter>第三方库</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_draw.cpp">
+      <Filter>第三方库</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vendor\imgui_for_dx11\imgui.cpp">
+      <Filter>第三方库</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ImguiManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_demo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Console.h">
@@ -181,12 +208,6 @@
     <ClInclude Include="src\DrawableBase.h">
       <Filter>Drawable</Filter>
     </ClInclude>
-    <ClInclude Include="src\header_lib\stb\stb_image.h">
-      <Filter>第三方库</Filter>
-    </ClInclude>
-    <ClInclude Include="src\header_lib\OBJ_Loader.h">
-      <Filter>第三方库</Filter>
-    </ClInclude>
     <ClInclude Include="src\Surface.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -198,6 +219,42 @@
     </ClInclude>
     <ClInclude Include="src\Plane.h">
       <Filter>Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ImguiManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\OBJ_Loader.h">
+      <Filter>第三方库</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\stb\stb_image.h">
+      <Filter>第三方库</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\imgui_for_dx11\imconfig.h">
+      <Filter>第三方库</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\imgui_for_dx11\imgui.h">
+      <Filter>第三方库</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\imgui_for_dx11\imgui_impl_dx11.h">
+      <Filter>第三方库</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\imgui_for_dx11\imgui_impl_win32.h">
+      <Filter>第三方库</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\imgui_for_dx11\imgui_internal.h">
+      <Filter>第三方库</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\imgui_for_dx11\imstb_rectpack.h">
+      <Filter>第三方库</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\imgui_for_dx11\imstb_truetype.h">
+      <Filter>第三方库</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\imgui_for_dx11\imstb_textedit.h">
+      <Filter>第三方库</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Camera.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

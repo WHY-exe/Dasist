@@ -13,6 +13,6 @@ private:
 	int m_imgWidth;
 	int m_imgHeight;
 	int m_imgComp;
-	std::unique_ptr<unsigned char[]> m_pPixelBuffer;
+	std::unique_ptr<unsigned char, void(*)(void*)> m_pPixelBuffer;
 };
 

@@ -3,17 +3,13 @@
 #include <d3dcompiler.h>
 #include <cmath>
 #include "GfxThrowMacro.h"
-
-namespace DX = DirectX;
-
+#include "imgui_impl_dx11.h"
+#include "imgui_impl_win32.h"
 // link the library
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
 Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
-    :
-    WinWidth(nWinWidth),
-    WinHeight(nWinHeight)
 {
     // create a swap chain descripter
     DXGI_SWAP_CHAIN_DESC sd = {};
@@ -77,8 +73,8 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
     // 2. create depth sencil texture
     Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthStencil;
     D3D11_TEXTURE2D_DESC depthDesc = {};
-    depthDesc.Width = WinWidth;
-    depthDesc.Height = WinHeight;
+    depthDesc.Width = nWinWidth;
+    depthDesc.Height = nWinHeight;
     depthDesc.MipLevels = 1u;
     depthDesc.ArraySize = 1u;
     depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
@@ -102,14 +98,21 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
 
     // configure viewport
     D3D11_VIEWPORT vp = {};
-    vp.Width = (float)WinWidth;
-    vp.Height = (float)WinHeight;
+    vp.Width = (float)nWinWidth;
+    vp.Height = (float)nWinHeight;
     vp.MinDepth = 0;
     vp.MaxDepth = 1;
     vp.TopLeftX = 0;
     vp.TopLeftY = 0;
     // bind the view port to the pipeline
     m_pContext->RSSetViewports(1u, &vp);
+    //
+    ImGui_ImplDX11_Init(m_pDevice.Get(), m_pContext.Get());
+}
+
+Graphics::~Graphics()
+{
+    ImGui_ImplDX11_Shutdown();
 }
 
 void Graphics::DrawIndexed(UINT index_count)
@@ -122,14 +125,37 @@ void Graphics::SetProjection(DirectX::FXMMATRIX proj) noexcept
     m_projection = proj;
 }
 
+void Graphics::SetCamera(DirectX::FXMMATRIX cam) noexcept
+{
+    m_camTransform = cam;
+}
+
+DirectX::XMMATRIX Graphics::GetCamera() const noexcept
+{
+    return m_camTransform;
+}
+
 DirectX::XMMATRIX Graphics::GetProjection() const noexcept
 {
     return m_projection;
 }
 
+void Graphics::BeginFrame()
+{
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+    const float color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    m_pContext->ClearRenderTargetView(m_pTarget.Get(), color);
+    m_pContext->ClearDepthStencilView(m_pDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
+}
+
 
 void Graphics::EndFrame()
 {
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
     INIT_GFX_EXCEPTION;
 #ifndef NDEBUG
     infoManager.Set();
@@ -146,14 +172,6 @@ void Graphics::EndFrame()
         }
     }
 }
-
-void Graphics::ClearBuffer(float r, float g, float b, float a)
-{
-    const float color[4] = {r, g, b, a};
-    m_pContext->ClearRenderTargetView(m_pTarget.Get(), color);
-    m_pContext->ClearDepthStencilView(m_pDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
-}
-
 Graphics::GfxExcepion::GfxExcepion(int nLine, const char* szFile, HRESULT hr, std::vector<std::string> v_szMsg)
     :
     WinException(nLine, szFile, hr)

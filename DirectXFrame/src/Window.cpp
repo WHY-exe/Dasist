@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "WinException.h"
 #include "resource.h"
+#include "imgui_impl_win32.h"
 #include <sstream>
 Window::Window(std::wstring szWinTitle, int nWidth, int nHeight, std::wstring szWinClass)
 	:
@@ -14,6 +15,7 @@ Window::Window(std::wstring szWinTitle, int nWidth, int nHeight, std::wstring sz
 }
 Window::~Window()
 {
+	ImGui_ImplWin32_Shutdown();
 	UnregisterClass(m_szWinClass.c_str(), m_hIns);
 	DestroyWindow(m_hWnd);
 }
@@ -84,6 +86,8 @@ void Window::InitWindow(std::wstring szWinTitile, int nWidth, int nHeight)
 	// show window
 	ShowWindow(this->m_hWnd, SW_NORMAL);
 	UpdateWindow(this->m_hWnd);
+	//
+	ImGui_ImplWin32_Init(m_hWnd);
 	// init graphics object
 	m_pGfx = std::make_unique<Graphics>(m_hWnd, nWidth, nHeight);
 	m_pGfx->SetProjection(
@@ -109,7 +113,7 @@ std::optional<UINT> Window::RunWindow()
 	return {};
 }
 
-Graphics& Window::GetpGfx()
+Graphics& Window::GetGfx()
 {
 	return *m_pGfx;
 }
@@ -157,6 +161,10 @@ LRESULT WINAPI Window::MsgHandlerCall(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+	{
+		return true;
+	}
 	switch (uMsg)
 	{
 	case WM_KILLFOCUS:
@@ -236,6 +244,7 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		kbd.OnKeyUp(static_cast<unsigned char>(wParam));
 		break;
 	/****************** 键盘消息 ******************/
+
 	/************** 窗口大小改变消息 **************/
 	case WM_SIZE:
 		m_nWidth = LOWORD(lParam);
@@ -251,6 +260,7 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	/************** 窗口大小改变消息 **************/
+
 	case WM_CLOSE:
 		PostQuitMessage(0);
 		return 0;

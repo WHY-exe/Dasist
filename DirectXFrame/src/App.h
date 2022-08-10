@@ -2,16 +2,23 @@
 #include "Window.h"
 #include "Timer.h"
 #include "Box.h"
+#include "Camera.h"
+#include "ImguiManager.h"
 class App
 {
-private:
-	Window m_wnd;
-	void DoLogic();
-	Timer timer;
-	Box box1;
-	Box box2;
 public:
 	App();
-	int Run();
+	int Run();	
+private:
+	void DoFrame();
+private:
+	ImguiManager m_imguiMan;	
+	Window m_wnd;
+	Graphics& m_gfx;
+	Timer timer;
+private:
+	// user data
+	std::vector<std::unique_ptr<Box>> m_objList;
+	Camera cam;
 };
 

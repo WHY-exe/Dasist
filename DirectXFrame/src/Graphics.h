@@ -34,14 +34,17 @@ public:
 	Graphics(HWND hWnd, int nWinWidth, int nWinHeight);
 	Graphics(const Graphics& gfx) = delete;
 	Graphics& operator=(const Graphics& gfx) = delete;
-	~Graphics() = default;
+	~Graphics();
 	void DrawIndexed(UINT index_count);
 	void SetProjection(DirectX::FXMMATRIX proj) noexcept;
+	void SetCamera(DirectX::FXMMATRIX cam) noexcept;
+	DirectX::XMMATRIX GetCamera() const noexcept;
 	DirectX::XMMATRIX GetProjection() const noexcept;
+	void BeginFrame();
 	void EndFrame();
-	void ClearBuffer(float r, float g, float b, float a);
 private:
 	DirectX::XMMATRIX m_projection;
+	DirectX::XMMATRIX m_camTransform;
 #ifndef NDEBUG
 	DxgiInfoManager infoManager;
 #endif
@@ -50,10 +53,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		m_pContext;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_pTarget;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>  m_pDSV;
-public:
-	int WinWidth;
-	int WinHeight;
-
 };
 
 

@@ -3,17 +3,17 @@
 #include <iomanip>
 #include "Box.h"
 #include "Surface.h"
+#include "imgui.h"
+
 App::App()
 	:
-	m_wnd(L"WindowTitle", 700, 500),
-	box1(m_wnd.GetpGfx()),
-	box2(m_wnd.GetpGfx())
+	m_wnd(L"WindowTitle", 1000, 700),
+	m_gfx(m_wnd.GetGfx())
 {
-	
-	box1.SetPosition(1.0f, 1.0f, 4.0f);
-	box2.SetPosition(0.0f, 0.0f, 3.0f);
-	box1.SetRotSpeed(0.0f, 0.0f, 0.0f);
-	box2.SetRotSpeed(-1.0f, 1.0f, 3.0f);
+	for (size_t i = 0; i < 2; i++)
+	{
+		m_objList.push_back(std::make_unique<Box>(m_gfx, (UINT)m_objList.size() + 1));
+	}
 }
 
 int App::Run()
@@ -25,16 +25,21 @@ int App::Run()
 		{
 			return *ecode;
 		}
-		DoLogic();
+		DoFrame();
 	}
 }
 
-void App::DoLogic()
+void App::DoFrame()
 {
-	m_wnd.GetpGfx().ClearBuffer(0.0f, 0.0f, 0.0f, 1.0f);
-	box1.Update(timer.Peek());
-	box1.Draw(m_wnd.GetpGfx());
-	box2.Update(timer.Peek());
-	box2.Draw(m_wnd.GetpGfx());
-	m_wnd.GetpGfx().EndFrame();
+	m_gfx.BeginFrame();
+	//
+	m_gfx.SetCamera(cam.GetMatrix());
+	cam.SpwanControlWindow();
+	for (auto& i : m_objList)
+	{
+		i->Draw(m_gfx);
+		i->SpwanControlWindow();
+	}
+	//
+	m_gfx.EndFrame();
 }

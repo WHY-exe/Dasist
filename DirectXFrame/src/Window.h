@@ -21,7 +21,7 @@ public:
 	void SetWindowTitle(std::wstring szTitle);
 	// c++17 required
 	static std::optional<UINT> RunWindow();
-	Graphics& GetpGfx();
+	Graphics& GetGfx();
 public:
 	int GetWindowWidth() const;
 	int GetWindowHeight() const;

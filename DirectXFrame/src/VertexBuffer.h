@@ -16,7 +16,7 @@ public:
         vbbd.Usage = D3D11_USAGE_DEFAULT;
         vbbd.CPUAccessFlags = 0u;
         vbbd.MiscFlags = 0u;
-        vbbd.ByteWidth = vertices.size() * m_uStride;
+        vbbd.ByteWidth = (UINT)vertices.size() * m_uStride;
         vbbd.StructureByteStride = m_uStride;
         D3D11_SUBRESOURCE_DATA sdVerts = {};
         sdVerts.pSysMem = vertices.data();

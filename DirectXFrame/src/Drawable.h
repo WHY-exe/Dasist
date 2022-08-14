@@ -12,6 +12,7 @@ public:
 	Drawable(const Drawable&) = delete;
 	void Draw(Graphics& gfx);
 	virtual DirectX::XMMATRIX GetTransformXM() const noexcept = 0;
+	virtual void SpwanControlWindow() noexcept = 0;
 	virtual void Update(float dt) noexcept = 0;
 	virtual ~Drawable() = default;
 protected:

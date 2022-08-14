@@ -8,7 +8,8 @@
 App::App()
 	:
 	m_wnd(L"WindowTitle", 1000, 700),
-	m_gfx(m_wnd.GetGfx())
+	m_gfx(m_wnd.GetGfx()),
+	light(m_gfx)
 {
 	for (size_t i = 0; i < 2; i++)
 	{
@@ -33,6 +34,8 @@ void App::DoFrame()
 {
 	m_gfx.BeginFrame();
 	//
+	light.Bind(m_gfx);
+	light.SpwanControlWindow();
 	m_gfx.SetCamera(cam.GetMatrix());
 	cam.SpwanControlWindow();
 	for (auto& i : m_objList)

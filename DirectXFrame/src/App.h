@@ -3,6 +3,7 @@
 #include "Timer.h"
 #include "Box.h"
 #include "Camera.h"
+#include "Light.h"
 #include "ImguiManager.h"
 class App
 {
@@ -18,7 +19,8 @@ private:
 	Timer timer;
 private:
 	// user data
-	std::vector<std::unique_ptr<Box>> m_objList;
+	std::vector<std::unique_ptr<Drawable>> m_objList;
 	Camera cam;
+	Light light;
 };
 

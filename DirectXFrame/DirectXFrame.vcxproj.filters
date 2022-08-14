@@ -89,9 +89,6 @@
     <ClCompile Include="src\Texture.cpp">
       <Filter>Bindable</Filter>
     </ClCompile>
-    <ClCompile Include="src\Plane.cpp">
-      <Filter>Drawable</Filter>
-    </ClCompile>
     <ClCompile Include="src\Sampler.cpp">
       <Filter>Bindable</Filter>
     </ClCompile>
@@ -123,6 +120,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Light.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Model.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vendor\OBJ_Loader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -217,9 +223,6 @@
     <ClInclude Include="src\Texture.h">
       <Filter>Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="src\Plane.h">
-      <Filter>Drawable</Filter>
-    </ClInclude>
     <ClInclude Include="src\ImguiManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -255,6 +258,12 @@
     </ClInclude>
     <ClInclude Include="src\Camera.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Light.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ModelObj.h">
+      <Filter>Drawable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

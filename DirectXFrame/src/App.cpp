@@ -34,12 +34,13 @@ void App::DoFrame()
 {
 	m_gfx.BeginFrame();
 	//
-	light.Bind(m_gfx);
+	light.Update(m_gfx);
 	light.SpwanControlWindow();
 	m_gfx.SetCamera(cam.GetMatrix());
 	cam.SpwanControlWindow();
 	for (auto& i : m_objList)
 	{
+		i->Update(m_gfx);
 		i->Draw(m_gfx);
 		i->SpwanControlWindow();
 	}

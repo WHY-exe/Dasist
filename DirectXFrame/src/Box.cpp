@@ -12,10 +12,6 @@ void Box::SpwanControlWindow() noexcept
 	ModelObj<Box>::SpwanControlWindow("Box", m_box_id);
 }
 
-void Box::Update(float dt) noexcept
-{
-}
-
 DirectX::XMMATRIX Box::GetTransformXM() const noexcept
 {
 	return

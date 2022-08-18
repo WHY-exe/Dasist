@@ -6,12 +6,8 @@ class Light
 private:
 	struct LightCBuffer
 	{
-		DirectX::XMFLOAT3 lightPos;		
-		float padding1;
-		DirectX::XMFLOAT3 ambient;
-		float padding2;
-		DirectX::XMFLOAT3 diffuseColor;
-		float padding3;
+		alignas(16) DirectX::XMFLOAT3 lightPos;		
+		alignas(16) DirectX::XMFLOAT3 diffuseColor;
 		float diffuseIntensity;
 		float attConst;
 		float attLinear;
@@ -20,11 +16,10 @@ private:
 	};
 public:
 	Light(Graphics& gfx);
-	void Bind(Graphics& gfx) noexcept;
+	void Update(Graphics& gfx) noexcept;
 	void SpwanControlWindow() noexcept;
 private:
 	DirectX::XMFLOAT3 m_pos;
-	DirectX::XMFLOAT3 m_Ambient = {0.25f, 0.25f, 0.25f};
 	DirectX::XMFLOAT3 m_diffuseColor = {1.0f, 1.0f, 1.0f};
 	float m_diffuseIntensity = 1.0f;
 	float m_attConst = 1.0f;

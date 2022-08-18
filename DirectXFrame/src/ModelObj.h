@@ -17,6 +17,11 @@
 template <class C>
 class ModelObj : public DrawableBase<C>
 {
+private:
+	struct ModelCBuffer
+	{
+		alignas(16) DirectX::XMFLOAT3 m_Ambient;
+	};
 protected:
 	ModelObj(
 		const Model& obj, Graphics& gfx, const Surface& tex,
@@ -24,7 +29,9 @@ protected:
 	)
 		:
 		m_pos(0.0f, 0.0f, 0.0f),
-		m_rot(0.0f, 0.0f, 0.0f)
+		m_rot(0.0f, 0.0f, 0.0f),
+		m_Ambient( 0.25f, 0.25f, 0.25f ),
+		m_PSCbuf(gfx, 1u)
 	{
 		if (!DrawableBase<C>::IsStaticInitialized())
 		{
@@ -54,6 +61,12 @@ protected:
 
 		Drawable::AddBind(std::make_unique<TransformCbuf>(gfx, *this));
 	}
+	void Update(Graphics& gfx) noexcept override
+	{
+		m_PSCbuf.Update(gfx, ModelCBuffer(m_Ambient));
+		m_PSCbuf.Bind(gfx);
+	}
+
 	void SpwanControlWindow(const std::string& szObjName, UINT uObjId) noexcept
 	{
 		std::stringstream ss;
@@ -68,11 +81,15 @@ protected:
 			ImGui::SliderAngle("AngleX", &m_rot.x, -180.0f, 180.0f, "%.1f");
 			ImGui::SliderAngle("AngleY", &m_rot.y, -180.0f, 180.0f, "%.1f");
 			ImGui::SliderAngle("AngleZ", &m_rot.z, -180.0f, 180.0f, "%.1f");
+			ImGui::Text("Ambient");
+			ImGui::ColorEdit3("AmbientColor", &m_Ambient.x);	
 		}
 		ImGui::End();
 	}
 protected:
 	DirectX::XMFLOAT3 m_pos;
 	DirectX::XMFLOAT3 m_rot;
+	DirectX::XMFLOAT3 m_Ambient;
+	PixelConstantBuffer<ModelCBuffer> m_PSCbuf;
 };
 

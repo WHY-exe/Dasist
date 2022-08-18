@@ -38,10 +38,17 @@ public:
 	void DrawIndexed(UINT index_count);
 	void SetProjection(DirectX::FXMMATRIX proj) noexcept;
 	void SetCamera(DirectX::FXMMATRIX cam) noexcept;
+	
 	DirectX::XMMATRIX GetCamera() const noexcept;
 	DirectX::XMMATRIX GetProjection() const noexcept;
 	void BeginFrame();
 	void EndFrame();
+public:
+	void CreateRenderTarget();
+	void CreateAndSetViewPort(int nWinWidth = 0, int nWinHeight = 0);
+	void CreateAndSetStencilDepthView(int nWinWidth = 0, int nWinHeight = 0);
+	void ResizeFrameBuffer(UINT bufferWidth, UINT bufferHeight);
+	void CleanUpRenderTarget();
 private:
 	DirectX::XMMATRIX m_projection;
 	DirectX::XMMATRIX m_camTransform;

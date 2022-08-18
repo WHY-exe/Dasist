@@ -51,6 +51,38 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
         nullptr,
         &m_pContext
     ));
+    CreateRenderTarget();
+
+    CreateAndSetStencilDepthView(nWinWidth, nWinHeight);
+
+    CreateAndSetViewPort(nWinWidth, nWinHeight);
+
+    ImGui_ImplDX11_Init(m_pDevice.Get(), m_pContext.Get());
+}
+
+Graphics::~Graphics()
+{
+    ImGui_ImplDX11_Shutdown();
+}
+
+void Graphics::DrawIndexed(UINT index_count)
+{
+    m_pContext->DrawIndexed(index_count, 0u, 0u);
+}
+
+void Graphics::SetProjection(DirectX::FXMMATRIX proj) noexcept
+{
+    m_projection = proj;
+}
+
+void Graphics::SetCamera(DirectX::FXMMATRIX cam) noexcept
+{
+    m_camTransform = cam;
+}
+
+void Graphics::CreateRenderTarget()
+{
+    INIT_GFX_EXCEPTION;
     Microsoft::WRL::ComPtr<ID3D11Resource> pBackResource;
     GFX_THROW_INFO(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), &pBackResource));
 
@@ -59,7 +91,25 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
         nullptr,
         &m_pTarget
     ));
+}
 
+void Graphics::CreateAndSetViewPort(int nWinWidth, int nWinHeight)
+{
+    // configure viewport
+    D3D11_VIEWPORT vp = {};
+    vp.Width = (float)nWinWidth;
+    vp.Height = (float)nWinHeight;
+    vp.MinDepth = 0;
+    vp.MaxDepth = 1;
+    vp.TopLeftX = 0;
+    vp.TopLeftY = 0;
+    // bind the view port to the pipeline
+    m_pContext->RSSetViewports(1u, &vp);
+}
+
+void Graphics::CreateAndSetStencilDepthView(int nWinWidth, int nWinHeight)
+{
+    INIT_GFX_EXCEPTION;
     // set the z-buffer
     // 1. create depth stencil state 
     D3D11_DEPTH_STENCIL_DESC dsDesc = {};
@@ -95,39 +145,17 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
 
     // 4. bind depth stensil view to OM
     m_pContext->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), m_pDSV.Get());
-
-    // configure viewport
-    D3D11_VIEWPORT vp = {};
-    vp.Width = (float)nWinWidth;
-    vp.Height = (float)nWinHeight;
-    vp.MinDepth = 0;
-    vp.MaxDepth = 1;
-    vp.TopLeftX = 0;
-    vp.TopLeftY = 0;
-    // bind the view port to the pipeline
-    m_pContext->RSSetViewports(1u, &vp);
-    //
-    ImGui_ImplDX11_Init(m_pDevice.Get(), m_pContext.Get());
 }
 
-Graphics::~Graphics()
+void Graphics::ResizeFrameBuffer(UINT bufferWidth, UINT bufferHeight)
 {
-    ImGui_ImplDX11_Shutdown();
+    INIT_GFX_EXCEPTION;
+    GFX_THROW_INFO(m_pSwapChain->ResizeBuffers(0, bufferWidth, bufferHeight, DXGI_FORMAT_UNKNOWN, 0u));
 }
 
-void Graphics::DrawIndexed(UINT index_count)
+void Graphics::CleanUpRenderTarget()
 {
-    m_pContext->DrawIndexed(index_count, 0u, 0u);
-}
-
-void Graphics::SetProjection(DirectX::FXMMATRIX proj) noexcept
-{
-    m_projection = proj;
-}
-
-void Graphics::SetCamera(DirectX::FXMMATRIX cam) noexcept
-{
-    m_camTransform = cam;
+    m_pTarget.Reset();
 }
 
 DirectX::XMMATRIX Graphics::GetCamera() const noexcept

@@ -6,7 +6,7 @@ void Drawable::Draw(Graphics& gfx)
 	{
 		b->Bind(gfx);
 	}
-	for (auto& b: GetStaticBinds())
+	for (auto& b: GetStaticBinds().find(GetModelName())->second)
 	{
 		b->Bind(gfx);
 	}

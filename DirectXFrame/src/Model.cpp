@@ -11,7 +11,7 @@ Model::Model(const std::string& file_path)
 		i.Position = NormalizeVec(i.Position);
 	}
 }
-const std::vector<D3D11_INPUT_ELEMENT_DESC>& Model::GetVertexLayout() const
+const std::vector<D3D11_INPUT_ELEMENT_DESC>& Model::GetVertexLayout()
 {
 	return m_VertexLayout;
 }

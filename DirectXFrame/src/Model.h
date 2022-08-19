@@ -9,7 +9,7 @@ class Model
 {
 public:
 	Model(const std::string& file_path);
-	const std::vector<D3D11_INPUT_ELEMENT_DESC>& GetVertexLayout() const;
+	static const std::vector<D3D11_INPUT_ELEMENT_DESC>& GetVertexLayout();
 	const std::vector<objl::Vertex>& GetVertices() const;
 	const std::vector<unsigned int>& GetIndices() const;
 private:

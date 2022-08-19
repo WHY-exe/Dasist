@@ -1,7 +1,7 @@
 #include "App.h"
 #include <sstream>
 #include <iomanip>
-#include "Box.h"
+#include "ModelObj.h"
 #include "Surface.h"
 #include "imgui.h"
 
@@ -11,10 +11,12 @@ App::App()
 	m_gfx(m_wnd.GetGfx()),
 	light(m_gfx)
 {
+	m_objList.push_back(std::make_unique<ModelObj>(m_gfx, "obj\\sphere.obj"));
 	for (size_t i = 0; i < 2; i++)
 	{
-		m_objList.push_back(std::make_unique<Box>(m_gfx, (UINT)m_objList.size() + 1));
+		m_objList.push_back(std::make_unique<ModelObj>(m_gfx, Surface("./images/box.png"), "obj\\cube.obj","box"));
 	}
+
 }
 
 int App::Run()

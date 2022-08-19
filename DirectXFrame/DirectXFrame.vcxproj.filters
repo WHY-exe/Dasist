@@ -41,9 +41,6 @@
     <ClCompile Include="src\Mouse.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\App.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="src\Timer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -82,9 +79,6 @@
     </ClCompile>
     <ClCompile Include="src\TransformCbuf.cpp">
       <Filter>Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Box.cpp">
-      <Filter>Drawable</Filter>
     </ClCompile>
     <ClCompile Include="src\Texture.cpp">
       <Filter>Bindable</Filter>
@@ -129,6 +123,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\vendor\OBJ_Loader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DrawableBase.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ModelObj.cpp">
+      <Filter>Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\App.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -208,9 +211,6 @@
     <ClInclude Include="src\TransformCbuf.h">
       <Filter>Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="src\Box.h">
-      <Filter>Drawable</Filter>
-    </ClInclude>
     <ClInclude Include="src\DrawableBase.h">
       <Filter>Drawable</Filter>
     </ClInclude>
@@ -267,9 +267,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="shader\VertexShader.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
     <FxCompile Include="shader\PixelShader.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>

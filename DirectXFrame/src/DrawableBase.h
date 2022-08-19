@@ -1,44 +1,16 @@
 #pragma once
 #include "Drawable.h"
-template <class T>
+#include <map>
 class DrawableBase : public Drawable
 {
 protected:
-	bool IsStaticInitialized() const noexcept
-	{
-		return !m_staticBinds.empty();
-	}
-	void AddStaticBind(std::unique_ptr<Bindable> bind) noexcept(!IS_DEBUG)
-	{
-		assert("*Must* use AddIndexBuffer to bind index buffer" && typeid(*bind) != typeid(IndexBuffer));
-		m_staticBinds.push_back(std::move(bind));
-	}
-	void AddStaticIndexBuffer(std::unique_ptr<IndexBuffer> idx_buf) noexcept(!IS_DEBUG)
-	{
-		assert("Attempting to add index buffer a second time" && m_pIndexBuffer == nullptr);
-		m_pIndexBuffer = idx_buf.get();
-		m_staticBinds.push_back(std::move(idx_buf));
-	}
-	void SetIndexfromStatic() noexcept(!IS_DEBUG)
-	{
-		assert(m_pIndexBuffer == nullptr);
-		for (auto& b: m_staticBinds)
-		{
-			if (const auto& p = dynamic_cast<IndexBuffer*>(b.get()))
-			{ 
-				m_pIndexBuffer = p;
-				return;
-			}
-		}
-		assert("fail to find index buffer from static binds" && m_pIndexBuffer != nullptr);
-	}
-	virtual const std::vector<std::unique_ptr<Bindable>>& GetStaticBinds() const noexcept override
-	{
-		return m_staticBinds;
-	}
+	bool IsStaticInitialized(const std::string& szBufferName) const noexcept;
+	void InitStaticSlot(const std::string& szBufferName) const noexcept;
+	bool IsSlotInitialized(const std::string& szBufferName) const noexcept;
+	void AddStaticBind(const std::string& szBufferName, std::unique_ptr<Bindable> bind) noexcept(!IS_DEBUG);
+	void AddStaticIndexBuffer(const std::string& szBufferName, std::unique_ptr<IndexBuffer> idx_buf) noexcept(!IS_DEBUG);
+	void SetIndexfromStatic(const std::string& szBufferName) noexcept(!IS_DEBUG);
+	virtual const std::map<std::string, std::vector<std::unique_ptr<Bindable>>>& GetStaticBinds() const noexcept override;
 private:
-	static std::vector<std::unique_ptr<Bindable>> m_staticBinds;
+	static std::map<std::string, std::vector<std::unique_ptr<Bindable>>> m_staticBind;
 };
-
-template <class T>
-std::vector<std::unique_ptr<Bindable>> DrawableBase<T>::m_staticBinds;

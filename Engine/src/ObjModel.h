@@ -4,16 +4,15 @@
 #include "Exception.h"
 #include <d3d11.h>
 #include <sstream>
-
-class Model
+class ObjModel
 {
 public:
-	Model(const std::string& file_path);
+	ObjModel(const std::string& file_path);
 	static const std::vector<D3D11_INPUT_ELEMENT_DESC>& GetVertexLayout();
 	const std::vector<objl::Vertex>& GetVertices() const;
-	const std::vector<unsigned int>& GetIndices() const;
+	const std::vector<unsigned int>& GetIndicies() const;
 private:
-	const objl::Vector3& NormalizeVec(const objl::Vector3& vec3);
+	const objl::Vector3 NormalizeVec(const objl::Vector3& vec3);
 private:
 	objl::Loader m_loader;
 	static const std::vector<D3D11_INPUT_ELEMENT_DESC> m_VertexLayout;

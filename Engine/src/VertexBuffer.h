@@ -1,6 +1,7 @@
 #pragma once
 #include "GfxThrowMacro.h"
 #include "Bindable.h"
+#include "Vertex.h"
 class VertexBuffer :public Bindable
 {
 public:
@@ -22,6 +23,7 @@ public:
         sdVerts.pSysMem = vertices.data();
         GFX_THROW_INFO_ONLY(GetDevice(gfx)->CreateBuffer(&vbbd, &sdVerts, &m_pBuffer));
 	}
+    VertexBuffer(Graphics& gfx, const Vertex::DataBuffer& buffer);
     void Bind(Graphics& gfx) noexcept override;
 private:
     UINT m_uStride;

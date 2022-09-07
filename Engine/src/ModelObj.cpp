@@ -10,7 +10,8 @@
 #include "Texture.h"
 #include "Sampler.h"
 #include "imgui.h"
-#include "Model.h"
+#include "ObjModel.h"
+#include "Scene.h"
 ModelObj::ModelObj(Graphics& gfx, const Surface& Tex, const std::string& szObjPath, 
 	const std::string& szModelName, const std::wstring& szPSPath, const std::wstring& szVSPath)
 	:
@@ -27,16 +28,16 @@ ModelObj::ModelObj(Graphics& gfx, const Surface& Tex, const std::string& szObjPa
 	}
 	if (!IsSlotInitialized(m_szObjName))
 	{
-		Model obj(szObjPath);
-		AddStaticBind(m_szObjName, std::make_unique<VertexBuffer>(gfx, obj.GetVertices()));
+		Scene obj(szObjPath);
+		AddStaticBind(m_szObjName, std::make_unique<VertexBuffer>(gfx, obj.GetVBuffer()));
 		AddStaticBind(m_szObjName, std::make_unique<Texture>(gfx, Tex));
 		AddStaticBind(m_szObjName, std::make_unique<Sampler>(gfx));
-		AddStaticIndexBuffer(m_szObjName, std::make_unique<IndexBuffer>(gfx, obj.GetIndices()));
+		AddStaticIndexBuffer(m_szObjName, std::make_unique<IndexBuffer>(gfx, obj.GetIndicies()));
 		auto pvs = std::make_unique<VertexShader>(gfx, szVSPath);
 		auto pvsbc = pvs->GetByteCode();
 		AddStaticBind(m_szObjName, std::move(pvs));
 		AddStaticBind(m_szObjName, std::make_unique<PixelShader>(gfx, szPSPath));
-		AddStaticBind(m_szObjName, std::make_unique<InputLayout>(gfx, Model::GetVertexLayout(), pvsbc));
+		AddStaticBind(m_szObjName, std::make_unique<InputLayout>(gfx, ObjModel::GetVertexLayout(), pvsbc));
 		AddStaticBind(m_szObjName, std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 	}
 	else
@@ -63,15 +64,15 @@ ModelObj::ModelObj(Graphics& gfx, const std::string& szObjPath, const std::strin
 	}
 	if (!IsSlotInitialized(m_szObjName))
 	{
-		Model obj(szObjPath);
-		AddStaticBind(m_szObjName, std::make_unique<VertexBuffer>(gfx, obj.GetVertices()));
+		Scene obj(szObjPath);
+		AddStaticBind(m_szObjName, std::make_unique<VertexBuffer>(gfx, obj.GetVBuffer()));
 		AddStaticBind(m_szObjName, std::make_unique<Sampler>(gfx));
-		AddStaticIndexBuffer(m_szObjName, std::make_unique<IndexBuffer>(gfx, obj.GetIndices()));
+		AddStaticIndexBuffer(m_szObjName, std::make_unique<IndexBuffer>(gfx, obj.GetIndicies()));
 		auto pvs = std::make_unique<VertexShader>(gfx, szVSPath);
 		auto pvsbc = pvs->GetByteCode();
 		AddStaticBind(m_szObjName, std::move(pvs));
 		AddStaticBind(m_szObjName, std::make_unique<PixelShader>(gfx, szPSPath));
-		AddStaticBind(m_szObjName, std::make_unique<InputLayout>(gfx, Model::GetVertexLayout(), pvsbc));
+		AddStaticBind(m_szObjName, std::make_unique<InputLayout>(gfx, ObjModel::GetVertexLayout(), pvsbc));
 		AddStaticBind(m_szObjName, std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 	}
 	else
@@ -107,6 +108,8 @@ void ModelObj::SpwanControlWindow() noexcept
 		ImGui::SliderAngle("AngleZ", &m_rot.z, -180.0f, 180.0f, "%.1f");
 		ImGui::Text("Ambient");
 		ImGui::ColorEdit3("AmbientColor", &m_Ambient.x);
+		ImGui::Text("Scale");
+		ImGui::SliderFloat("ScalFactor", &m_Scale, 0.0f, 80.0f, "%.1f");
 	}
 	ImGui::End();
 }

@@ -42,7 +42,7 @@
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui_impl_win32.cpp" />
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui_tables.cpp" />
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui_widgets.cpp" />
-    <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\ObjModel.cpp" />
     <ClCompile Include="src\vendor\OBJ_Loader.cpp" />
     <ClCompile Include="src\WinMain.cpp" />
     <ClCompile Include="src\Window.cpp" />
@@ -54,6 +54,7 @@
     <ClCompile Include="src\TransformCbuf.cpp" />
     <ClCompile Include="src\Surface.cpp" />
     <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ModelObj.h" />
@@ -72,7 +73,7 @@
     <ClInclude Include="src\Graphics.h" />
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\InitWin.h" />
-    <ClInclude Include="src\Model.h" />
+    <ClInclude Include="src\ObjModel.h" />
     <ClInclude Include="src\Mouse.h" />
     <ClInclude Include="src\Keyboard.h" />
     <ClInclude Include="src\resource.h" />
@@ -103,17 +104,19 @@
     <ClInclude Include="src\TransformCbuf.h" />
     <ClInclude Include="src\Surface.h" />
     <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="src\Scene.h" />
+    <ClInclude Include="src\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="lightBall.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+    <FxCompile Include="shader\lightBall.hlsl">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0_level_9_3</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0_level_9_3</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0_level_9_3</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0_level_9_3</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)bin\$(Platform)\$(Configuration)\res\cso\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)bin\$(Platform)\$(Configuration)\res\cso\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)bin\$(Platform)\$(Configuration)\res\cso\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)bin\$(Platform)\$(Configuration)\res\cso\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="shader\PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -213,25 +216,27 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <ExternalIncludePath>$(SolutionDir)lib\assimp\code;$(ProjectDir)src\vendor\imgui_for_dx11;$(ProjectDir)src\vendor\;$(ProjectDir)src\vendor\stb;C:\Users\29478\source\repos\DirectX11\DirectXFrame\DirectXFrame\src\vendor\stb;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)include\;$(ProjectDir)src\vendor\imgui_for_dx11;$(ProjectDir)src\vendor\;$(ProjectDir)src\vendor\stb;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <ExternalIncludePath>$(SolutionDir)lib\assimp\code;$(ProjectDir)src\vendor\imgui_for_dx11;$(ProjectDir)src\vendor\;$(ProjectDir)src\vendor\stb;C:\Users\29478\source\repos\DirectX11\DirectXFrame\DirectXFrame\src\vendor\stb;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)include\;$(ProjectDir)src\vendor\imgui_for_dx11;$(ProjectDir)src\vendor\;$(ProjectDir)src\vendor\stb;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <ExternalIncludePath>$(SolutionDir)lib\assimp\code;$(ProjectDir)src\vendor\imgui_for_dx11;$(ProjectDir)src\vendor\;$(ProjectDir)src\vendor\stb;C:\Users\29478\source\repos\DirectX11\DirectXFrame\DirectXFrame\src\vendor\stb;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)include\;$(ProjectDir)src\vendor\imgui_for_dx11;$(ProjectDir)src\vendor\;$(ProjectDir)src\vendor\stb;$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(SolutionDir)bin\$(Platform)\$(Configuration)\lib;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <ExternalIncludePath>$(SolutionDir)lib\assimp\code;$(ProjectDir)src\vendor\imgui_for_dx11;$(ProjectDir)src\vendor\;$(ProjectDir)src\vendor\stb;C:\Users\29478\source\repos\DirectX11\DirectXFrame\DirectXFrame\src\vendor\stb;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)include\;$(ProjectDir)src\vendor\imgui_for_dx11;$(ProjectDir)src\vendor\;$(ProjectDir)src\vendor\stb;$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>$(SolutionDir)bin\$(Platform)\$(Configuration)\;$(LibraryPath);$(SolutionDir)bin\$(Platform)\$(Configuration)\lib;</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -280,6 +285,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);</AdditionalDependencies>
     </Link>
     <FxCompile>
       <ObjectFileOutput>$(SolutionDir)bin\$(Platform)\$(Configuration)\res\cso\%(Filename).cso</ObjectFileOutput>
@@ -300,6 +306,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies);</AdditionalDependencies>
     </Link>
     <FxCompile>
       <ObjectFileOutput>$(SolutionDir)bin\$(Platform)\$(Configuration)\res\cso\%(Filename).cso</ObjectFileOutput>

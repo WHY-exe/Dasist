@@ -1,6 +1,6 @@
-#include "Model.h"
+#include "ObjModel.h"
 
-Model::Model(const std::string& file_path)
+ObjModel::ObjModel(const std::string& file_path)
 {
 	if (!m_loader.LoadFile(file_path))
 	{
@@ -11,20 +11,20 @@ Model::Model(const std::string& file_path)
 		i.Position = NormalizeVec(i.Position);
 	}
 }
-const std::vector<D3D11_INPUT_ELEMENT_DESC>& Model::GetVertexLayout()
+const std::vector<D3D11_INPUT_ELEMENT_DESC>& ObjModel::GetVertexLayout()
 {
 	return m_VertexLayout;
 }
-const std::vector<objl::Vertex>& Model::GetVertices() const
+const std::vector<objl::Vertex>& ObjModel::GetVertices() const
 {
 	return m_loader.LoadedVertices;
 }
-const std::vector<unsigned int>& Model::GetIndices() const
+const std::vector<unsigned int>& ObjModel::GetIndicies() const
 {
 	return m_loader.LoadedIndices;
 }
 
-const objl::Vector3& Model::NormalizeVec(const objl::Vector3& vec3)
+const objl::Vector3 ObjModel::NormalizeVec(const objl::Vector3& vec3)
 {
 	{
 		float length = (float)sqrt(vec3.X * vec3.X + vec3.Y * vec3.Y + vec3.Z * vec3.Z);
@@ -36,8 +36,9 @@ const objl::Vector3& Model::NormalizeVec(const objl::Vector3& vec3)
 	}
 }
 
-const std::vector<D3D11_INPUT_ELEMENT_DESC> Model::m_VertexLayout = {
+const std::vector<D3D11_INPUT_ELEMENT_DESC> ObjModel::m_VertexLayout = {
 	{ "Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	{ "FaceNorm", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12u, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	{ "TexCoord", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24u, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 };
+

@@ -26,6 +26,7 @@
         }\
     }
 #else
+#define IMPORT_INFOMAN(gfx)
 #define INIT_GFX_EXCEPTION\
     HRESULT hr = S_OK
 #define GFX_THORW(hrcall)\

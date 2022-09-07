@@ -77,16 +77,32 @@
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.dll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\29478\source\repos\assimp\bin\RelWithDebInfo\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">assimp.dir\RelWithDebInfo\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">assimp-vc142-mt</TargetName>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)bin\$(Platform)\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)bin\intermediate\$(ProjectName)\$(Platform)\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">assimp-vc142-mtd</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.dll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
+    <CopyLocalDebugSymbols>false</CopyLocalDebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
+    <CopyLocalDebugSymbols>false</CopyLocalDebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
+    <CopyLocalDebugSymbols>false</CopyLocalDebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
+    <CopyLocalDebugSymbols>false</CopyLocalDebugSymbols>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\29478\source\repos\assimp\include;C:\Users\29478\source\repos\assimp;C:\Users\29478\source\repos\assimp\code;C:\Users\29478\source\repos\assimp\.;C:\Users\29478\source\repos\assimp\contrib\zlib;C:\Users\29478\source\repos\assimp\code\..\contrib\pugixml\src;C:\Users\29478\source\repos\assimp\code\..\contrib\rapidjson\include;C:\Users\29478\source\repos\assimp\code\..\contrib;C:\Users\29478\source\repos\assimp\code\..\contrib\unzip;C:\Users\29478\source\repos\assimp\code\..\contrib\openddlparser\include;C:\Users\29478\source\repos\assimp\code\..\include;C:\Users\29478\source\repos\assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\29478\source\repos\assimp\include;C:\Users\29478\source\repos\assimp;C:\Users\29478\source\repos\assimp\code;C:\Users\29478\source\repos\assimp\.;C:\Users\29478\source\repos\assimp\contrib\zlib;C:\Users\29478\source\repos\assimp\code\..\contrib\pugixml\src;C:\Users\29478\source\repos\assimp\code\..\contrib\rapidjson\include;C:\Users\29478\source\repos\assimp\code\..\contrib;C:\Users\29478\source\repos\assimp\code\..\contrib\unzip;C:\Users\29478\source\repos\assimp\code\..\contrib\openddlparser\include;C:\Users\29478\source\repos\assimp\code\..\include;C:\Users\29478\source\repos\assimp\code\..;%(AdditionalIncludeDirectories);$(SolutionDir)include\assimp;</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -124,7 +140,7 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/29478/source/repos/assimp/lib/Debug/assimp-vc142-mtd.lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)bin\$(Platform)\$(Configuration)\lib\assimp-vc142-mtd.lib</ImportLibrary>
       <ProgramDataBaseFile>C:/Users/29478/source/repos/assimp/bin/Debug/assimp-vc142-mtd.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -134,7 +150,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\29478\source\repos\assimp\include;C:\Users\29478\source\repos\assimp;C:\Users\29478\source\repos\assimp\code;C:\Users\29478\source\repos\assimp\.;C:\Users\29478\source\repos\assimp\contrib\zlib;C:\Users\29478\source\repos\assimp\code\..\contrib\pugixml\src;C:\Users\29478\source\repos\assimp\code\..\contrib\rapidjson\include;C:\Users\29478\source\repos\assimp\code\..\contrib;C:\Users\29478\source\repos\assimp\code\..\contrib\unzip;C:\Users\29478\source\repos\assimp\code\..\contrib\openddlparser\include;C:\Users\29478\source\repos\assimp\code\..\include;C:\Users\29478\source\repos\assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\29478\source\repos\assimp\include;C:\Users\29478\source\repos\assimp;C:\Users\29478\source\repos\assimp\code;C:\Users\29478\source\repos\assimp\.;C:\Users\29478\source\repos\assimp\contrib\zlib;C:\Users\29478\source\repos\assimp\code\..\contrib\pugixml\src;C:\Users\29478\source\repos\assimp\code\..\contrib\rapidjson\include;C:\Users\29478\source\repos\assimp\code\..\contrib;C:\Users\29478\source\repos\assimp\code\..\contrib\unzip;C:\Users\29478\source\repos\assimp\code\..\contrib\openddlparser\include;C:\Users\29478\source\repos\assimp\code\..\include;C:\Users\29478\source\repos\assimp\code\..;%(AdditionalIncludeDirectories);$(SolutionDir)include\assimp;</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -172,7 +188,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/29478/source/repos/assimp/lib/Release/assimp-vc142-mt.lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)bin\$(Platform)\$(Configuration)\lib\assimp-vc142-mt.lib</ImportLibrary>
       <OptimizeReferences>true</OptimizeReferences>
       <ProgramDataBaseFile>C:/Users/29478/source/repos/assimp/bin/Release/assimp-vc142-mt.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
@@ -183,7 +199,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\29478\source\repos\assimp\include;C:\Users\29478\source\repos\assimp;C:\Users\29478\source\repos\assimp\code;C:\Users\29478\source\repos\assimp\.;C:\Users\29478\source\repos\assimp\contrib\zlib;C:\Users\29478\source\repos\assimp\code\..\contrib\pugixml\src;C:\Users\29478\source\repos\assimp\code\..\contrib\rapidjson\include;C:\Users\29478\source\repos\assimp\code\..\contrib;C:\Users\29478\source\repos\assimp\code\..\contrib\unzip;C:\Users\29478\source\repos\assimp\code\..\contrib\openddlparser\include;C:\Users\29478\source\repos\assimp\code\..\include;C:\Users\29478\source\repos\assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\29478\source\repos\assimp\include;C:\Users\29478\source\repos\assimp;C:\Users\29478\source\repos\assimp\code;C:\Users\29478\source\repos\assimp\.;C:\Users\29478\source\repos\assimp\contrib\zlib;C:\Users\29478\source\repos\assimp\code\..\contrib\pugixml\src;C:\Users\29478\source\repos\assimp\code\..\contrib\rapidjson\include;C:\Users\29478\source\repos\assimp\code\..\contrib;C:\Users\29478\source\repos\assimp\code\..\contrib\unzip;C:\Users\29478\source\repos\assimp\code\..\contrib\openddlparser\include;C:\Users\29478\source\repos\assimp\code\..\include;C:\Users\29478\source\repos\assimp\code\..;%(AdditionalIncludeDirectories);$(SolutionDir)include\assimp;</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DisableSpecificWarnings>4244</DisableSpecificWarnings>
@@ -231,7 +247,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\29478\source\repos\assimp\include;C:\Users\29478\source\repos\assimp;C:\Users\29478\source\repos\assimp\code;C:\Users\29478\source\repos\assimp\.;C:\Users\29478\source\repos\assimp\contrib\zlib;C:\Users\29478\source\repos\assimp\code\..\contrib\pugixml\src;C:\Users\29478\source\repos\assimp\code\..\contrib\rapidjson\include;C:\Users\29478\source\repos\assimp\code\..\contrib;C:\Users\29478\source\repos\assimp\code\..\contrib\unzip;C:\Users\29478\source\repos\assimp\code\..\contrib\openddlparser\include;C:\Users\29478\source\repos\assimp\code\..\include;C:\Users\29478\source\repos\assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include\assimp;C:\Users\29478\source\repos\assimp\include;C:\Users\29478\source\repos\assimp;C:\Users\29478\source\repos\assimp\code;C:\Users\29478\source\repos\assimp\.;C:\Users\29478\source\repos\assimp\contrib\zlib;C:\Users\29478\source\repos\assimp\code\..\contrib\pugixml\src;C:\Users\29478\source\repos\assimp\code\..\contrib\rapidjson\include;C:\Users\29478\source\repos\assimp\code\..\contrib;C:\Users\29478\source\repos\assimp\code\..\contrib\unzip;C:\Users\29478\source\repos\assimp\code\..\contrib\openddlparser\include;C:\Users\29478\source\repos\assimp\code\..\include;C:\Users\29478\source\repos\assimp\code\..;%(AdditionalIncludeDirectories);$(SolutionDir)include\assimp;</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -268,7 +284,7 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/29478/source/repos/assimp/lib/RelWithDebInfo/assimp-vc142-mt.lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)bin\$(Platform)\Debug\lib\assimp-vc142-mtd.lib</ImportLibrary>
       <ProgramDataBaseFile>C:/Users/29478/source/repos/assimp/bin/RelWithDebInfo/assimp-vc142-mt.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -919,10 +935,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Name>ZERO_CHECK</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\29478\source\repos\assimp\contrib\zlib\zlibstatic.vcxproj">
-      <Project>{4983A5D3-35B9-37C3-A321-A153A27DCB45}</Project>
-      <Name>zlibstatic</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

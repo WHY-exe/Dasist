@@ -119,19 +119,19 @@
     <ClCompile Include="src\Light.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\ObjModel.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ModelObj.cpp">
-      <Filter>Drawable</Filter>
-    </ClCompile>
     <ClCompile Include="src\App.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\vendor\OBJ_Loader.cpp">
       <Filter>第三方库</Filter>
     </ClCompile>
+    <ClCompile Include="src\Vertex.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="src\Scene.cpp">
+      <Filter>Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\String2WString.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -259,14 +259,11 @@
     <ClInclude Include="src\Light.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\ModelObj.h">
-      <Filter>Drawable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="src\Vertex.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene.h">
+      <Filter>Drawable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

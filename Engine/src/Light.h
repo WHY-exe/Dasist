@@ -1,7 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 #include "ConstantBuffer.h"
-#include "ModelObj.h"
+#include "Scene.h"
 class PointLight
 {
 private:
@@ -28,7 +28,7 @@ private:
 	float m_attLinear = 1.0f;
 	float m_attQuad = 1.0f;
 	PixelConstantBuffer<PointLightCBuffer> m_PSCbuf;
-	ModelObj m_lightBall;
+	Scene::Model m_lightBall;
 };
 
 class GlobalLight

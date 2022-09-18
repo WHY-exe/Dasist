@@ -1,22 +1,69 @@
 #pragma once
-#include "InitWin.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
-#include <memory>
-#include <d3d11.h>
-#include <DirectXMath.h>
+#include <assimp/postprocess.h>
+#include <string>
 #include <vector>
-#include "Vertex.h"
-class Scene
+#include <memory>
+#include "Drawable.h"
+namespace Scene
 {
-
-public:
-	const std::vector<D3D11_INPUT_ELEMENT_DESC>& GetVertexLayout();
-	Scene(const std::string& szFilePath);
-	const Vertex::DataBuffer& GetVBuffer() const noexcept;
-	const std::vector<unsigned int>& GetIndicies() const noexcept;
-	const DirectX::XMFLOAT3 NormalizeVec(const DirectX::XMFLOAT3& vec3);
-private:
-	Vertex::DataBuffer m_vbuf;
-	std::vector<unsigned int> m_Indices;
+	struct RenderOption 
+	{
+		std::string szModelPath;
+		std::string szModelName = "Model";
+		std::wstring szVSPath = L"res\\cso\\TexVS.cso";
+		std::wstring szPSPath = L"res\\cso\\PixelShader.cso";
+		bool bHasTexture = false;
+		std::string szTexturePath;
+	};
+	class Mesh:public Drawable
+	{
+	public:
+		Mesh(Graphics& gfx, std::vector<std::unique_ptr<Bindable>>& binds);
+		void Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) noexcept(!IS_DEBUG);
+		const std::string& GetModelName() const noexcept override;
+		DirectX::XMMATRIX GetTransformXM() const noexcept override;
+	private:
+		std::string m_szMeshName;
+		DirectX::XMFLOAT4X4 m_transform;
+	};
+	class Node
+	{
+		friend class Model;
+	public:
+		Node(const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform);
+		void Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG);
+	private:
+		void AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG);
+		void ShowTree() noexcept(!IS_DEBUG);
+	private:
+		std::vector<Mesh*> m_pMeshes;
+		std::vector<std::unique_ptr<Node>> m_pChilds;
+		std::wstring m_wszNodeName;
+		std::string m_szNodeName;
+		DirectX::XMFLOAT4X4 m_transform;
+	};
+	class Model
+	{
+	public:
+		Model() = default;
+		Model(Graphics& gfx, const RenderOption& option);
+		static std::unique_ptr<Mesh> ParseMesh(Graphics& gfx, const aiMesh& mesh, const RenderOption& option);
+		std::unique_ptr<Node> ParseNode(const aiNode& node);
+		DirectX::XMMATRIX GetTransform() const noexcept;
+		void SpwanControlWindow() noexcept;
+		void SetPos(float x, float y, float z) noexcept;
+		void SetPos(DirectX::XMFLOAT3 pos) noexcept;
+		void Scale(float scale) noexcept;
+		void Draw(Graphics& gfx) const;
+	private:
+		DirectX::XMFLOAT3 m_pos;
+		DirectX::XMFLOAT3 m_rot;
+		float m_Scale = 0.2f;
+		std::string m_szModelName;
+		std::vector<std::unique_ptr<Mesh>> m_pMeshes;
+		std::unique_ptr<Node> m_pRoot;
+	};
 };
+

@@ -13,8 +13,10 @@ public:
 	void Draw(Graphics& gfx);
 	virtual DirectX::XMMATRIX GetTransformXM() const noexcept = 0;
 	virtual const std::string& GetModelName() const noexcept = 0;
-	virtual void SpwanControlWindow() noexcept = 0;
-	virtual void Update(Graphics& gfx) noexcept = 0;
+	virtual void SpwanControlWindow() noexcept
+	{};
+	virtual void Update(Graphics& gfx) noexcept
+	{}
 	virtual ~Drawable() = default;
 protected:
 	void AddBind(std::unique_ptr<Bindable> bind) noexcept;
@@ -22,7 +24,7 @@ protected:
 protected:
 	bool IsStaticInitialized(const std::string& szBufferName) const noexcept;
 	void InitStaticSlot(const std::string& szBufferName) const noexcept;
-	bool IsSlotInitialized(const std::string& szBufferName) const noexcept;
+	bool IsSlotEmpty(const std::string& szBufferName) const noexcept;
 	void AddStaticBind(const std::string& szBufferName, std::unique_ptr<Bindable> bind) noexcept(!IS_DEBUG);
 	void AddStaticIndexBuffer(const std::string& szBufferName, std::unique_ptr<IndexBuffer> idx_buf) noexcept(!IS_DEBUG);
 	void SetIndexfromStatic(const std::string& szBufferName) noexcept(!IS_DEBUG);

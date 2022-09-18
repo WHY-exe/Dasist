@@ -102,7 +102,7 @@ std::optional<UINT> Window::RunWindow()
 {
 	MSG msg = { 0 };
 
-	while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+	while(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 	{
 		if (msg.message == WM_QUIT)
 		{
@@ -168,7 +168,6 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 
 	const auto imio = ImGui::GetIO();
-
 	switch (uMsg)
 	{
 	case WM_KILLFOCUS:

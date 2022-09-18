@@ -3,10 +3,13 @@
 PointLight::PointLight(Graphics& gfx)
 	:
 	m_pos(0.0f, 5.0f, 0.0f),
-	m_PSCbuf(gfx),
-	m_lightBall(gfx, "res\\model\\sphere.obj", "lightBall", L"res\\cso\\lightBall.cso")
+	m_PSCbuf(gfx)
 {
-	m_lightBall.Scale(0.3f);
+	Scene::RenderOption op;
+	op.szModelPath = "res\\model\\sphere.obj";
+	op.szPSPath = L"res\\cso\\lightBall.cso";
+	m_lightBall = Scene::Model(gfx, op);
+	m_lightBall.Scale(0.003f);
 }
 
 void PointLight::Update(Graphics& gfx) noexcept
@@ -29,7 +32,7 @@ void PointLight::Update(Graphics& gfx) noexcept
 
 void PointLight::SpwanControlWindow() noexcept
 {
-	if (ImGui::Begin("Pointlight"))
+	if (ImGui::Begin("Point light"))
 	{
 		ImGui::Text("Position");
 		ImGui::SliderFloat("X", &m_pos.x, -80.0f, 80.0f, "%.1f");

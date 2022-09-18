@@ -26,7 +26,7 @@ cbuffer GlobalLightCBuf
     float gDiffuseIntensity;
 }
 
-float4 main(float2 tc : TexCoord, float3 worldPos : Position, float3 camPos : CamPos, float3 fn : FaceNorm) : SV_Target
+float4 main(float2 tc : Texure2D, float3 worldPos : Position3D, float3 camPos : CamPos, float3 fn : Normal) : SV_Target
 {
     // vector of the obj to the light source
     const float3 vToGLight = glightPos - worldPos;

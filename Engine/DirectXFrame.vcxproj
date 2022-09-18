@@ -19,11 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\Light.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\ImguiManager.cpp" />
-    <ClCompile Include="src\ModelObj.cpp" />
     <ClCompile Include="src\Sampler.cpp" />
     <ClCompile Include="src\Drawable.cpp" />
     <ClCompile Include="src\PixelShader.cpp" />
@@ -42,7 +42,6 @@
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui_impl_win32.cpp" />
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui_tables.cpp" />
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui_widgets.cpp" />
-    <ClCompile Include="src\ObjModel.cpp" />
     <ClCompile Include="src\vendor\OBJ_Loader.cpp" />
     <ClCompile Include="src\WinMain.cpp" />
     <ClCompile Include="src\Window.cpp" />
@@ -54,10 +53,11 @@
     <ClCompile Include="src\TransformCbuf.cpp" />
     <ClCompile Include="src\Surface.cpp" />
     <ClCompile Include="src\Texture.cpp" />
-    <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\Vertex.cpp" />
+    <ClCompile Include="src\String2WString.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ModelObj.h" />
+    <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Light.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\ImguiManager.h" />
@@ -104,7 +104,6 @@
     <ClInclude Include="src\TransformCbuf.h" />
     <ClInclude Include="src\Surface.h" />
     <ClInclude Include="src\Texture.h" />
-    <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Vertex.h" />
   </ItemGroup>
   <ItemGroup>

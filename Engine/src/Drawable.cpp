@@ -36,7 +36,7 @@ void Drawable::InitStaticSlot(const std::string& szBufferName) const noexcept
 	m_staticBind.insert({ szBufferName, std::vector<std::unique_ptr<Bindable>>() });
 }
 
-bool Drawable::IsSlotInitialized(const std::string& szBufferName) const noexcept
+bool Drawable::IsSlotEmpty(const std::string& szBufferName) const noexcept
 {
 	return !m_staticBind.find(szBufferName)->second.empty();
 }

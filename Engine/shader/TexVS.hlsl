@@ -7,14 +7,14 @@ cbuffer CBuf
 
 struct VSOut
 {
-	float2 tex : TexCoord;
-	float3 worldPos : Position;
+    float2 tex : Tex2D;
+    float3 worldPos : Position3D;
     float3 camPos : CamPos;
-	float3 fNormal : FaceNorm;
+    float3 fNormal : Normal;
 	float4 pos : SV_Position;
 };
 
-VSOut main(float3 pos : Position, float3 fn : FaceNorm, float2 tex : TexCoord)
+VSOut main(float3 pos : Position3D, float3 fn : Normal, float2 tex : Tex2D)
 {
 	VSOut vso;
 	vso.tex = tex;	

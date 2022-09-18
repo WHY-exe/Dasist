@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "ImguiManager.h"
+#include "Scene.h"
 class App
 {
 public:
@@ -19,7 +20,7 @@ private:
 	Timer timer;
 private:
 	// user data
-	std::vector<std::unique_ptr<Drawable>> m_objList;
+	Scene::Model model;
 	Camera cam;
 	PointLight pointLight;
 	GlobalLight gLight;

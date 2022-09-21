@@ -1,6 +1,6 @@
 #include "App.h"
 #include <sstream>
-#include "String2WString.h"
+#include "StrTransf.h"
 
 // standar win32 windows program
 int WINAPI WinMain(
@@ -25,7 +25,7 @@ int WINAPI WinMain(
 	catch (const std::exception& e)
 	{
 		const std::wstring output_msg = String2WString(std::string(e.what()));
-		MessageBox(nullptr, output_msg.c_str(), L"Standar Error", MB_OKCANCEL | MB_ICONASTERISK);
+		MessageBox(nullptr, output_msg.c_str(), L"Standard Error", MB_OKCANCEL | MB_ICONASTERISK);
 	}
 	catch (...)
 	{

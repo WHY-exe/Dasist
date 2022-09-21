@@ -131,7 +131,7 @@
     <ClCompile Include="src\Scene.cpp">
       <Filter>Drawable</Filter>
     </ClCompile>
-    <ClCompile Include="src\String2WString.cpp">
+    <ClCompile Include="src\StrTransf.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -172,7 +172,7 @@
     <ClInclude Include="src\WinException.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\String2WString.h">
+    <ClInclude Include="src\StrTransf.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\ObjModel.h">

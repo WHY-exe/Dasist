@@ -1,4 +1,4 @@
-#include "String2WString.h"
+#include "StrTransf.h"
 std::wstring String2WString(const std::string& str_in)
 {
 	const char* c_str_in = str_in.c_str();

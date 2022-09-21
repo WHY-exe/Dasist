@@ -13,7 +13,7 @@
 #include "ConstantBuffer.h"
 #include <stdexcept>
 #include "imgui.h"
-#include "String2WString.h"
+#include "StrTransf.h"
 #pragma comment(lib, "assimp-vc142-mtd.lib")
 
 Scene::Mesh::Mesh(Graphics& gfx, std::vector<std::unique_ptr<Bindable>>& binds)
@@ -60,21 +60,25 @@ DirectX::XMMATRIX Scene::Mesh::GetTransformXM() const noexcept
 Scene::Node::Node(const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform)
 	:
 	m_pMeshes(std::move(pMeshes)),
-	m_wszNodeName(NodeName),
-	m_szNodeName(WString2String(m_wszNodeName))
+	m_szNodeName(WString2String(NodeName))
 {
-	DirectX::XMStoreFloat4x4(&m_transform, transform);
+	DirectX::XMStoreFloat4x4(&m_BaseTransform, transform);
+	DirectX::XMStoreFloat4x4(&m_AppliedTransform, DirectX::XMMatrixIdentity());
 }
 
 void Scene::Node::Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG)
 {
+	auto build = 
+		DirectX::XMLoadFloat4x4(&m_AppliedTransform) * 
+		DirectX::XMLoadFloat4x4(&m_BaseTransform) * 
+		accumulateTransform;
 	for (const auto pm : m_pMeshes)
 	{
-		pm->Draw(gfx, accumulateTransform * DirectX::XMLoadFloat4x4(&m_transform));
+		pm->Draw(gfx, build);
 	}
 	for (const auto& pc : m_pChilds)
 	{
-		pc->Draw(gfx, accumulateTransform);
+		pc->Draw(gfx, build);
 	}
 }
 
@@ -84,23 +88,80 @@ void Scene::Node::AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG)
 	m_pChilds.emplace_back(std::move(child));
 }
 
-void Scene::Node::ShowTree() noexcept(!IS_DEBUG)
+void Scene::Node::ShowTree(int& nodeIndexTracked, std::optional<int>& selectedIndex, Node*& pSelectedNode) const noexcept(!IS_DEBUG)
 {
-	if (ImGui::TreeNode(m_szNodeName.c_str()))
+	const int curNodeIndex = nodeIndexTracked;
+	nodeIndexTracked++;
+	const auto imgui_flags = ImGuiTreeNodeFlags_OpenOnArrow 
+		| ((curNodeIndex == selectedIndex.value_or(-1)) ? ImGuiTreeNodeFlags_Selected : 0)
+		| ((m_pChilds.empty() ? ImGuiTreeNodeFlags_Leaf : 0));
+	// render the node
+	const auto expand = ImGui::TreeNodeEx((void*)(intptr_t)curNodeIndex, imgui_flags, m_szNodeName.c_str());
+	if (ImGui::IsItemClicked())
+	{
+		selectedIndex = curNodeIndex;
+		pSelectedNode = const_cast<Node*>(this);
+	}
+	// render the child node if root expanded
+	if (expand)
 	{
 		for (auto& child : m_pChilds)
 		{
-			child->ShowTree();
+			child->ShowTree(nodeIndexTracked, selectedIndex, pSelectedNode);
 		}
 		ImGui::TreePop();
 	}
 }
 
+void Scene::Node::SetAppliedTransform(DirectX::XMMATRIX transform)
+{
+	DirectX::XMStoreFloat4x4(&m_AppliedTransform, transform);
+}
+
+void Scene::Model::ModelWindow::Show(const char* WindowName, const Node& node) noexcept(!IS_DEBUG)
+{
+	int nodeIndexTracker = 0;
+	if (ImGui::Begin(WindowName))
+	{
+		ImGui::Columns(2, nullptr, true);
+		node.ShowTree(nodeIndexTracker, m_SelectedIndex, m_pSelectedNode);
+		ImGui::NextColumn();
+		if (m_pSelectedNode != nullptr)
+		{
+			auto& transform = m_transform[*m_SelectedIndex];
+			ImGui::Text("Position");
+			ImGui::SliderFloat("X", &transform.x, -80.0f, 80.0f, "%.1f");
+			ImGui::SliderFloat("Y", &transform.y, -80.0f, 80.0f, "%.1f");
+			ImGui::SliderFloat("Z", &transform.z, -80.0f, 80.0f, "%.1f");
+			ImGui::Text("Angle");
+			ImGui::SliderAngle("AngleX", &transform.roll, -180.0f, 180.0f, "%.1f");
+			ImGui::SliderAngle("AngleY", &transform.yaw, -180.0f, 180.0f, "%.1f");
+			ImGui::SliderAngle("AngleZ", &transform.pitch, -180.0f, 180.0f, "%.1f");
+			ImGui::Text("Scale");
+			ImGui::SliderFloat("Scale", &transform.scale, 0.0f, 1.0f, "%.3f");
+		}
+	}
+	ImGui::End();
+}
+
+DirectX::XMMATRIX Scene::Model::ModelWindow::GetTransform() noexcept
+{
+	const auto& transform = m_transform.at(*m_SelectedIndex);
+	return
+		DirectX::XMMatrixRotationRollPitchYaw(transform.roll, transform.yaw, transform.pitch) *
+		DirectX::XMMatrixScaling(transform.scale, transform.scale, transform.scale) *
+		DirectX::XMMatrixTranslation(transform.x, transform.y, transform.z);
+}
+
+Scene::Node* Scene::Model::ModelWindow::GetSelectedNode() const noexcept
+{
+	return m_pSelectedNode;
+}
+
 Scene::Model::Model(Graphics& gfx,const RenderOption& option)
 	:
-	m_pos(0.0f, 0.0f, 0.0f),
-	m_rot(0.0f, 0.0f, 0.0f),
-	m_szModelName(option.szModelName)
+	m_szModelName(option.szModelName),
+	m_pWindow(std::make_unique<ModelWindow>())
 {
 	Assimp::Importer importer;
 	const aiScene* pScene = importer.ReadFile(
@@ -197,51 +258,39 @@ std::unique_ptr<Scene::Node> Scene::Model::ParseNode(const aiNode& node)
 	return pNode;
 }
 
-DirectX::XMMATRIX Scene::Model::GetTransform() const noexcept
-{
-	return
-		DirectX::XMMatrixRotationRollPitchYaw(m_rot.x, m_rot.y, m_rot.z) *
-		DirectX::XMMatrixScaling(m_Scale, m_Scale, m_Scale) *
-		DirectX::XMMatrixTranslation(m_pos.x, m_pos.y, m_pos.z);
-}
-
 void Scene::Model::SpwanControlWindow() noexcept
 {
-	if (ImGui::Begin(m_szModelName.c_str()))
-	{
-		ImGui::Columns(2, nullptr, true);
-		m_pRoot->ShowTree();
-		ImGui::NextColumn();
-		ImGui::Text("Position");
-		ImGui::SliderFloat("X", &m_pos.x, -80.0f, 80.0f, "%.1f");
-		ImGui::SliderFloat("Y", &m_pos.y, -80.0f, 80.0f, "%.1f");
-		ImGui::SliderFloat("Z", &m_pos.z, -80.0f, 80.0f, "%.1f");
-		ImGui::Text("Angle");
-		ImGui::SliderAngle("AngleX", &m_rot.x, -180.0f, 180.0f, "%.1f");
-		ImGui::SliderAngle("AngleY", &m_rot.y, -180.0f, 180.0f, "%.1f");
-		ImGui::SliderAngle("AngleZ", &m_rot.z, -180.0f, 180.0f, "%.1f");
-		ImGui::Text("Scale");
-		ImGui::SliderFloat("ScalFactor", &m_Scale, 0.0f, 1.0f, "%.2f");
-	}
-	ImGui::End();
+	m_pWindow->Show(m_szModelName.c_str(), *m_pRoot);
 }
 
 void Scene::Model::Draw(Graphics& gfx) const
 {
-	m_pRoot->Draw(gfx, GetTransform());
+	if (auto pNode = m_pWindow->GetSelectedNode())
+	{
+		pNode->SetAppliedTransform(m_pWindow->GetTransform());
+	}
+	m_pRoot->Draw(gfx, DirectX::XMMatrixIdentity());
 }
 
 void Scene::Model::SetPos(float x, float y, float z) noexcept
 {
-	m_pos = { x, y, z };
+	auto& transform = m_pWindow->m_transform[*(m_pWindow->m_SelectedIndex)];
+	transform.x = x;
+	transform.y = y;
+	transform.z = z;
 }
 
 void Scene::Model::Scale(float scale) noexcept
 {
-	m_Scale = scale;
+	auto& transform = m_pWindow->m_transform[*(m_pWindow->m_SelectedIndex)];
+	transform.scale = scale;
 }
 
 void Scene::Model::SetPos(DirectX::XMFLOAT3 pos) noexcept
 {
-	m_pos = pos;
+	auto& transform = m_pWindow->m_transform[*(m_pWindow->m_SelectedIndex)];
+	transform.x = pos.x;
+	transform.y = pos.y;
+	transform.z = pos.z;
 }
+

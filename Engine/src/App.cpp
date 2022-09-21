@@ -4,7 +4,7 @@
 #include "Surface.h"
 #include "imgui.h"
 #include "Vertex.h"
-#include "String2WString.h"
+#include "StrTransf.h"
 App::App()
 	:
 	m_wnd(L"WindowTitle", 1000, 700),
@@ -13,19 +13,10 @@ App::App()
 	gLight(m_gfx)
 {
 	Scene::RenderOption op;
-	op.szModelPath = "res\\model\\Lumie.pmx";
-	op.szModelName = "Lumie";
+	op.szModelPath = "res\\model\\nano.gltf";
+	op.szModelName = "nano suit";
 	model = Scene::Model(m_gfx, op);
 }
-void showTestWindow()
-{
-	std::wstring wtitle = L"ÖÐÎÄ";
-	std::string title = WString2String(wtitle);
-	ImGui::Begin(title.c_str());
-
-	ImGui::End();
-}
-
 
 int App::Run()
 {

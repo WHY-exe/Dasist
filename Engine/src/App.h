@@ -13,7 +13,10 @@ public:
 	int Run();	
 private:
 	void DoFrame();
+	void DoWinLogic();
+	void ShowRawInputWindow() noexcept;
 private:
+	int x = 0, y = 0;
 	ImguiManager m_imguiMan;	
 	Window m_wnd;
 	Graphics& m_gfx;

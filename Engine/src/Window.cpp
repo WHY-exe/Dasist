@@ -11,7 +11,6 @@ Window::Window(std::wstring szWinTitle, int nWidth, int nHeight, std::wstring sz
 	m_nWidth(nWidth),
 	m_nHeight(nHeight)
 {
-	this->InitWinClass();
 	this->InitWindow(szWinTitle, nWidth, nHeight);
 }
 Window::~Window()
@@ -60,6 +59,7 @@ void Window::InitWinClass()
 }
 void Window::InitWindow(std::wstring szWinTitile, int nWidth, int nHeight)
 {
+	this->InitWinClass();
 	RECT rectWindow = { 0, 0, nWidth, nHeight };
 	if (!AdjustWindowRect(&rectWindow, WS_OVERLAPPEDWINDOW, FALSE))
 	{
@@ -97,6 +97,17 @@ void Window::InitWindow(std::wstring szWinTitile, int nWidth, int nHeight)
 			0.5f, 10.0f
 		)
 	);
+	// 使用硬件raw input
+	//（鼠标的移动距离直接记录而非光标的移动距离的记录）
+	RAWINPUTDEVICE rid;
+	rid.usUsagePage = 0x01; // mouse page
+	rid.usUsage = 0x02; // mouse page;
+	rid.hwndTarget = nullptr;
+	rid.dwFlags = 0;
+	if (!RegisterRawInputDevices(&rid, 1u, sizeof(rid)))
+	{
+		throw WND_LAST_EXCEPT();
+	}
 }
 std::optional<UINT> Window::RunWindow() 
 {
@@ -129,6 +140,22 @@ int Window::GetWindowHeight() const
 	return m_nHeight;
 }
 
+
+void Window::EnableCursor() noexcept
+{
+	m_bEnableCursor = true;
+	ShowCursor();
+	EnableImguiMouse();
+	FreeCursor();
+}
+
+void Window::DisableCursor() noexcept
+{
+	m_bEnableCursor = false;
+	HideCursor();
+	DisableImguiMouse();
+	ConfineCursor();
+}
 
 LRESULT WINAPI Window::MsgHandlerSetUp(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -190,6 +217,24 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		mouse.OnLButtonUp(lParam);
+		break;
+	}
+	case WM_MBUTTONDOWN:
+	{
+		if (imio.WantCaptureMouse)
+		{
+			break;
+		}
+		mouse.OnMButtonDown(lParam);
+		break;
+	}
+	case WM_MBUTTONUP:
+	{
+		if (imio.WantCaptureMouse)
+		{
+			break;
+		}
+		mouse.OnMButtonUp(lParam);
 		break;
 	}
 	case WM_RBUTTONDOWN:
@@ -284,6 +329,44 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 	/****************** 键盘消息 ******************/
 
+	/****************** raw input 消息 ******************/
+	case WM_INPUT:
+	{
+		UINT uRBufferSize = 0;
+		if (GetRawInputData(
+			reinterpret_cast<HRAWINPUT>(lParam),
+			RID_INPUT,
+			nullptr,
+			&uRBufferSize,
+			sizeof(RAWINPUTHEADER)
+		) == -1)
+		{
+			break;
+		}
+		m_RawBuffer.resize(uRBufferSize);
+		if (GetRawInputData(
+			reinterpret_cast<HRAWINPUT>(lParam),
+			RID_INPUT,
+			m_RawBuffer.data(),
+			&uRBufferSize,
+			sizeof(RAWINPUTHEADER)
+		) != uRBufferSize)
+		{
+			break;
+		}
+		auto& ri = reinterpret_cast<const RAWINPUT&>(*m_RawBuffer.data());
+		if (
+			ri.header.dwType == RIM_TYPEMOUSE &&
+			(ri.data.mouse.lLastX != 0 || ri.data.mouse.lLastY != 0)
+			)
+		{
+			mouse.OnRawDelta(ri.data.mouse.lLastX, ri.data.mouse.lLastY);
+		}
+
+		break;
+	}
+	/****************** raw input 消息 ******************/
+
 	/************** 窗口大小改变消息 **************/
 	case WM_SIZE:
 	{
@@ -312,5 +395,38 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+void Window::ShowCursor() noexcept
+{
+	while (::ShowCursor(TRUE) < 0);
+}
+
+void Window::HideCursor() noexcept
+{
+	while (::ShowCursor(FALSE) >= 0);
+}
+
+void Window::ConfineCursor() noexcept
+{
+	RECT crec;
+	GetClientRect(m_hWnd, &crec);
+	MapWindowPoints(m_hWnd, nullptr, reinterpret_cast<POINT*>(&crec), 2u);
+	ClipCursor(&crec);
+}
+
+void Window::FreeCursor() noexcept
+{
+	ClipCursor(nullptr);
+}
+
+void Window::EnableImguiMouse() noexcept
+{
+	ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
+}
+
+void Window::DisableImguiMouse() noexcept
+{
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
 }
 

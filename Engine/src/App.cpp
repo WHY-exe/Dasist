@@ -13,7 +13,7 @@ App::App()
 	gLight(m_gfx)
 {
 	Scene::RenderOption op;
-	op.szModelPath = "res\\model\\nano.gltf";
+	op.szModelPath = "res\\model\\Lumie.pmx";
 	op.szModelName = "nano suit";
 	model = Scene::Model(m_gfx, op);
 }
@@ -28,6 +28,7 @@ int App::Run()
 			return *ecode;
 		}
 		DoFrame();
+		DoWinLogic();
 	}
 }
 
@@ -35,6 +36,7 @@ void App::DoFrame()
 {
 	m_gfx.BeginFrame();
 	//
+	ShowRawInputWindow();
 	gLight.Update(m_gfx);
 	gLight.SpwanControlWindow();
 
@@ -47,4 +49,28 @@ void App::DoFrame()
 	model.SpwanControlWindow();
 	//
 	m_gfx.EndFrame();
+}
+
+void App::DoWinLogic()
+{
+	if (m_wnd.mouse.lmrButtonStatus().m_MIsPressed && m_wnd.kbd.KeyIsPressed(VK_MENU))
+	{
+		m_wnd.DisableCursor();
+	}
+	else
+		m_wnd.EnableCursor();
+}
+
+void App::ShowRawInputWindow() noexcept
+{
+	while (const auto rd = m_wnd.mouse.ReadRawDelta())
+	{
+		x += rd->x;
+		y += rd->y;
+	}
+	if (ImGui::Begin("Raw Input Window"))
+	{
+		ImGui::Text("Tally:%d, %d", x, y);
+	}
+	ImGui::End();
 }

@@ -25,6 +25,8 @@ public:
 public:
 	int GetWindowWidth() const;
 	int GetWindowHeight() const;
+	void EnableCursor() noexcept;
+	void DisableCursor() noexcept;
 public:
 	Keyboard kbd;
 	Mouse mouse;
@@ -33,10 +35,19 @@ private:
 	static LRESULT WINAPI MsgHandlerCall(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 private:
+	void ShowCursor() noexcept;
+	void HideCursor() noexcept;
+	void ConfineCursor() noexcept;
+	void FreeCursor() noexcept;
+	void EnableImguiMouse() noexcept;
+	void DisableImguiMouse() noexcept;
+private:
+	bool m_bEnableCursor = false;
 	std::unique_ptr<Graphics> m_pGfx;
 	HWND m_hWnd = nullptr;
 	HINSTANCE m_hIns;
 	std::wstring m_szWinClass;
+	std::vector<BYTE> m_RawBuffer;
 	int m_nWidth;
 	int m_nHeight;
 private:

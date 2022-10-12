@@ -22,7 +22,7 @@ private:
 	Timer timer;
 private:
 	// user data
-	Scene::Model model;
+	Scene::Model model1;
 	Camera cam;
 	PointLight pointLight;
 	GlobalLight gLight;

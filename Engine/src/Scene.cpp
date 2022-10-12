@@ -185,6 +185,8 @@ Scene::Model::Model(Graphics& gfx,const RenderOption& option)
 	}
 	int next_id = 0;
 	m_pRoot = ParseNode(next_id, *pScene->mRootNode);
+	m_pWindow->m_pSelectedNode = const_cast<Node*>(m_pRoot.get());
+	m_pWindow->m_transform.insert({ *(m_pWindow->m_SelectedIndex),  Model::ModelWindow::TransformParams{} });
 }
 
 std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, const RenderOption& option, const aiMaterial* const* pMaterial)

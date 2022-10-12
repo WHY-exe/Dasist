@@ -1,12 +1,12 @@
-cbuffer LightCBuf
+cbuffer pointLightCBuf
 {
-    float3 lightPos;
-    float3 diffuseColor;
+    float3 plightPos;
+    float3 pDiffuseColor;
 }
 
 
 
 float4 main() : SV_TARGET
 {
-	return float4(diffuseColor, 1.0f);
+	return float4(pDiffuseColor, 1.0f);
 }

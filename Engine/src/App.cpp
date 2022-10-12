@@ -13,11 +13,11 @@ App::App()
 	pointLight(m_gfx),
 	gLight(m_gfx)
 {
-	Scene::RenderOption op;
-	op.szModelPath = "res\\model\\Lumie.obj";
-	op.szModelName = "Lumie";
-	op.szPSPath = L"res\\cso\\TexPS.cso";
-	model = Scene::Model(m_gfx, op);
+	Scene::RenderOption op1;
+	op1.szModelPath = "res\\model\\Lumie.obj";
+	op1.szModelName = "Lumie";
+	op1.szPSPath = L"res\\cso\\TexPS.cso";
+	model1 = Scene::Model(m_gfx, op1);
 }
 
 int App::Run()
@@ -40,14 +40,13 @@ void App::DoFrame()
 	//
 	gLight.Update(m_gfx);
 	gLight.SpwanControlWindow();
-
 	pointLight.Update(m_gfx);
 	pointLight.Draw(m_gfx);
 	pointLight.SpwanControlWindow();
 	m_gfx.SetCamera(cam.GetMatrix());
 	cam.SpwanControlWindow();
-	model.Draw(m_gfx);
-	model.SpwanControlWindow();
+	model1.Draw(m_gfx);
+	model1.SpwanControlWindow();
 	//
 	m_gfx.EndFrame();
 }

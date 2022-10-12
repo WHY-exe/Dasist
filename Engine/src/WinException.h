@@ -25,5 +25,8 @@ protected:
 #else
 #define WND_EXCEPT(error_code)
 #define WND_LAST_EXCEPT()
+#define WND_CALL(hr)\
+	if(FAILED(hr))\
+		throw WND_EXCEPT(hr)
 #endif // !_DEBUG
 

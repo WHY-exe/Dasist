@@ -14,7 +14,13 @@
 #include <stdexcept>
 #include "imgui.h"
 #include "StrTransf.h"
+#ifndef NDEBUG
 #pragma comment(lib, "assimp-vc142-mtd.lib")
+#else
+#pragma comment(lib, "assimp-vc142-mt.lib")
+#endif // !_Debug
+
+
 
 Scene::Mesh::Mesh(Graphics& gfx, std::vector<std::unique_ptr<Bindable>>& binds)
 	:
@@ -57,8 +63,9 @@ DirectX::XMMATRIX Scene::Mesh::GetTransformXM() const noexcept
 	return DirectX::XMLoadFloat4x4(&m_transform);
 }
 
-Scene::Node::Node(const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform)
+Scene::Node::Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform)
 	:
+	m_id(id),
 	m_pMeshes(std::move(pMeshes)),
 	m_szNodeName(WString2String(NodeName))
 {
@@ -88,18 +95,16 @@ void Scene::Node::AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG)
 	m_pChilds.emplace_back(std::move(child));
 }
 
-void Scene::Node::ShowTree(int& nodeIndexTracked, std::optional<int>& selectedIndex, Node*& pSelectedNode) const noexcept(!IS_DEBUG)
+void Scene::Node::ShowTree(std::optional<int>& selectedIndex, Node*& pSelectedNode) const noexcept(!IS_DEBUG)
 {
-	const int curNodeIndex = nodeIndexTracked;
-	nodeIndexTracked++;
 	const auto imgui_flags = ImGuiTreeNodeFlags_OpenOnArrow 
-		| ((curNodeIndex == selectedIndex.value_or(-1)) ? ImGuiTreeNodeFlags_Selected : 0)
+		| ((m_id == selectedIndex.value_or(-1)) ? ImGuiTreeNodeFlags_Selected : 0)
 		| ((m_pChilds.empty() ? ImGuiTreeNodeFlags_Leaf : 0));
 	// render the node
-	const auto expand = ImGui::TreeNodeEx((void*)(intptr_t)curNodeIndex, imgui_flags, m_szNodeName.c_str());
+	const auto expand = ImGui::TreeNodeEx((void*)(intptr_t)m_id, imgui_flags, m_szNodeName.c_str());
 	if (ImGui::IsItemClicked())
 	{
-		selectedIndex = curNodeIndex;
+		selectedIndex = m_id;
 		pSelectedNode = const_cast<Node*>(this);
 	}
 	// render the child node if root expanded
@@ -107,7 +112,7 @@ void Scene::Node::ShowTree(int& nodeIndexTracked, std::optional<int>& selectedIn
 	{
 		for (auto& child : m_pChilds)
 		{
-			child->ShowTree(nodeIndexTracked, selectedIndex, pSelectedNode);
+			child->ShowTree(selectedIndex, pSelectedNode);
 		}
 		ImGui::TreePop();
 	}
@@ -124,7 +129,7 @@ void Scene::Model::ModelWindow::Show(const char* WindowName, const Node& node) n
 	if (ImGui::Begin(WindowName))
 	{
 		ImGui::Columns(2, nullptr, true);
-		node.ShowTree(nodeIndexTracker, m_SelectedIndex, m_pSelectedNode);
+		node.ShowTree(m_SelectedIndex, m_pSelectedNode);
 		ImGui::NextColumn();
 		if (m_pSelectedNode != nullptr)
 		{
@@ -176,14 +181,16 @@ Scene::Model::Model(Graphics& gfx,const RenderOption& option)
 
 	for (unsigned int i = 0; i < pScene->mNumMeshes; i++)
 	{
-		m_pMeshes.emplace_back(ParseMesh(gfx, *pScene->mMeshes[i], option));		
+		m_pMeshes.emplace_back(ParseMesh(gfx, *pScene->mMeshes[i], option, pScene->mMaterials));		
 	}
-	m_pRoot = ParseNode(*pScene->mRootNode);
+	int next_id = 0;
+	m_pRoot = ParseNode(next_id, *pScene->mRootNode);
 }
 
-std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, const RenderOption& option)
+std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, const RenderOption& option, const aiMaterial* const* pMaterial)
 {
 	std::vector<std::unique_ptr<Bindable>> binds;
+
 
 	Vertex::DataBuffer vtxb(
 		Vertex::Layout()
@@ -191,6 +198,25 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		.Append(Vertex::Layout::Normal)
 		.Append(Vertex::Layout::Tex2D)
 	);
+	//auto& e = *pMaterial[mesh.mMaterialIndex];
+	//for (size_t i = 0; i < e.mNumProperties; i++)
+	//{
+	//	auto& prop = *e.mProperties[i];
+	//	int a = 1;
+	//}
+	if (mesh.mMaterialIndex >= 0)
+	{
+		using namespace std::string_literals;
+		auto& material = *pMaterial[mesh.mMaterialIndex];
+		aiString texPath;
+		if (material.GetTexture(aiTextureType_DIFFUSE, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
+		{
+			std::string szTexPath = "./res/model/"s + texPath.C_Str();
+			binds.emplace_back(std::make_unique<Texture>(gfx, Surface(szTexPath)));
+			binds.emplace_back(std::make_unique<Sampler>(gfx));
+		}
+	}
+
 	for (unsigned int i = 0; i < mesh.mNumVertices; i++)
 	{
 		vtxb.EmplaceBack(
@@ -213,12 +239,6 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 	}
 	binds.emplace_back(std::make_unique<IndexBuffer>(gfx, indicies));
 
-	if (option.bHasTexture)
-	{
-		binds.emplace_back(std::make_unique<Texture>(gfx, Surface(option.szTexturePath)));
-		binds.emplace_back(std::make_unique<Sampler>(gfx));
-	}
-
 	auto pvs = std::make_unique<VertexShader>(gfx, option.szVSPath);
 	auto pvsbc = pvs->GetByteCode();
 	binds.emplace_back(std::move(pvs));
@@ -236,7 +256,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 	return std::make_unique<Mesh>(gfx, binds);
 }
 
-std::unique_ptr<Scene::Node> Scene::Model::ParseNode(const aiNode& node)
+std::unique_ptr<Scene::Node> Scene::Model::ParseNode(int& next_id, const aiNode& node)
 {
 	const auto transform = DirectX::XMMatrixTranspose(
 		DirectX::XMLoadFloat4x4(reinterpret_cast<const DirectX::XMFLOAT4X4*>(&node.mTransformation))
@@ -249,11 +269,12 @@ std::unique_ptr<Scene::Node> Scene::Model::ParseNode(const aiNode& node)
 		curMeshPtrs.emplace_back(m_pMeshes.at(meshIdx).get());
 	}
 	std::unique_ptr<Node> pNode = std::make_unique<Node>(
+		next_id,
 		String2WString(std::string(node.mName.C_Str())), 
 		std::move(curMeshPtrs), transform);
 	for (UINT i = 0 ; i < node.mNumChildren; i++)
 	{
-		pNode->AddChild(ParseNode(*node.mChildren[i]));
+		pNode->AddChild(ParseNode(++next_id, *node.mChildren[i]));
 	}
 	return pNode;
 }

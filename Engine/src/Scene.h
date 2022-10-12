@@ -16,8 +16,6 @@ namespace Scene
 		std::string szModelName = "Model";
 		std::wstring szVSPath = L"res\\cso\\TexVS.cso";
 		std::wstring szPSPath = L"res\\cso\\PixelShader.cso";
-		bool bHasTexture = false;
-		std::string szTexturePath;
 	};
 	class Mesh:public Drawable
 	{
@@ -34,13 +32,14 @@ namespace Scene
 	{
 		friend class Model;
 	public:
-		Node(const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform);
+		Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform);
 		void Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG);
 	private:
 		void AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG);
-		void ShowTree(int& nodeIndexTracked, std::optional<int>& selectedIndex, Node*& pSelectedNode) const noexcept(!IS_DEBUG);
+		void ShowTree(std::optional<int>& selectedIndex, Node*& pSelectedNode) const noexcept(!IS_DEBUG);
 		void SetAppliedTransform(DirectX::XMMATRIX transform);
 	private:
+		int m_id;
 		std::vector<Mesh*> m_pMeshes;
 		std::vector<std::unique_ptr<Node>> m_pChilds;
 		std::string m_szNodeName;
@@ -75,8 +74,8 @@ namespace Scene
 	public:
 		Model() = default;
 		Model(Graphics& gfx, const RenderOption& option);
-		static std::unique_ptr<Mesh> ParseMesh(Graphics& gfx, const aiMesh& mesh, const RenderOption& option);
-		std::unique_ptr<Node> ParseNode(const aiNode& node);
+		static std::unique_ptr<Mesh> ParseMesh(Graphics& gfx, const aiMesh& mesh, const RenderOption& option, const aiMaterial* const* pMaterial);
+		std::unique_ptr<Node> ParseNode(int& next_id, const aiNode& node);
 		void SpwanControlWindow() noexcept;
 		void SetPos(float x, float y, float z) noexcept;
 		void SetPos(DirectX::XMFLOAT3 pos) noexcept;

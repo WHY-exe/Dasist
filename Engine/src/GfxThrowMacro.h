@@ -26,12 +26,14 @@
         }\
     }
 #else
-#define IMPORT_INFOMAN(gfx)
+#define IMPORT_INFOMAN(gfx)\
+    HRESULT hr = S_OK;
 #define INIT_GFX_EXCEPTION\
     HRESULT hr = S_OK
 #define GFX_THORW(hrcall)\
 	if(FAILED(hr = hrcall))\
-		throw Graphics::GfxExcepion( __LINE__, __FILE__, hrcall\)
+		throw Graphics::GfxExcepion( __LINE__, __FILE__, hrcall)
 #define GFX_THROW_INFO(hrcall) GFX_THORW(hrcall)
+#define GFX_DEVICE_REMOVED_CALL(hrcall) throw Graphics::GfxExcepion( __LINE__, __FILE__, (hrcall))
 #define GFX_THROW_INFO_ONLY(call) call
 #endif // 

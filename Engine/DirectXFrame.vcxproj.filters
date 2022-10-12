@@ -265,6 +265,9 @@
     <ClInclude Include="src\Scene.h">
       <Filter>Drawable</Filter>
     </ClInclude>
+    <ClInclude Include="src\MathTool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\PixelShader.hlsl">

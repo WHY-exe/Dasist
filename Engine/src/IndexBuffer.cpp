@@ -2,14 +2,14 @@
 
 IndexBuffer::IndexBuffer(Graphics& gfx, const std::vector<UINT>& indicies)
 	:
-	m_uBufferSize(indicies.size())
+	m_uBufferSize((UINT)indicies.size())
 {
     IMPORT_INFOMAN(gfx);
     D3D11_BUFFER_DESC ibbd = {};
     ibbd.BindFlags = D3D11_BIND_INDEX_BUFFER;
     ibbd.Usage = D3D11_USAGE_DEFAULT;
     ibbd.CPUAccessFlags = 0u;
-    ibbd.ByteWidth = indicies.size() * sizeof(UINT);
+    ibbd.ByteWidth = (UINT)indicies.size() * sizeof(UINT);
     ibbd.StructureByteStride = sizeof(UINT);
     D3D11_SUBRESOURCE_DATA sdIdics = {};
     sdIdics.pSysMem = indicies.data();

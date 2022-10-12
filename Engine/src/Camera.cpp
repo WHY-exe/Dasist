@@ -1,5 +1,7 @@
 #include "Camera.h"
 #include "imgui.h"
+#include "MathTool.h"
+#include <algorithm>
 Camera::Camera()
 	:
 	m_pos(0.0f, 0.0f, -10.0f),
@@ -19,6 +21,15 @@ DirectX::XMMATRIX Camera::GetMatrix() const
 	}
 }
 
+void Camera::Rotate(float dx, float dy) noexcept
+{
+	if (m_bView)
+	{
+		m_rot.y = math_tool::wrap_angle(m_rot.y + dx * m_rot_speed);
+		m_rot.x = std::clamp(m_rot.x + dy * m_rot_speed, 0.995f * (-PI) / 2.0f, 0.995f * PI / 2.0f);
+	}
+}
+
 DirectX::XMMATRIX Camera::GetFPMatrix() const
 {
 	using namespace DirectX;
@@ -33,6 +44,7 @@ DirectX::XMMATRIX Camera::GetFPMatrix() const
 	const DirectX::XMVECTOR camTarget = camPos + lookVec;
 	// 最后向世界中的物体施加变换矩阵使世界按现有的摄像机视角变化
 	// 使用一个相机位置、一个向上的方向和一个焦点为左手坐标系构建一个视图矩阵。
+	// 在这里Y轴为向上的方向
 	return DirectX::XMMatrixLookAtLH(camPos, camTarget, DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 }
 

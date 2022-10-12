@@ -157,6 +157,11 @@ void Window::DisableCursor() noexcept
 	ConfineCursor();
 }
 
+bool Window::CursorEnabled() const noexcept
+{
+	return m_bEnableCursor;
+}
+
 LRESULT WINAPI Window::MsgHandlerSetUp(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if (uMsg == WM_NCCREATE)
@@ -193,8 +198,7 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		return true;
 	}
-
-	const auto imio = ImGui::GetIO();
+	const auto& imio = ImGui::GetIO();
 	switch (uMsg)
 	{
 	case WM_KILLFOCUS:
@@ -203,64 +207,36 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	/****************** 鼠标消息 ******************/
 	case WM_LBUTTONDOWN:
 	{
-		if (imio.WantCaptureMouse)
-		{
-			break;
-		}
 		mouse.OnLButtonDown(lParam);
 		break;
 	}	
 	case WM_LBUTTONUP:
 	{
-		if (imio.WantCaptureMouse)
-		{
-			break;
-		}
 		mouse.OnLButtonUp(lParam);
 		break;
 	}
 	case WM_MBUTTONDOWN:
 	{
-		if (imio.WantCaptureMouse)
-		{
-			break;
-		}
 		mouse.OnMButtonDown(lParam);
 		break;
 	}
 	case WM_MBUTTONUP:
 	{
-		if (imio.WantCaptureMouse)
-		{
-			break;
-		}
 		mouse.OnMButtonUp(lParam);
 		break;
 	}
 	case WM_RBUTTONDOWN:
 	{
-		if (imio.WantCaptureMouse)
-		{
-			break;
-		}
 		mouse.OnRButtonDown(lParam);
 		break;
 	}
 	case WM_RBUTTONUP:
 	{
-		if (imio.WantCaptureMouse)
-		{
-			break;
-		}
 		mouse.OnRButtonUp(lParam);
 		break;
 	}
 	case WM_MOUSEMOVE:
 	{
-		if (imio.WantCaptureMouse)
-		{
-			break;
-		}
 		POINTS pt = MAKEPOINTS(lParam);
 		if (pt.x > 0 && pt.y > 0 && pt.x <= m_nWidth && pt.y <= m_nHeight)
 		{
@@ -289,10 +265,6 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_MOUSEWHEEL:
 	{
-		if (imio.WantCaptureMouse)
-		{
-			break;
-		}
 		mouse.OnMouseWheel(wParam);
 		break;
 	}
@@ -301,10 +273,6 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	/****************** 键盘消息 ******************/
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
-		if (imio.WantCaptureKeyboard)
-		{
-			break;
-		}
 		// 禁用autorepeat
 		if(!(lParam & 0x40000000) || kbd.AutoRepeatIsEnable())
 		{ 
@@ -314,17 +282,9 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_SYSKEYUP:
 	case WM_CHAR:
-		if (imio.WantCaptureKeyboard)
-		{
-			break;
-		}
 		kbd.OnChar(static_cast<unsigned char>(wParam));
 		break;
 	case WM_KEYUP:
-		if (imio.WantCaptureKeyboard)
-		{
-			break;
-		}
 		kbd.OnKeyUp(static_cast<unsigned char>(wParam));
 		break;
 	/****************** 键盘消息 ******************/

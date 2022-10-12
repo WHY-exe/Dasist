@@ -57,6 +57,7 @@
     <ClCompile Include="src\StrTransf.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\MathTool.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Light.h" />
     <ClInclude Include="src\Camera.h" />

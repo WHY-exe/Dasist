@@ -7,14 +7,16 @@
 #include "StrTransf.h"
 App::App()
 	:
+	m_imguiMan(),
 	m_wnd(L"WindowTitle", 1000, 700),
 	m_gfx(m_wnd.GetGfx()),
 	pointLight(m_gfx),
 	gLight(m_gfx)
 {
 	Scene::RenderOption op;
-	op.szModelPath = "res\\model\\Lumie.pmx";
-	op.szModelName = "nano suit";
+	op.szModelPath = "res\\model\\Lumie.obj";
+	op.szModelName = "Lumie";
+	op.szPSPath = L"res\\cso\\TexPS.cso";
 	model = Scene::Model(m_gfx, op);
 }
 
@@ -36,7 +38,6 @@ void App::DoFrame()
 {
 	m_gfx.BeginFrame();
 	//
-	ShowRawInputWindow();
 	gLight.Update(m_gfx);
 	gLight.SpwanControlWindow();
 
@@ -59,18 +60,12 @@ void App::DoWinLogic()
 	}
 	else
 		m_wnd.EnableCursor();
-}
+	while (auto d = m_wnd.mouse.ReadRawDelta())
+	{
+		if (!m_wnd.CursorEnabled())
+		{
+			cam.Rotate((float)d->x, (float)d->y);
+		}
+	}
 
-void App::ShowRawInputWindow() noexcept
-{
-	while (const auto rd = m_wnd.mouse.ReadRawDelta())
-	{
-		x += rd->x;
-		y += rd->y;
-	}
-	if (ImGui::Begin("Raw Input Window"))
-	{
-		ImGui::Text("Tally:%d, %d", x, y);
-	}
-	ImGui::End();
 }

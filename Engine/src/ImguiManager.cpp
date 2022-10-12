@@ -4,8 +4,8 @@ ImguiManager::ImguiManager()
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	const auto io = ImGui::GetIO();	
 	ImGui::StyleColorsDark();
+	const auto io = ImGui::GetIO();	
 	ImFontConfig config;
 	config.MergeMode = false;
 	config.OversampleH = 2;

@@ -27,6 +27,7 @@ public:
 	int GetWindowHeight() const;
 	void EnableCursor() noexcept;
 	void DisableCursor() noexcept;
+	bool CursorEnabled() const noexcept;
 public:
 	Keyboard kbd;
 	Mouse mouse;

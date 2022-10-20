@@ -11,3 +11,18 @@ void Topology::Bind(Graphics& gfx) noexcept
 	GetContext(gfx)->IASetPrimitiveTopology(m_type);
 }
 
+std::shared_ptr<Bindable> Topology::Resolve(Graphics& gfx, D3D11_PRIMITIVE_TOPOLOGY type) noexcept(!IS_DEBUG)
+{
+	return CodeX::Resolve<Topology>(gfx, type);
+}
+
+std::wstring Topology::GenUID(D3D11_PRIMITIVE_TOPOLOGY type) noexcept
+{
+	return ANSI_TO_UTF8_STR(typeid(Topology).name() + std::to_string(type));
+}
+
+std::wstring Topology::GetUID() const noexcept
+{
+	return GenUID(m_type);
+}
+

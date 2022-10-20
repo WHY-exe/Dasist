@@ -22,40 +22,20 @@
 
 
 
-Scene::Mesh::Mesh(Graphics& gfx, std::vector<std::unique_ptr<Bindable>>& binds)
-	:
-	m_szMeshName("Mesh")
+Scene::Mesh::Mesh(Graphics& gfx, std::vector<std::shared_ptr<Bindable>>& binds)
 {
-	if (!IsStaticInitialized(m_szMeshName))
-	{
-		InitStaticSlot(m_szMeshName);
-	}
-	AddStaticBind(m_szMeshName, std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-
+	AddBind(Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 	for (auto& b : binds)
 	{
-		if (auto idb = dynamic_cast<IndexBuffer*>(b.get()))
-		{
-			AddIndexBuffer(std::unique_ptr<IndexBuffer>(idb));
-			b.release();
-		}
-		else
-		{
-			AddBind(std::move(b));
-		}
+		AddBind(std::move(b));
 	}
-	AddBind(std::make_unique<TransformCbuf>(gfx, *this));
+	AddBind(std::make_shared<TransformCbuf>(gfx, *this));
 }
 
 void Scene::Mesh::Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) noexcept(!IS_DEBUG)
 {
 	DirectX::XMStoreFloat4x4(&m_transform, accumulateTransform);
 	Drawable::Draw(gfx);
-}
-
-const std::string& Scene::Mesh::GetModelName() const noexcept
-{
-	return m_szMeshName;
 }
 
 DirectX::XMMATRIX Scene::Mesh::GetTransformXM() const noexcept
@@ -67,7 +47,7 @@ Scene::Node::Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMesh
 	:
 	m_id(id),
 	m_pMeshes(std::move(pMeshes)),
-	m_szNodeName(WString2String(NodeName))
+	m_szNodeName(UTF8_TO_ANSI_STR(NodeName))
 {
 	DirectX::XMStoreFloat4x4(&m_BaseTransform, transform);
 	DirectX::XMStoreFloat4x4(&m_AppliedTransform, DirectX::XMMatrixIdentity());
@@ -163,7 +143,7 @@ Scene::Node* Scene::Model::ModelWindow::GetSelectedNode() const noexcept
 	return m_pSelectedNode;
 }
 
-Scene::Model::Model(Graphics& gfx,const RenderOption& option)
+Scene::Model::Model(Graphics& gfx,RenderOption& option)
 	:
 	m_szModelName(option.szModelName),
 	m_pWindow(std::make_unique<ModelWindow>())
@@ -189,23 +169,17 @@ Scene::Model::Model(Graphics& gfx,const RenderOption& option)
 	m_pWindow->m_transform.insert({ *(m_pWindow->m_SelectedIndex),  Model::ModelWindow::TransformParams{} });
 }
 
-std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, const RenderOption& option, const aiMaterial* const* pMaterial)
+std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, RenderOption& option, const aiMaterial* const* pMaterial)
 {
-	std::vector<std::unique_ptr<Bindable>> binds;
-
-
+	std::vector<std::shared_ptr<Bindable>> binds;
 	Vertex::DataBuffer vtxb(
 		Vertex::Layout()
 		.Append(Vertex::Layout::Position3D)
 		.Append(Vertex::Layout::Normal)
 		.Append(Vertex::Layout::Tex2D)
 	);
-	//auto& e = *pMaterial[mesh.mMaterialIndex];
-	//for (size_t i = 0; i < e.mNumProperties; i++)
-	//{
-	//	auto& prop = *e.mProperties[i];
-	//	int a = 1;
-	//}
+	float shininess = 30.0f;
+
 	if (mesh.mMaterialIndex >= 0)
 	{
 		using namespace std::string_literals;
@@ -214,9 +188,19 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		if (material.GetTexture(aiTextureType_DIFFUSE, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
 		{
 			std::string szTexPath = "./res/model/"s + texPath.C_Str();
-			binds.emplace_back(std::make_unique<Texture>(gfx, Surface(szTexPath)));
-			binds.emplace_back(std::make_unique<Sampler>(gfx));
+			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexPath)));
+			option.szPSPath = L"res\\cso\\TexPS.cso";
 		}
+		if (material.GetTexture(aiTextureType_SPECULAR, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
+		{
+			std::string szTexPath = "./res/model/"s + texPath.C_Str();
+			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexPath), 1));
+			option.szPSPath = L"res\\cso\\TexPSSpec.cso";
+		}
+		else {
+			material.Get(AI_MATKEY_SHININESS, shininess);
+		}
+		binds.emplace_back(Sampler::Resolve(gfx));
 	}
 
 	for (unsigned int i = 0; i < mesh.mNumVertices; i++)
@@ -227,7 +211,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			*reinterpret_cast<DirectX::XMFLOAT2*>(&mesh.mTextureCoords[0][i])
 		);
 	}
-	binds.emplace_back(std::make_unique<VertexBuffer>(gfx, vtxb));
+	binds.emplace_back(VertexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), vtxb));
 	std::vector<UINT> indicies;
 	indicies.reserve((size_t)mesh.mNumFaces * 3);
 	for (unsigned int f = 0; f < mesh.mNumFaces; f++)
@@ -239,13 +223,13 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			indicies.push_back(face.mIndices[i]);
 		}
 	}
-	binds.emplace_back(std::make_unique<IndexBuffer>(gfx, indicies));
+	binds.emplace_back(IndexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), indicies));
 
-	auto pvs = std::make_unique<VertexShader>(gfx, option.szVSPath);
-	auto pvsbc = pvs->GetByteCode();
+	auto pvs = VertexShader::Resolve(gfx, option.szVSPath);
+	auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
 	binds.emplace_back(std::move(pvs));
-	binds.emplace_back(std::make_unique<InputLayout>(gfx, vtxb.GetLayout().GetD3DLayout(), pvsbc));
-	binds.emplace_back(std::make_unique<PixelShader>(gfx, option.szPSPath));
+	binds.emplace_back(InputLayout::Resolve(gfx, vtxb.GetLayout(), pvsbc));
+	binds.emplace_back(PixelShader::Resolve(gfx, option.szPSPath));
 	
 	struct ModelCBuffer
 	{
@@ -253,8 +237,8 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		float specular_intesity = 0.6f;
 		float specular_pow = 30.0f;
 	} mcb;
-
-	binds.emplace_back(std::make_unique<PixelConstantBuffer<ModelCBuffer>>(gfx, mcb, 1u)); 
+	mcb.specular_pow = shininess;
+	binds.emplace_back(PixelConstantBuffer<ModelCBuffer>::Resolve(gfx, mcb, 1u)); 
 	return std::make_unique<Mesh>(gfx, binds);
 }
 
@@ -272,7 +256,7 @@ std::unique_ptr<Scene::Node> Scene::Model::ParseNode(int& next_id, const aiNode&
 	}
 	std::unique_ptr<Node> pNode = std::make_unique<Node>(
 		next_id,
-		String2WString(std::string(node.mName.C_Str())), 
+		String2Utf8String(std::string(node.mName.C_Str())), 
 		std::move(curMeshPtrs), transform);
 	for (UINT i = 0 ; i < node.mNumChildren; i++)
 	{

@@ -6,6 +6,7 @@ public:
 	Camera();
 	DirectX::XMMATRIX GetMatrix() const;
 	void Rotate(float dx, float dy) noexcept;
+	void Translate(float dx, float dy, float dz);
 	void SpwanControlWindow();
 private:
 	DirectX::XMMATRIX GetFPMatrix() const;

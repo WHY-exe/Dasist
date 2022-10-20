@@ -1,8 +1,14 @@
 #include "IndexBuffer.h"
 
 IndexBuffer::IndexBuffer(Graphics& gfx, const std::vector<UINT>& indicies)
-	:
-	m_uBufferSize((UINT)indicies.size())
+    :
+    IndexBuffer(gfx, L"?", indicies)
+{}
+
+IndexBuffer::IndexBuffer(Graphics& gfx, const std::wstring& tag, const std::vector<UINT>& indicies)
+    :
+    m_uBufferSize((UINT)indicies.size()),
+    m_Tag(tag)
 {
     IMPORT_INFOMAN(gfx);
     D3D11_BUFFER_DESC ibbd = {};
@@ -18,6 +24,16 @@ IndexBuffer::IndexBuffer(Graphics& gfx, const std::vector<UINT>& indicies)
 
 }
 
+std::shared_ptr<Bindable> IndexBuffer::Resolve(Graphics& gfx, const std::wstring& tag, const std::vector<UINT>& indicies) noexcept
+{
+    return CodeX::Resolve<IndexBuffer>(gfx, tag, indicies);
+}
+
+std::wstring IndexBuffer::GetUID() const noexcept
+{
+    return GenUID(m_Tag);
+}
+
 void IndexBuffer::Bind(Graphics& gfx) noexcept
 {
     GetContext(gfx)->IASetIndexBuffer(m_IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
@@ -26,4 +42,10 @@ void IndexBuffer::Bind(Graphics& gfx) noexcept
 UINT IndexBuffer::GetSize() const
 {
 	return m_uBufferSize;
+}
+
+std::wstring IndexBuffer::GenUID_(std::wstring tag) noexcept
+{
+    using namespace std::string_literals;
+    return ANSI_TO_UTF8_STR(typeid(IndexBuffer).name()) + L"#" + tag;
 }

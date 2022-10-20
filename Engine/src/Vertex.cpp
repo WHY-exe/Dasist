@@ -86,6 +86,29 @@ D3D11_INPUT_ELEMENT_DESC Vertex::Layout::Element::GetLayoutDesc() const noexcept
 	return { "INVALID", 0u, DXGI_FORMAT_UNKNOWN, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0u };
 }
 
+const char* Vertex::Layout::Element::GetCode() const noexcept
+{
+	switch (m_type)
+	{
+	case Position2D:
+		return Map<Position2D>::code;
+	case Position3D:
+		return Map<Position3D>::code;
+	case Tex2D:
+		return Map<Tex2D>::code;
+	case Normal:
+		return Map<Normal>::code;
+	case Float3Color:
+		return Map<Float3Color>::code;
+	case Float4Color:
+		return Map<Float4Color>::code;
+	case Byte4Color:
+		return Map<Byte4Color>::code;
+	}
+	assert("Invalid element type" && false);
+	return "Invalid";
+}
+
 const Vertex::Layout::Element& Vertex::Layout::Resolve(ElementType Type) const noexcept(!IS_DEBUG)
 {
 	for (const auto& e : m_Elements)
@@ -120,6 +143,16 @@ size_t Vertex::Layout::Size() const noexcept(!IS_DEBUG)
 const std::vector<D3D11_INPUT_ELEMENT_DESC>& Vertex::Layout::GetD3DLayout() const
 {
 	return m_d3d_desc;
+}
+
+std::string Vertex::Layout::GetCode() const noexcept
+{
+	std::string code;
+	for (auto e : m_Elements)
+	{
+		code += e.GetCode();
+	}
+	return code;
 }
 
 Vertex::Data::Data(char* pBuffer, const Layout& layout) noexcept(!IS_DEBUG)

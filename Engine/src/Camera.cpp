@@ -30,12 +30,25 @@ void Camera::Rotate(float dx, float dy) noexcept
 	}
 }
 
+void Camera::Translate(float dx, float dy, float dz)
+{
+	using namespace DirectX;
+	DirectX::XMVECTOR delta_pos = {dx, dy, dz};
+	const DirectX::XMVECTOR lookVec = DirectX::XMVector3Transform(
+		delta_pos, DirectX::XMMatrixRotationRollPitchYaw(m_rot.x, m_rot.y, 0.0f)
+	);
+	DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&m_pos);
+	pos += lookVec;
+	DirectX::XMStoreFloat3(&m_pos, pos);
+}
+
 DirectX::XMMATRIX Camera::GetFPMatrix() const
 {
 	using namespace DirectX;
 	// 第一人称视角摄像机的矩阵变换
 	const DirectX::XMVECTOR forwardBaseVec = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	// 将Z轴方向上的单位向量，与X轴、Y轴上的旋转矩阵相乘，得到现在摄像机的朝向
+	// (对于第一人称视角来说，只有X轴和Y轴两个旋转方向)
 	const DirectX::XMVECTOR lookVec = DirectX::XMVector3Transform(
 		forwardBaseVec, DirectX::XMMatrixRotationRollPitchYaw(m_rot.x, m_rot.y, 0.0f)
 	);

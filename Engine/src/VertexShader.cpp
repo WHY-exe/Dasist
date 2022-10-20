@@ -1,7 +1,13 @@
 #include "VertexShader.h"
 #include "GfxThrowMacro.h"
 #include <d3dcompiler.h>
+#include <typeinfo>
+#include "BindableCodex.h"
+#include <memory>
+#include "StrTransf.h"
 VertexShader::VertexShader(Graphics& gfx, const std::wstring szPath)
+    :
+    m_szPath(szPath)
 {
     IMPORT_INFOMAN(gfx);
     // read the compiled vertex shader to the memory
@@ -25,4 +31,20 @@ void VertexShader::Bind(Graphics& gfx) noexcept
 ID3DBlob* VertexShader::GetByteCode() const noexcept
 {
     return m_pByteCodeBlob.Get();
+}
+
+std::shared_ptr<Bindable> VertexShader::Resolve(Graphics& gfx, const std::wstring& path) noexcept(!IS_DEBUG)
+{
+    return CodeX::Resolve<VertexShader>(gfx, path);
+}
+
+std::wstring VertexShader::GenUID(const std::wstring& path) noexcept
+{
+    using namespace std::string_literals;
+    return ANSI_TO_UTF8_STR(typeid(VertexShader).name()) + L"#"s + path;
+}
+
+std::wstring VertexShader::GetUID() const noexcept
+{
+    return GenUID(m_szPath);
 }

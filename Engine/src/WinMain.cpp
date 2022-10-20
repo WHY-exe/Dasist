@@ -18,13 +18,13 @@ int WINAPI WinMain(
 	}
 	catch (const Exception& e)
 	{
-		const std::wstring output_msg = String2WString(std::string(e.what()));
-		const std::wstring output_type = String2WString(std::string(e.GetType()));
+		const std::wstring output_msg = ANSI_TO_GBK_STR(e.what());
+		const std::wstring output_type = ANSI_TO_GBK_STR(e.GetType());
 		MessageBox(nullptr, output_msg.c_str(), output_type.c_str(), MB_OKCANCEL | MB_ICONASTERISK);
 	}
 	catch (const std::exception& e)
 	{
-		const std::wstring output_msg = String2WString(std::string(e.what()));
+		const std::wstring output_msg = ANSI_TO_GBK_STR(e.what());
 		MessageBox(nullptr, output_msg.c_str(), L"Standard Error", MB_OKCANCEL | MB_ICONASTERISK);
 	}
 	catch (...)

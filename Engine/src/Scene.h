@@ -20,12 +20,10 @@ namespace Scene
 	class Mesh:public Drawable
 	{
 	public:
-		Mesh(Graphics& gfx, std::vector<std::unique_ptr<Bindable>>& binds);
+		Mesh(Graphics& gfx, std::vector<std::shared_ptr<Bindable>>& binds);
 		void Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) noexcept(!IS_DEBUG);
-		const std::string& GetModelName() const noexcept override;
 		DirectX::XMMATRIX GetTransformXM() const noexcept override;
 	private:
-		std::string m_szMeshName;
 		DirectX::XMFLOAT4X4 m_transform;
 	};
 	class Node
@@ -73,8 +71,8 @@ namespace Scene
 		};
 	public:
 		Model() = default;
-		Model(Graphics& gfx, const RenderOption& option);
-		static std::unique_ptr<Mesh> ParseMesh(Graphics& gfx, const aiMesh& mesh, const RenderOption& option, const aiMaterial* const* pMaterial);
+		Model(Graphics& gfx, RenderOption& option);
+		static std::unique_ptr<Mesh> ParseMesh(Graphics& gfx, const aiMesh& mesh, RenderOption& option, const aiMaterial* const* pMaterial);
 		std::unique_ptr<Node> ParseNode(int& next_id, const aiNode& node);
 		void SpwanControlWindow() noexcept;
 		void SetPos(float x, float y, float z) noexcept;

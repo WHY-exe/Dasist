@@ -2,6 +2,9 @@
 #include "GfxThrowMacro.h"
 #include "Bindable.h"
 #include "Vertex.h"
+#include <memory>
+#include <typeinfo>
+#include "StrTransf.h"
 class VertexBuffer :public Bindable
 {
 public:
@@ -24,8 +27,21 @@ public:
         GFX_THROW_INFO_ONLY(GetDevice(gfx)->CreateBuffer(&vbbd, &sdVerts, &m_pBuffer));
 	}
     VertexBuffer(Graphics& gfx, const Vertex::DataBuffer& buffer);
+    VertexBuffer(Graphics& gfx, const std::wstring& tag, const Vertex::DataBuffer& buffer);
+    static std::shared_ptr<Bindable> Resolve(
+        Graphics& gfx, const std::wstring& tag, 
+        const Vertex::DataBuffer buffer) noexcept;
+    template <typename...Ignore>
+    static std::wstring GenUID(std::wstring tag, Ignore&&...ingnore) noexcept
+    {
+        return GenUID_(tag);
+    }
+    std::wstring GetUID() const noexcept override;
     void Bind(Graphics& gfx) noexcept override;
 private:
+    static std::wstring GenUID_(std::wstring tag) noexcept;
+private:
+    std::wstring m_Tag;
     UINT m_uStride;
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_pBuffer;
 };

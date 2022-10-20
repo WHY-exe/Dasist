@@ -1,5 +1,7 @@
 #include "Sampler.h"
 #include "GfxThrowMacro.h"
+#include "StrTransf.h"
+#include <typeinfo>
 Sampler::Sampler(Graphics& gfx)
 {
 	IMPORT_INFOMAN(gfx);
@@ -16,4 +18,19 @@ Sampler::Sampler(Graphics& gfx)
 void Sampler::Bind(Graphics& gfx) noexcept
 {
 	GetContext(gfx)->PSSetSamplers(0u, 1u, m_pSampler.GetAddressOf());
+}
+
+std::shared_ptr<Bindable> Sampler::Resolve(Graphics& gfx) noexcept(!IS_DEBUG)
+{
+	return CodeX::Resolve<Sampler>(gfx);
+}
+
+std::wstring Sampler::GenUID() noexcept
+{
+	return ANSI_TO_UTF8_STR(typeid(Sampler).name());
+}
+
+std::wstring Sampler::GetUID() const noexcept
+{
+	return GenUID();
 }

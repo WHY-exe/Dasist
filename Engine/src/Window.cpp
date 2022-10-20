@@ -280,13 +280,15 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			//std::cout << wParam << std::endl;
 		}
 		break;
-	case WM_SYSKEYUP:
+
+	case WM_SYSKEYUP:	
+	case WM_KEYUP:
+		kbd.OnKeyUp(static_cast<unsigned char>(wParam));		
+		break;
 	case WM_CHAR:
 		kbd.OnChar(static_cast<unsigned char>(wParam));
 		break;
-	case WM_KEYUP:
-		kbd.OnKeyUp(static_cast<unsigned char>(wParam));
-		break;
+
 	/****************** 键盘消息 ******************/
 
 	/****************** raw input 消息 ******************/

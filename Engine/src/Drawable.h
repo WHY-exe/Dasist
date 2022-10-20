@@ -12,25 +12,11 @@ public:
 	Drawable(const Drawable&) = delete;
 	void Draw(Graphics& gfx);
 	virtual DirectX::XMMATRIX GetTransformXM() const noexcept = 0;
-	virtual const std::string& GetModelName() const noexcept = 0;
-	virtual void SpwanControlWindow() noexcept
-	{};
-	virtual void Update(Graphics& gfx) noexcept
-	{}
 	virtual ~Drawable() = default;
 protected:
-	void AddBind(std::unique_ptr<Bindable> bind) noexcept;
-	void AddIndexBuffer(std::unique_ptr<IndexBuffer> ibuf) noexcept;
-protected:
-	bool IsStaticInitialized(const std::string& szBufferName) const noexcept;
-	void InitStaticSlot(const std::string& szBufferName) const noexcept;
-	bool IsSlotEmpty(const std::string& szBufferName) const noexcept;
-	void AddStaticBind(const std::string& szBufferName, std::unique_ptr<Bindable> bind) noexcept(!IS_DEBUG);
-	void AddStaticIndexBuffer(const std::string& szBufferName, std::unique_ptr<IndexBuffer> idx_buf) noexcept(!IS_DEBUG);
-	void SetIndexfromStatic(const std::string& szBufferName) noexcept(!IS_DEBUG);
+	void AddBind(std::shared_ptr<Bindable> bind) noexcept(!IS_DEBUG);
 private:
-	static std::map<std::string, std::vector<std::unique_ptr<Bindable>>> m_staticBind;	
 	const IndexBuffer* m_pIndexBuffer = nullptr;
-	std::vector<std::unique_ptr<Bindable>> m_binds;
+	std::vector<std::shared_ptr<Bindable>> m_binds;
 };
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "GfxThrowMacro.h"
 #include "Bindable.h"
+
 template <typename C>
 class ConstantBuffer : public Bindable
 {
@@ -70,6 +71,24 @@ public:
     {
         GetContext(gfx)->VSSetConstantBuffers(m_slot, 1u, m_pBuffer.GetAddressOf());
     }
+    static std::shared_ptr<Bindable> Resolve(Graphics& gfx, const C& consts, UINT slot = 0)
+    {
+        return CodeX::Resolve<VertexConstantBuffer>(gfx, consts, slot);
+    }
+    static std::wstring GenUID(const C& consts, UINT slot = 0)
+    {
+        using namespace std::string_literals;
+        return ANSI_TO_UTF8_STR(typeid(VertexConstantBuffer).name() + "#"s + std::to_string(slot));
+    }
+    static std::wstring GenUID(UINT slot = 0)
+    {
+        using namespace std::string_literals;
+        return ANSI_TO_UTF8_STR(typeid(VertexConstantBuffer).name() + "#"s + std::to_string(slot));
+    }
+    std::wstring GetUID() const noexcept override
+    {
+        return GenUID(m_slot);
+    }
 };
 template <typename C>
 class PixelConstantBuffer :public ConstantBuffer<C>
@@ -83,5 +102,23 @@ public:
     void Bind(Graphics& gfx) noexcept override
     {
         GetContext(gfx)->PSSetConstantBuffers(m_slot, 1u, m_pBuffer.GetAddressOf());
+    }
+    static std::shared_ptr<Bindable> Resolve(Graphics& gfx, const C& consts, UINT slot = 0)
+    {
+        return CodeX::Resolve<PixelConstantBuffer>(gfx, consts, slot);
+    }
+    static std::wstring GenUID(const C& consts, UINT slot = 0)
+    {
+        using namespace std::string_literals;
+        return ANSI_TO_UTF8_STR(typeid(PixelConstantBuffer).name() + "#"s + std::to_string(slot));
+    }
+    static std::wstring GenUID(UINT slot = 0)
+    {
+        using namespace std::string_literals;
+        return ANSI_TO_UTF8_STR(typeid(PixelConstantBuffer).name() + "#"s + std::to_string(slot));
+    }
+    std::wstring GetUID() const noexcept override
+    {
+        return GenUID(m_slot);
     }
 };

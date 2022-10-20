@@ -1,5 +1,5 @@
 Texture2D tex;
-
+Texture2D spec;
 SamplerState splr;
 
 cbuffer pointLightCBuf
@@ -34,19 +34,23 @@ float4 main(float2 tc : Texure2D, float3 worldPos : Position3D, float3 camPos : 
     const float distToGLight = length(vToGLight);
 	// Norm vector of the obj to the light source
     const float3 dirToGLight = vToGLight / distToGLight;
+    
+    const float4 SpecularSample = spec.Sample(splr, tc);
+    const float3 SpecularReflectionColor = SpecularSample.rgb;
+    const float SpecularPower = pow(2.0f, SpecularSample.a * 13.0f);
 	// diffuse intensity
 	// the vector take part in the dot product caculation is the unity vector
 	// so the result is the cos(theta) between the two vector
     const float3 gDiffuse = gDiffuseColor * gDiffuseIntensity * max(0.0f, dot(dirToGLight, fn));
     const float3 gr = 2.0f * fn * dot(vToGLight, fn) - vToGLight;
-    const float3 gSpecular = (gDiffuse * gDiffuseIntensity) * specular_intensity * pow(max(0.0f, dot(normalize(-gr), normalize(camPos))), specular_pow);
+    const float3 gSpecular = (gDiffuse * gDiffuseIntensity) * pow(max(0.0f, dot(normalize(-gr), normalize(camPos))), SpecularPower);
     
 	// vector of the obj to the light source
-	const float3 vToPLight = plightPos - worldPos;
+    const float3 vToPLight = plightPos - worldPos;
 	// distance between the obj to the light source
-	const float distToPLight = length(vToPLight);
+    const float distToPLight = length(vToPLight);
 	// Norm vector of the obj to the light source
-	const float3 dirToPLight = vToPLight / distToPLight;
+    const float3 dirToPLight = vToPLight / distToPLight;
 	// caculate the light intensity attenuation
 	// by the way the "*" operation in hlsl seems to be hadmard product
     const float att = 1.0f / (pAttConst + pAttLinear * distToPLight + pAttQuad * (distToPLight * distToPLight));
@@ -56,6 +60,6 @@ float4 main(float2 tc : Texure2D, float3 worldPos : Position3D, float3 camPos : 
 	// so the result is the cos(theta) between the two vector
     const float3 pDiffuse = pDiffuseColor * pDiffuseIntensity * att * max(0.0f, dot(dirToPLight, fn));
     const float3 pr = 2.0f * fn * dot(vToPLight, fn) - vToPLight;
-    const float3 pSpecular = (pDiffuse * pDiffuseIntensity) * specular_intensity * pow(max(0.0f, dot(normalize(-pr), normalize(camPos))), specular_pow);
-    return float4(tex.Sample(splr, tc).rgb * saturate(pDiffuse + gDiffuse + ambient) + (pSpecular + gSpecular), 1.0f);
+    const float3 pSpecular = (pDiffuse * pDiffuseIntensity) * pow(max(0.0f, dot(normalize(-pr), normalize(camPos))), SpecularPower);
+    return float4(tex.Sample(splr, tc).rgb * saturate(pDiffuse + gDiffuse + ambient) + (pSpecular + gSpecular) * SpecularReflectionColor, 1.0f);
 }

@@ -36,24 +36,28 @@ namespace Vertex {
 			using SysType = DirectX::XMFLOAT2;
 			static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32_FLOAT;
 			static constexpr const char* semantic = "Position2D";
+			static constexpr const char* code = "P2";
 		};
 		template <> struct Map<Position3D>
 		{
 			using SysType = DirectX::XMFLOAT3;
 			static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "Position3D";
+			static constexpr const char* code = "P3";
 		};
 		template <> struct Map<Tex2D>
 		{
 			using SysType = DirectX::XMFLOAT2;
 			static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32_FLOAT;
 			static constexpr const char* semantic = "Tex2D";
+			static constexpr const char* code = "T2";
 		};
 		template <> struct Map<Normal>
 		{
 			using SysType = DirectX::XMFLOAT3;
 			static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "Normal";
+			static constexpr const char* code = "N";
 		};
 
 		template <> struct Map<Float3Color>
@@ -61,6 +65,7 @@ namespace Vertex {
 			using SysType = DirectX::XMFLOAT3;
 			static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "Float3Color";
+			static constexpr const char* code = "C3";
 		};
 
 		template <> struct Map<Float4Color>
@@ -68,6 +73,7 @@ namespace Vertex {
 			using SysType = DirectX::XMFLOAT4;
 			static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
 			static constexpr const char* semantic = "Float4Color";
+			static constexpr const char* code = "C4";
 		};
 
 		template <> struct Map<Byte4Color>
@@ -75,6 +81,7 @@ namespace Vertex {
 			using SysType = BGRAColor;
 			static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32_FLOAT;
 			static constexpr const char* semantic = "Byte4Color";
+			static constexpr const char* code = "CB";
 		};
 
 
@@ -88,6 +95,7 @@ namespace Vertex {
 			size_t Size() const noexcept(!IS_DEBUG);
 			static constexpr size_t SizeOf(ElementType type) noexcept(!IS_DEBUG);
 			D3D11_INPUT_ELEMENT_DESC GetLayoutDesc() const noexcept(!IS_DEBUG);
+			const char* GetCode() const noexcept;
 		private:
 			template <ElementType type>
 			static D3D11_INPUT_ELEMENT_DESC GenDesc(size_t offset) noexcept(!IS_DEBUG)
@@ -103,6 +111,7 @@ namespace Vertex {
 		Layout& Append(ElementType Type) noexcept(!IS_DEBUG);
 		size_t Size() const noexcept(!IS_DEBUG);
 		const std::vector<D3D11_INPUT_ELEMENT_DESC>& GetD3DLayout() const;
+		std::string GetCode() const noexcept;
 	private:
 		std::vector<Element> m_Elements;
 		std::vector<D3D11_INPUT_ELEMENT_DESC> m_d3d_desc;

@@ -1,8 +1,12 @@
 #include "Texture.h"
 #include "GfxThrowMacro.h"
-Texture::Texture(Graphics& gfx, const Surface& s)
+Texture::Texture(Graphics& gfx, const std::wstring& szPath, unsigned int slot)
+	:
+	m_slot(slot),
+	m_Path(szPath)
 {
 	IMPORT_INFOMAN(gfx);
+	Surface s(UTF8_TO_ANSI_STR(szPath));
 	D3D11_TEXTURE2D_DESC texDesc = {};
 	texDesc.Width = s.GetWidth();
 	texDesc.Height = s.GetHeight();
@@ -38,5 +42,21 @@ Texture::Texture(Graphics& gfx, const Surface& s)
 
 void Texture::Bind(Graphics& gfx) noexcept
 {
-	GetContext(gfx)->PSSetShaderResources(0u, 1u, m_pTexView.GetAddressOf());
+	GetContext(gfx)->PSSetShaderResources(m_slot, 1u, m_pTexView.GetAddressOf());
+}
+
+std::shared_ptr<Bindable> Texture::Resolve(Graphics& gfx, const std::wstring& path, unsigned int slot) noexcept(!IS_DEBUG)
+{
+	return CodeX::Resolve<Texture>(gfx, path, slot);
+}
+
+std::wstring Texture::GenUID(const std::wstring& path, unsigned int slot) noexcept
+{
+	using namespace std::string_literals;
+	return ANSI_TO_UTF8_STR(typeid(Texture).name() + "#"s + std::to_string(slot)) + L"#"s + path;
+}
+
+std::wstring Texture::GetUID() const noexcept
+{
+	return GenUID(m_Path, m_slot);
 }

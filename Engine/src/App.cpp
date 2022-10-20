@@ -4,6 +4,7 @@
 #include "Surface.h"
 #include "imgui.h"
 #include "Vertex.h"
+#include "VertexShader.h"
 #include "StrTransf.h"
 App::App()
 	:
@@ -14,9 +15,9 @@ App::App()
 	gLight(m_gfx)
 {
 	Scene::RenderOption op1;
-	op1.szModelPath = "res\\model\\Lumie.obj";
+	op1.szModelPath = "res\\model\\lumie.obj";
 	op1.szModelName = "Lumie";
-	op1.szPSPath = L"res\\cso\\TexPS.cso";
+	op1.szPSPath = L"res\\cso\\TexPSSpec.cso";
 	model1 = Scene::Model(m_gfx, op1);
 }
 
@@ -59,6 +60,32 @@ void App::DoWinLogic()
 	}
 	else
 		m_wnd.EnableCursor();
+	if (m_wnd.kbd.KeyIsPressed('W'))
+	{
+		cam.Translate(0.0f, 0.0f, 0.1f);
+	}
+	if (m_wnd.kbd.KeyIsPressed('A'))
+	{
+		cam.Translate(-0.1f, 0.0f, 0.0f);
+	}
+	if (m_wnd.kbd.KeyIsPressed('R'))
+	{
+		cam.Translate(0.0f, 0.1f, 0.0f);
+	}
+	if (m_wnd.kbd.KeyIsPressed('S'))
+	{
+		cam.Translate(0.0f, 0.0f, -0.1f);
+	}
+	if (m_wnd.kbd.KeyIsPressed('D'))
+	{
+		cam.Translate(0.1f, 0.0f, 0.0f);
+	}
+	if (m_wnd.kbd.KeyIsPressed('F'))
+	{
+		cam.Translate(0.0f, -0.1f, 0.0f);
+	}
+
+
 	while (auto d = m_wnd.mouse.ReadRawDelta())
 	{
 		if (!m_wnd.CursorEnabled())

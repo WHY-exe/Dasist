@@ -94,7 +94,7 @@ void Window::InitWindow(std::wstring szWinTitile, int nWidth, int nHeight)
 	m_pGfx->SetProjection(
 		DirectX::XMMatrixPerspectiveLH(
 			1.0f, (float)m_nHeight / (float)m_nWidth,
-			0.5f, 10.0f
+			0.5f, 100.0f
 		)
 	);
 	// Ê¹ÓÃÓ²¼þraw input
@@ -109,7 +109,7 @@ void Window::InitWindow(std::wstring szWinTitile, int nWidth, int nHeight)
 		throw WND_LAST_EXCEPT();
 	}
 }
-std::optional<UINT> Window::RunWindow() 
+std::optional<WPARAM> Window::RunWindow() 
 {
 	MSG msg = { 0 };
 
@@ -338,13 +338,13 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			m_pGfx->CleanUpRenderTarget();
 			m_pGfx->ResizeFrameBuffer(m_nWidth, m_nHeight);
-			m_pGfx->CreateRenderTarget();
+			m_pGfx->GetBackBufferAndCreateRenderTarget();
 			m_pGfx->CreateAndSetStencilDepthView(m_nWidth, m_nHeight);
 			m_pGfx->CreateAndSetViewPort(m_nWidth, m_nHeight);
 			m_pGfx->SetProjection(
 				DirectX::XMMatrixPerspectiveLH(
 					1.0f, (float)m_nHeight / (float)m_nWidth,
-					0.5f, 10.0f
+					0.5f, 100.0f
 				)
 			);
 		}

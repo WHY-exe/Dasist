@@ -10,7 +10,7 @@ class App
 {
 public:
 	App();
-	int Run();	
+	WPARAM Run();	
 private:
 	void DoFrame();
 	void DoWinLogic();
@@ -23,6 +23,7 @@ private:
 private:
 	// user data
 	Scene::Model model1;
+	Scene::Model model2;
 	Camera cam;
 	PointLight pointLight;
 	GlobalLight gLight;

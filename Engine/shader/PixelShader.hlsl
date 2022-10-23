@@ -1,4 +1,4 @@
-cbuffer pointLightCBuf
+cbuffer pointLightCBuf : register(b0)
 {
     float3 plightPos;
     float3 pDiffuseColor;
@@ -7,19 +7,21 @@ cbuffer pointLightCBuf
     float pAttLinear;
     float pAttQuad;
 }
-cbuffer OBJCBuf
+
+cbuffer GlobalLightCBuf : register(b1)
+{
+    float3 glightPos;
+    float3 gDiffuseColor;
+    float gDiffuseIntensity;
+}
+    
+cbuffer OBJCBuf : register(b2)
 {
     float3 ambient;
     float specular_intensity;
     float specular_pow;
 };
 
-cbuffer GlobalLightCBuf
-{
-    float3 glightPos;
-    float3 gDiffuseColor;
-    float gDiffuseIntensity;
-}
 
 float4 main(float2 tc : Tex2D, float3 worldPos : Position3D, float3 camPos : CamPos, float3 fn : Normal) : SV_Target
 {

@@ -122,9 +122,6 @@
     <ClCompile Include="src\App.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\vendor\OBJ_Loader.cpp">
-      <Filter>第三方库</Filter>
-    </ClCompile>
     <ClCompile Include="src\Vertex.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -223,9 +220,6 @@
     <ClInclude Include="src\ImguiManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\vendor\OBJ_Loader.h">
-      <Filter>第三方库</Filter>
-    </ClInclude>
     <ClInclude Include="src\vendor\stb\stb_image.h">
       <Filter>第三方库</Filter>
     </ClInclude>
@@ -286,6 +280,12 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="shader\TexPSSpec.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\PSTexNorm.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\VSTexNorm.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

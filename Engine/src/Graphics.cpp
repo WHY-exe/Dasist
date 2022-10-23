@@ -13,7 +13,7 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
 {
     // create a swap chain descripter
     DXGI_SWAP_CHAIN_DESC sd = {};
-    sd.BufferCount = 1;
+    sd.BufferCount = 2;
     sd.BufferDesc.Width = 0;
     sd.BufferDesc.Height = 0;
     sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -28,7 +28,7 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
     sd.SampleDesc.Count = 1;
     sd.SampleDesc.Quality = 0;
     sd.Windowed = TRUE;
-    sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+    sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     sd.Flags = 0;
     // determine wether it is on debug mod
     unsigned int swapChainCreateFlags = 0u;
@@ -51,7 +51,7 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
         nullptr,
         &m_pContext
     ));
-    CreateRenderTarget();
+    GetBackBufferAndCreateRenderTarget();
 
     CreateAndSetStencilDepthView(nWinWidth, nWinHeight);
 
@@ -80,7 +80,7 @@ void Graphics::SetCamera(DirectX::FXMMATRIX cam) noexcept
     m_camTransform = cam;
 }
 
-void Graphics::CreateRenderTarget()
+void Graphics::GetBackBufferAndCreateRenderTarget()
 {
     INIT_GFX_EXCEPTION;
     Microsoft::WRL::ComPtr<ID3D11Resource> pBackResource;
@@ -173,9 +173,10 @@ void Graphics::BeginFrame()
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
-    const float color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    const float color[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
     m_pContext->ClearRenderTargetView(m_pTarget.Get(), color);
     m_pContext->ClearDepthStencilView(m_pDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
+    m_pContext->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), m_pDSV.Get());
 }
 
 

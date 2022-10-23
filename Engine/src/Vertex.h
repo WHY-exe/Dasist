@@ -27,7 +27,9 @@ namespace Vertex {
 			Normal,
 			Float3Color,
 			Float4Color,
-			Byte4Color
+			Byte4Color,
+			Tangent,
+			Bitangent
 		};
 		template <ElementType type> struct Map;
 
@@ -59,7 +61,20 @@ namespace Vertex {
 			static constexpr const char* semantic = "Normal";
 			static constexpr const char* code = "N";
 		};
-
+		template<> struct Map<Tangent>
+		{
+			using SysType = DirectX::XMFLOAT3;
+			static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+			static constexpr const char* semantic = "Tangent";
+			static constexpr const char* code = "Nt";
+		};
+		template<> struct Map<Bitangent>
+		{
+			using SysType = DirectX::XMFLOAT3;
+			static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+			static constexpr const char* semantic = "Bitangent";
+			static constexpr const char* code = "Nb";
+		};
 		template <> struct Map<Float3Color>
 		{
 			using SysType = DirectX::XMFLOAT3;
@@ -146,6 +161,12 @@ namespace Vertex {
 				break;
 			case Layout::Normal:
 				SetAttribute<Layout::Normal>(pAttribute, std::forward<T>(val));
+				break;
+			case Layout::Bitangent:
+				SetAttribute<Layout::Bitangent>(pAttribute, std::forward<T>(val));
+				break;
+			case Layout::Tangent:
+				SetAttribute<Layout::Tangent>(pAttribute, std::forward<T>(val));
 				break;
 			case Layout::Float4Color:
 				SetAttribute<Layout::Float4Color>(pAttribute, std::forward<T>(val));

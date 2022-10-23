@@ -14,8 +14,8 @@ public:
 	public:
 		GfxExcepion(int nLine, const char* szFile, HRESULT hr, std::vector<std::string> v_szMsg);
 		GfxExcepion(int nLine, const char* szFile, HRESULT hr);
-		virtual const char* what() const noexcept override;
-		virtual const char* GetType() const noexcept override;
+		const char* what() const noexcept override;
+		const char* GetType() const noexcept override;
 		std::string GetErrorInfo() const noexcept;
 	private:
 		std::string m_info;
@@ -24,8 +24,8 @@ public:
 	{
 	public:
 		GfxInfoOnlyException(int nLine, const char* szFile, std::vector<std::string>& v_szInfo);
-		virtual const char* what() const noexcept override;
-		virtual const char* GetType() const noexcept override;
+		const char* what() const noexcept override;
+		const char* GetType() const noexcept override;
 		std::string GetErrorInfo() const noexcept;
 	private:
 		std::string m_szInfo;
@@ -44,7 +44,7 @@ public:
 	void BeginFrame();
 	void EndFrame();
 public:
-	void CreateRenderTarget();
+	void GetBackBufferAndCreateRenderTarget();
 	void CreateAndSetViewPort(int nWinWidth = 0, int nWinHeight = 0);
 	void CreateAndSetStencilDepthView(int nWinWidth = 0, int nWinHeight = 0);
 	void ResizeFrameBuffer(UINT bufferWidth, UINT bufferHeight);

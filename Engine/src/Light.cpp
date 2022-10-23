@@ -54,7 +54,7 @@ GlobalLight::GlobalLight(Graphics& gfx)
 	:
 	m_pos(0.0f, 10.0f, 0.0f),
 	m_rot(0.0f, 0.0f, 0.0f),
-	m_PSCbuf(gfx, 2u)
+	m_PSCbuf(gfx, 1u)
 {
 }
 

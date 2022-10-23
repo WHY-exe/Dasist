@@ -152,7 +152,9 @@ Scene::Model::Model(Graphics& gfx,RenderOption& option)
 	const aiScene* pScene = importer.ReadFile(
 		option.szModelPath,
 		aiProcess_Triangulate |
-		aiProcess_JoinIdenticalVertices
+		aiProcess_JoinIdenticalVertices |
+		aiProcess_GenNormals |
+		aiProcess_CalcTangentSpace
 	);
 	if (pScene == nullptr)
 	{
@@ -177,6 +179,8 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		.Append(Vertex::Layout::Position3D)
 		.Append(Vertex::Layout::Normal)
 		.Append(Vertex::Layout::Tex2D)
+		.Append(Vertex::Layout::Tangent)
+		.Append(Vertex::Layout::Bitangent)
 	);
 	float shininess = 30.0f;
 
@@ -197,6 +201,13 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexPath), 1));
 			option.szPSPath = L"res\\cso\\TexPSSpec.cso";
 		}
+		if (material.GetTexture(aiTextureType_NORMALS, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
+		{
+			std::string szTexPath = "./res/model/"s + texPath.C_Str();
+			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexPath), 2));
+			option.szPSPath = L"res\\cso\\PSTexNorm.cso";
+			option.szVSPath = L"res\\cso\\VSTexNorm.cso";
+		}
 		else {
 			material.Get(AI_MATKEY_SHININESS, shininess);
 		}
@@ -208,7 +219,9 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		vtxb.EmplaceBack(
 			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mVertices[i]),
 			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mNormals[i]),
-			*reinterpret_cast<DirectX::XMFLOAT2*>(&mesh.mTextureCoords[0][i])
+			*reinterpret_cast<DirectX::XMFLOAT2*>(&mesh.mTextureCoords[0][i]),
+			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mTangents[i]),
+			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mBitangents[i])
 		);
 	}
 	binds.emplace_back(VertexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), vtxb));
@@ -238,7 +251,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		float specular_pow = 30.0f;
 	} mcb;
 	mcb.specular_pow = shininess;
-	binds.emplace_back(PixelConstantBuffer<ModelCBuffer>::Resolve(gfx, mcb, 1u)); 
+	binds.emplace_back(PixelConstantBuffer<ModelCBuffer>::Resolve(gfx, mcb, 2u)); 
 	return std::make_unique<Mesh>(gfx, binds);
 }
 

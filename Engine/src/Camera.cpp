@@ -4,7 +4,7 @@
 #include <algorithm>
 Camera::Camera()
 	:
-	m_pos(0.0f, 0.0f, -10.0f),
+	m_pos(0.0f, 12.0f, -25.0f),
 	m_rot(0.0f, 0.0f, 0.0f)
 {
 }
@@ -34,12 +34,18 @@ void Camera::Translate(float dx, float dy, float dz)
 {
 	using namespace DirectX;
 	DirectX::XMVECTOR delta_pos = {dx, dy, dz};
-	const DirectX::XMVECTOR lookVec = DirectX::XMVector3Transform(
+	// 如果不想让摄像机的前进方向随视角上下移动改变，只需将m_rot.x, 替换为0.0f即可
+	const DirectX::XMVECTOR delta_lookVec = DirectX::XMVector3Transform(
 		delta_pos, DirectX::XMMatrixRotationRollPitchYaw(m_rot.x, m_rot.y, 0.0f)
 	);
 	DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&m_pos);
-	pos += lookVec;
+	pos += delta_lookVec;
 	DirectX::XMStoreFloat3(&m_pos, pos);
+}
+
+bool Camera::MouseStatus() const noexcept
+{
+	return m_hideMouse;
 }
 
 DirectX::XMMATRIX Camera::GetFPMatrix() const
@@ -78,7 +84,7 @@ void Camera::SpwanControlWindow()
 		ImGui::Text("Angle");
 		if (m_bView)
 		{
-			ImGui::SliderAngle("AngleX", &m_rot.x, 0.995 * -90.0f, 0.995 * 90.0f, "%.1f");
+			ImGui::SliderAngle("AngleX", &m_rot.x, 0.995f * -90.0f, 0.995f * 90.0f, "%.1f");
 			ImGui::SliderAngle("AngleY", &m_rot.y, -180.0f, 180.0f, "%.1f");
 		}
 		else
@@ -92,13 +98,36 @@ void Camera::SpwanControlWindow()
 			m_bView = true;
 			m_rot = { 0.0f, 0.0f ,0.0f };
 		}
+		
 		if (ImGui::Button("Thrid Person View"))
 		{
 			m_bView = false;
 			m_rot = { 0.0f, 0.0f ,0.0f };
 		}
+		if (!m_hideMouse)
+		{
+			if (ImGui::Button("Hide Mouse"))
+			{
+				HideMouse();
+			}
+		}
+		else
+		{
+			ImGui::Text("Press escape to go back to ctrl mod");
+		}
+		
 	}
 	ImGui::End();
 
+}
+
+void Camera::HideMouse() noexcept
+{
+	m_hideMouse = true;
+}
+
+void Camera::ShowMouse() noexcept
+{
+	m_hideMouse = false;
 }
 

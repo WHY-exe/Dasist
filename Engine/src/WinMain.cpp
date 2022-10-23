@@ -14,7 +14,7 @@ int WINAPI WinMain(
 	// ADD_CONSOLE();
 	try
 	{
-		return App{}.Run();
+		return (int)App{}.Run();
 	}
 	catch (const Exception& e)
 	{

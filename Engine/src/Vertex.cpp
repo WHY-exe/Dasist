@@ -48,6 +48,11 @@ constexpr size_t Vertex::Layout::Element::SizeOf(ElementType type) noexcept(!IS_
 	case ElementType::Float4Color:
 		return sizeof(Map<Float4Color>::SysType);
 		break;
+		return sizeof(Map<Normal>::SysType);
+	case ElementType::Tangent:
+		return sizeof(Map<Tangent>::SysType);
+	case ElementType::Bitangent:
+		return sizeof(Map<Bitangent>::SysType);
 	case ElementType::Byte4Color:
 		return sizeof(Map<Byte4Color>::SysType);
 		break;
@@ -60,22 +65,26 @@ D3D11_INPUT_ELEMENT_DESC Vertex::Layout::Element::GetLayoutDesc() const noexcept
 {
 	switch (m_type)
 	{
-	case Position2D:
+	case ElementType::Position2D:
 		return GenDesc<Position2D>(m_offset);
 		break;
-	case Position3D:
+	case ElementType::Position3D:
 		return GenDesc<Position3D>(m_offset);
 		break;
-	case Tex2D:
+	case ElementType::Tex2D:
 		return GenDesc<Tex2D>(m_offset);
 		break;
 	case Normal:
 		return GenDesc<Normal>(m_offset);
 		break;
-	case Float3Color:
+	case ElementType::Tangent:
+		return GenDesc<Tangent>(m_offset);
+	case ElementType::Bitangent:
+		return GenDesc<Bitangent>(m_offset);
+	case ElementType::Float3Color:
 		return GenDesc<Float3Color>(m_offset);
 		break;
-	case Float4Color:
+	case ElementType::Float4Color:
 		return GenDesc<Float4Color>(m_offset);
 		break;
 	case Byte4Color:
@@ -100,6 +109,10 @@ const char* Vertex::Layout::Element::GetCode() const noexcept
 		return Map<Normal>::code;
 	case Float3Color:
 		return Map<Float3Color>::code;
+	case ElementType::Tangent:
+		return Map<Tangent>::code;
+	case ElementType::Bitangent:
+		return Map<Bitangent>::code;
 	case Float4Color:
 		return Map<Float4Color>::code;
 	case Byte4Color:

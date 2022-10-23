@@ -15,6 +15,7 @@ void TransformCbuf::Bind(Graphics& gfx) noexcept
 	const Transform tf =
 	{
 		DirectX::XMMatrixTranspose(m_parent.GetTransformXM()),
+		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * gfx.GetProjection()),
 		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * gfx.GetCamera()),
 		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * gfx.GetCamera() * gfx.GetProjection())
 	};

@@ -20,7 +20,7 @@ public:
 	~Window();
 	void SetWindowTitle(std::wstring szTitle);
 	// c++17 required
-	static std::optional<UINT> RunWindow();
+	static std::optional<WPARAM> RunWindow();
 	Graphics& GetGfx();
 public:
 	int GetWindowWidth() const;

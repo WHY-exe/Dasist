@@ -1,8 +1,9 @@
-cbuffer CBuf
-{	
-	matrix modelWorldView;
+cbuffer CBuf : register(b0)
+{
+    matrix modelWorldView;
+    matrix modelWorldProjView;
     matrix modelCamView;
-	matrix modelProjView;
+    matrix modelProjView;
 };
 
 struct VSOut

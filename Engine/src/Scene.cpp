@@ -14,6 +14,7 @@
 #include <stdexcept>
 #include "imgui.h"
 #include "StrTransf.h"
+#include "VS_PS_TFCB.h"
 #ifndef NDEBUG
 #pragma comment(lib, "assimp-vc142-mtd.lib")
 #else
@@ -153,6 +154,7 @@ Scene::Model::Model(Graphics& gfx,RenderOption& option)
 		option.szModelPath,
 		aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices |
+		aiProcess_ConvertToLeftHanded |
 		aiProcess_GenNormals |
 		aiProcess_CalcTangentSpace
 	);
@@ -186,6 +188,9 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 
 	if (mesh.mMaterialIndex >= 0)
 	{
+		bool hasNormal = false, hasTex = false, hasSpec = false;
+		std::wstring szPSPath = L"res\\cso\\PS";
+		std::wstring szVSPath = L"res\\cso\\VSTex";
 		using namespace std::string_literals;
 		auto& material = *pMaterial[mesh.mMaterialIndex];
 		aiString texPath;
@@ -193,24 +198,40 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		{
 			std::string szTexPath = "./res/model/"s + texPath.C_Str();
 			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexPath)));
-			option.szPSPath = L"res\\cso\\TexPS.cso";
+			hasTex = true;
 		}
 		if (material.GetTexture(aiTextureType_SPECULAR, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
 		{
 			std::string szTexPath = "./res/model/"s + texPath.C_Str();
 			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexPath), 1));
-			option.szPSPath = L"res\\cso\\TexPSSpec.cso";
+			hasSpec = true;
 		}
 		if (material.GetTexture(aiTextureType_NORMALS, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
 		{
 			std::string szTexPath = "./res/model/"s + texPath.C_Str();
 			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexPath), 2));
-			option.szPSPath = L"res\\cso\\PSTexNorm.cso";
-			option.szVSPath = L"res\\cso\\VSTexNorm.cso";
+			hasNormal = true;
 		}
 		else {
 			material.Get(AI_MATKEY_SHININESS, shininess);
 		}
+		if (hasTex)
+		{
+			szPSPath += L"Tex";
+		}
+		if (hasSpec)
+		{
+			szPSPath += L"Spec";
+		}
+		if (hasNormal)
+		{
+			szPSPath += L"Norm";
+			szVSPath += L"Norm";
+		}
+		szPSPath += L".cso";
+		szVSPath += L".cso";
+		option.szPSPath = szPSPath;
+		option.szVSPath = szVSPath;
 		binds.emplace_back(Sampler::Resolve(gfx));
 	}
 
@@ -248,7 +269,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 	{
 		alignas(16) DirectX::XMFLOAT3 m_Ambient = { 0.45f, 0.45f, 0.45f };
 		float specular_intesity = 0.6f;
-		float specular_pow = 30.0f;
+		float specular_pow = 20.0f;
 	} mcb;
 	mcb.specular_pow = shininess;
 	binds.emplace_back(PixelConstantBuffer<ModelCBuffer>::Resolve(gfx, mcb, 2u)); 

@@ -12,14 +12,20 @@ TransformCbuf::TransformCbuf(Graphics& gfx, const Drawable& parent, UINT slot)
 
 void TransformCbuf::Bind(Graphics& gfx) noexcept
 {
-	const Transform tf =
+	UpdateBindImpl(gfx, GetTransform(gfx));
+	s_vcbuf->Bind(gfx);
+}
+TransformCbuf::Transform TransformCbuf::GetTransform(Graphics& gfx) const noexcept
+{
+	return
 	{
 		DirectX::XMMatrixTranspose(m_parent.GetTransformXM()),
-		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * gfx.GetProjection()),
 		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * gfx.GetCamera()),
 		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * gfx.GetCamera() * gfx.GetProjection())
-	};
-
+	};;
+}
+void TransformCbuf::UpdateBindImpl(Graphics& gfx, const Transform& tf) const noexcept
+{
 	s_vcbuf->Update(gfx, tf);
 	s_vcbuf->Bind(gfx);
 }

@@ -131,6 +131,9 @@
     <ClCompile Include="src\StrTransf.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\VS_PS_TFCB.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Console.h">
@@ -265,27 +268,33 @@
     <ClInclude Include="src\BindableCodex.h">
       <Filter>Bindable</Filter>
     </ClInclude>
+    <ClInclude Include="src\VS_PS_TFCB.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="shader\PixelShader.hlsl">
+    <FxCompile Include="shader\PS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="shader\TexVS.hlsl">
+    <FxCompile Include="shader\VSTex.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="shader\TexPS.hlsl">
+    <FxCompile Include="shader\PSTex.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="shader\lightBall.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="shader\TexPSSpec.hlsl">
+    <FxCompile Include="shader\PSTexSpec.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="shader\PSTexNorm.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="shader\VSTexNorm.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\PSTexSpecNorm.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

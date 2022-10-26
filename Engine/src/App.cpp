@@ -42,14 +42,14 @@ void App::DoFrame()
 {
 	m_gfx.BeginFrame();
 	//
-	m_gfx.SetCamera(cam.GetMatrix());
-	gLight.Update(m_gfx);
-	gLight.SpwanControlWindow();
-	pointLight.Update(m_gfx);
-	pointLight.Draw(m_gfx);
-	pointLight.SpwanControlWindow();
-	
 	cam.SpwanControlWindow();
+	m_gfx.SetCamera(cam.GetMatrix());
+	gLight.SpwanControlWindow();
+	gLight.Update(m_gfx, cam.GetMatrix());
+	pointLight.SpwanControlWindow();
+	pointLight.Update(m_gfx, cam.GetMatrix());
+	pointLight.Draw(m_gfx);
+	
 	//model1.Draw(m_gfx);
 	//model1.SpwanControlWindow();
 	model2.Draw(m_gfx);

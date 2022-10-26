@@ -12,12 +12,15 @@ PointLight::PointLight(Graphics& gfx)
 	m_lightBall.Scale(0.003f);
 }
 
-void PointLight::Update(Graphics& gfx) noexcept
+void PointLight::Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept
 {
+	const auto worPos = DirectX::XMLoadFloat3(&m_pos);
+	DirectX::XMFLOAT3 ViewPos;
+	DirectX::XMStoreFloat3(&ViewPos, DirectX::XMVector3Transform(worPos, viewTF));
 	m_PSCbuf.Update(
 		gfx, 
 		PointLightCBuffer(
-			m_pos,
+			ViewPos,
 			m_diffuseColor,
 			m_diffuseIntensity,
 			m_attConst,
@@ -58,12 +61,15 @@ GlobalLight::GlobalLight(Graphics& gfx)
 {
 }
 
-void GlobalLight::Update(Graphics& gfx) noexcept
+void GlobalLight::Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept
 {
+	const auto worPos = DirectX::XMLoadFloat3(&m_pos);
+	DirectX::XMFLOAT3 ViewPos;
+	DirectX::XMStoreFloat3(&ViewPos, DirectX::XMVector3Transform(worPos, viewTF));
 	m_PSCbuf.Update(
 		gfx,
 		GlobalLightCBuffer(
-			m_pos,
+			ViewPos,
 			m_diffuseColor,
 			m_diffuseIntensity
 		)

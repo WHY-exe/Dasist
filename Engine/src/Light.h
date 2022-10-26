@@ -17,7 +17,7 @@ private:
 	};
 public:
 	PointLight(Graphics& gfx);
-	void Update(Graphics& gfx) noexcept;
+	void Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept;
 	void SpwanControlWindow() noexcept;
 	void Draw(Graphics& gfx) noexcept;
 private:
@@ -42,7 +42,7 @@ private:
 	};
 public:
 	GlobalLight(Graphics& gfx);
-	void Update(Graphics& gfx) noexcept;
+	void Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept;
 	void SpwanControlWindow() noexcept;
 private:
 	DirectX::XMFLOAT3 m_pos;

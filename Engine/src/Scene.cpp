@@ -182,7 +182,6 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		.Append(Vertex::Layout::Normal)
 		.Append(Vertex::Layout::Tex2D)
 		.Append(Vertex::Layout::Tangent)
-		.Append(Vertex::Layout::Bitangent)
 	);
 	float shininess = 30.0f;
 
@@ -241,8 +240,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mVertices[i]),
 			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mNormals[i]),
 			*reinterpret_cast<DirectX::XMFLOAT2*>(&mesh.mTextureCoords[0][i]),
-			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mTangents[i]),
-			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mBitangents[i])
+			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mTangents[i])
 		);
 	}
 	binds.emplace_back(VertexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), vtxb));

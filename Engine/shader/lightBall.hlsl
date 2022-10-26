@@ -1,9 +1,4 @@
-cbuffer pointLightCBuf : register(b0)
-{
-    float3 plightPos;
-    float3 pDiffuseColor;
-}
-
+#include "PSBase.hlsli"
 
 
 float4 main() : SV_TARGET

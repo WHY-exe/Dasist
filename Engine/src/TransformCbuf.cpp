@@ -19,7 +19,6 @@ TransformCbuf::Transform TransformCbuf::GetTransform(Graphics& gfx) const noexce
 {
 	return
 	{
-		DirectX::XMMatrixTranspose(m_parent.GetTransformXM()),
 		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * gfx.GetCamera()),
 		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * gfx.GetCamera() * gfx.GetProjection())
 	};;

@@ -179,6 +179,8 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="shader\PSBase.hlsli" />
+    <None Include="shader\VSBase.hlsli" />
     <None Include="res\DirectXFrame.aps" />
   </ItemGroup>
   <ItemGroup>

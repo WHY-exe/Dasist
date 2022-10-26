@@ -302,6 +302,12 @@
     <None Include="res\DirectXFrame.aps">
       <Filter>res</Filter>
     </None>
+    <None Include="shader\VSBase.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shader\PSBase.hlsli">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\DirectXFrame.rc">

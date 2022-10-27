@@ -9,13 +9,13 @@ float4 main(VSOut vso) : SV_Target
     LightComponent gLight = GetLight(
          gLightViewPos, vso.ViewPos, ViewNormal,
          gDiffuseColor, gDiffuseIntensity,
-         SpecularPower, 1.0f
+         SpecularPower, 0.1f
     );
     LightComponent pLight = GetLight(
         pLightViewPos, vso.ViewPos, ViewNormal,
         pDiffuseColor, pDiffuseIntensity,
-        SpecularPower, 1.0f,
-        true, pAttConst, pAttLinear, pAttQuad
+        SpecularPower, 0.1f,
+        true, true, pAttConst, pAttLinear, pAttQuad
     );
-    return float4(saturate(gLight.Diffuse + pLight.Diffuse + ambient) * dmap.Sample(splr, vso.tc).rgb + (pLight.Specular + gLight.Specular) * SpecularReflectionColor, 1.0f);
+    return float4(saturate(gLight.Diffuse + pLight.Diffuse) * ambient * dmap.Sample(splr, vso.tc).rgb + (pLight.Specular + gLight.Specular) * SpecularReflectionColor, 1.0f);
 }

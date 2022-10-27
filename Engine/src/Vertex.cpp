@@ -48,11 +48,12 @@ constexpr size_t Vertex::Layout::Element::SizeOf(ElementType type) noexcept(!IS_
 	case ElementType::Float4Color:
 		return sizeof(Map<Float4Color>::SysType);
 		break;
-		return sizeof(Map<Normal>::SysType);
 	case ElementType::Tangent:
 		return sizeof(Map<Tangent>::SysType);
+		break;
 	case ElementType::Bitangent:
 		return sizeof(Map<Bitangent>::SysType);
+		break;
 	case ElementType::Byte4Color:
 		return sizeof(Map<Byte4Color>::SysType);
 		break;
@@ -79,8 +80,10 @@ D3D11_INPUT_ELEMENT_DESC Vertex::Layout::Element::GetLayoutDesc() const noexcept
 		break;
 	case ElementType::Tangent:
 		return GenDesc<Tangent>(m_offset);
+		break;
 	case ElementType::Bitangent:
 		return GenDesc<Bitangent>(m_offset);
+		break;
 	case ElementType::Float3Color:
 		return GenDesc<Float3Color>(m_offset);
 		break;

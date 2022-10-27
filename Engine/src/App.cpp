@@ -15,7 +15,7 @@ App::App()
 	gLight(m_gfx)
 {
 	Scene::RenderOption op1;
-	op1.szModelPath = "res\\model\\nanosuit.obj";
+	op1.szModelPath = "res\\model\\lumie.pmx";
 	op1.szModelName = "nano";
 	model1 = Scene::Model(m_gfx, op1);
 	Scene::RenderOption op2;
@@ -50,8 +50,8 @@ void App::DoFrame()
 	pointLight.Update(m_gfx, cam.GetMatrix());
 	pointLight.Draw(m_gfx);
 	
-	//model1.Draw(m_gfx);
-	//model1.SpwanControlWindow();
+	model1.Draw(m_gfx);
+	model1.SpwanControlWindow();
 	model2.Draw(m_gfx);
 	model2.SpwanControlWindow();
 	//

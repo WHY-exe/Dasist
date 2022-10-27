@@ -16,6 +16,22 @@ struct LightComponent
     float3 Diffuse : Diffuse;
     float3 Specular : Specular;
 };
+struct LightAttri
+{
+    float3 lightViewPos;
+    float3 VertexPos;
+    float3 VertexNormal;
+    float3 DiffuseColor;
+    float3 DiffuseIntensity;
+    float SpecularPow;
+    bool enableAtt;
+    bool enableSpecMap;
+    float SpecularIntensity;
+    float AttConst;
+    float AttLinear;
+    float AttQuad;
+};
+
 
 cbuffer pointLightCBuf : register(b0)
 {
@@ -48,7 +64,8 @@ float3 GenNormal(
     float3 tangent
 )
 {
-    float3 normalT = SampleNormal * 2.0f - 1.0f;
+    float3 normalT = normalize(SampleNormal * 2.0f - 1.0f);
+    normalT.z = -normalT.z;
     tangent = normalize(unitNormal.xyz - dot(tangent.xyz, unitNormal) * unitNormal);
     float3 bitangent = cross(unitNormal, tangent);
     float3x3 TBN = float3x3(tangent, bitangent, unitNormal);
@@ -64,6 +81,7 @@ LightComponent GetLight(
     float SpecularIntensity,
     float SpecularPow,
     bool enableAtt = false,
+    bool enableSpecMap = false,
     float AttConst = 1.0f,
     float AttLinear = 0.0f,
     float AttQuad = 0.0f
@@ -75,20 +93,31 @@ LightComponent GetLight(
 	// distance between the obj to the light source
     const float distToLight = length(vToLight);
 	// Norm vector of the obj to the light source
-    const float3 dirToLight = normalize(vToLight);
+    const float3 dirToLight = vToLight / distToLight;
 	// the vector take part in the dot product caculation is the unity vector
 	// so the result is the cos(theta) between the two vector
     float3 Diffuse = DiffuseColor * DiffuseIntensity * max(0.0f, dot(dirToLight, VertexNormal));
     if (enableAtt)
     {
         const float att = 1.0f / (AttConst + AttLinear * distToLight + AttQuad * (distToLight * distToLight));
-        Diffuse = Diffuse * att;
+        Diffuse *= att;
     }
     // the reflection vector
     const float3 r = 2.0f * VertexNormal * dot(vToLight, VertexNormal) - vToLight;
-    const float3 Specular = Diffuse * SpecularIntensity * pow(max(0.0f, dot(normalize(-r), normalize(VertexPos))), SpecularPow);
+    float3 Specular = Diffuse * pow(max(0.0f, dot(normalize(-r), normalize(VertexPos))), SpecularPow);
+    if (!enableSpecMap)
+    {
+        Specular *= SpecularIntensity;
 
+    }
     lc.Diffuse = Diffuse;
     lc.Specular = Specular;
     return lc;
+};
+
+LightComponent GetLight( LightAttri la)
+{
+    return GetLight(la.lightViewPos, la.VertexPos, la.VertexNormal,
+    la.DiffuseColor, la.DiffuseIntensity, la.SpecularIntensity, la.SpecularPow,
+    la.enableAtt, la.enableSpecMap, la.AttConst, la.AttLinear, la.AttQuad);
 };

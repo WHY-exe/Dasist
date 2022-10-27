@@ -189,10 +189,10 @@ namespace Vertex {
 			SetAttributeByIndex(i, std::forward<First>(first));
 			SetAttributeByIndex(i + 1, std::forward<Rest>(rest)...);
 		}
-		template <Layout::ElementType DestLayouType, typename Src>
+		template <Layout::ElementType DestLayoutType, typename Src>
 		void SetAttribute(char* pAttribute, Src&& val) noexcept(!IS_DEBUG)
 		{
-			using Dest = Layout::Map<DestLayouType>::SysType;
+			using Dest = Layout::Map<DestLayoutType>::SysType;
 			if constexpr (std::is_assignable<Dest, Src>::value)
 			{
 				*reinterpret_cast<Dest*>(pAttribute) = val;

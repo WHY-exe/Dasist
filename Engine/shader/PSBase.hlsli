@@ -65,11 +65,10 @@ float3 GenNormal(
 )
 {
     float3 normalT = normalize(SampleNormal * 2.0f - 1.0f);
-    normalT.z = -normalT.z;
-    tangent = normalize(unitNormal.xyz - dot(tangent.xyz, unitNormal) * unitNormal);
+    tangent = normalize(unitNormal - dot(tangent, unitNormal) * unitNormal);
     float3 bitangent = cross(unitNormal, tangent);
     float3x3 TBN = float3x3(tangent, bitangent, unitNormal);
-    return mul(normalT, TBN);
+    return normalize(mul(normalT, TBN));
 };
 
 LightComponent GetLight(
@@ -79,9 +78,9 @@ LightComponent GetLight(
     float3 DiffuseColor,
     float3 DiffuseIntensity,
     float SpecularIntensity,
-    float SpecularPow,
-    bool enableAtt = false,
+    float SpecularPow,    
     bool enableSpecMap = false,
+    bool enableAtt = false,
     float AttConst = 1.0f,
     float AttLinear = 0.0f,
     float AttQuad = 0.0f
@@ -117,7 +116,11 @@ LightComponent GetLight(
 
 LightComponent GetLight( LightAttri la)
 {
-    return GetLight(la.lightViewPos, la.VertexPos, la.VertexNormal,
+    if (! la.enableAtt )
+        return GetLight(la.lightViewPos, la.VertexPos, la.VertexNormal,
     la.DiffuseColor, la.DiffuseIntensity, la.SpecularIntensity, la.SpecularPow,
-    la.enableAtt, la.enableSpecMap, la.AttConst, la.AttLinear, la.AttQuad);
+    la.enableSpecMap, la.enableAtt,  la.AttConst, la.AttLinear, la.AttQuad);
+    else
+        return GetLight(la.lightViewPos, la.VertexPos, la.VertexNormal,
+    la.DiffuseColor, la.DiffuseIntensity, la.SpecularIntensity, la.SpecularPow, la.enableSpecMap);
 };

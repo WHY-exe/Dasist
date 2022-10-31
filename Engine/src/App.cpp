@@ -15,12 +15,12 @@ App::App()
 	gLight(m_gfx)
 {
 	Scene::RenderOption op1;
-	op1.szModelPath = "res\\model\\nano.obj";
-	op1.szModelName = "nano";
+	op1.szModelPath = "res\\model\\GoblinX.obj";
+	op1.szModelName = "Gobber";
 	model1 = Scene::Model(m_gfx, op1);
 	Scene::RenderOption op2;
 	op2.szModelPath = "res\\model\\plain.obj";
-	op2.szModelName = "brick_wall";
+	op2.szModelName = "plain_brick_wall";
 	model2 = Scene::Model(m_gfx, op2);
 }
 
@@ -49,7 +49,7 @@ void App::DoFrame()
 	pointLight.SpwanControlWindow();
 	pointLight.Update(m_gfx, cam.GetMatrix());
 	pointLight.Draw(m_gfx);
-	
+	//
 	model1.Draw(m_gfx);
 	model1.SpwanControlWindow();
 	

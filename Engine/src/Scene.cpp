@@ -184,10 +184,12 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		.Append(Vertex::Layout::Tangent)
 	);
 	float shininess = 30.0f;
-
+	DirectX::XMFLOAT4 specColor = { 0.18f,0.18f,0.18f,1.0f };
+	DirectX::XMFLOAT4 diffuseColor = { 0.45f,0.45f,0.85f,1.0f };
 	if (mesh.mMaterialIndex >= 0)
 	{
 		bool hasNormal = false, hasTex = false, hasSpec = false;
+		
 		std::wstring szPSPath = L"res\\cso\\PS";
 		std::wstring szVSPath = L"res\\cso\\VSTex";
 		using namespace std::string_literals;
@@ -199,11 +201,19 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexPath)));
 			hasTex = true;
 		}
+		else
+		{
+			material.Get(AI_MATKEY_COLOR_DIFFUSE, reinterpret_cast<aiColor3D&>(diffuseColor));
+		}
 		if (material.GetTexture(aiTextureType_SPECULAR, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
 		{
 			std::string szTexPath = "./res/model/"s + texPath.C_Str();
 			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexPath), 1));
 			hasSpec = true;
+		}
+		else
+		{
+			material.Get(AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor3D&>(specColor));
 		}
 		if (material.GetTexture(aiTextureType_NORMALS, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
 		{
@@ -269,6 +279,8 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		float specular_intesity = 0.6f;
 		float specular_pow = 20.0f;
 	} mcb;
+	//mcb.m_Ambient = DirectX::XMFLOAT3(diffuseColor.x, diffuseColor.y, diffuseColor.z);
+	mcb.specular_intesity = (specColor.x + specColor.y + specColor.z) / 3.0f;
 	mcb.specular_pow = shininess;
 	binds.emplace_back(PixelConstantBuffer<ModelCBuffer>::Resolve(gfx, mcb, 2u)); 
 	return std::make_unique<Mesh>(gfx, binds);

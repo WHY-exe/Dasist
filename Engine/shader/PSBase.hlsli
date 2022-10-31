@@ -65,10 +65,11 @@ float3 GenNormal(
 )
 {
     float3 normalT = normalize(SampleNormal * 2.0f - 1.0f);
+    //normalT.z = -normalT.z;
     tangent = normalize(unitNormal - dot(tangent, unitNormal) * unitNormal);
     float3 bitangent = cross(unitNormal, tangent);
     float3x3 TBN = float3x3(tangent, bitangent, unitNormal);
-    return normalize(mul(normalT, TBN));
+    return mul(normalT, TBN);
 };
 
 LightComponent GetLight(

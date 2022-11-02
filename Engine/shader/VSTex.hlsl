@@ -1,6 +1,6 @@
 #include "VSBase.hlsli"
 
-VSOut main(float3 pos : Position3D, float3 fn : Normal, float2 tc : Tex2D)
+VSOut main(float3 pos : Position3D, float3 fn : Normal, float2 tc : Tex2D, float3 tan : Tangent)
 {
 	VSOut vso;
 	vso.tc = tc;	

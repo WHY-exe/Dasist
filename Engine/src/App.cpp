@@ -15,12 +15,12 @@ App::App()
 	gLight(m_gfx)
 {
 	Scene::RenderOption op1;
-	op1.szModelPath = "res\\model\\GoblinX.obj";
-	op1.szModelName = "Gobber";
+	op1.szModelPath = "res\\model\\nano.obj";
+	op1.szModelName = "Nano";
 	model1 = Scene::Model(m_gfx, op1);
 	Scene::RenderOption op2;
-	op2.szModelPath = "res\\model\\plain.obj";
-	op2.szModelName = "plain_brick_wall";
+	op2.szModelPath = "res\\model\\cube.obj";
+	op2.szModelName = "cube_brick_wall";
 	model2 = Scene::Model(m_gfx, op2);
 }
 
@@ -33,8 +33,8 @@ WPARAM App::Run()
 		{
 			return *ecode;
 		}
-		DoFrame();
 		DoWinLogic();
+		DoFrame();
 	}
 }
 
@@ -44,17 +44,18 @@ void App::DoFrame()
 	//
 	cam.SpwanControlWindow();
 	m_gfx.SetCamera(cam.GetMatrix());
-	gLight.SpwanControlWindow();
 	gLight.Update(m_gfx, cam.GetMatrix());
-	pointLight.SpwanControlWindow();
 	pointLight.Update(m_gfx, cam.GetMatrix());
+	
 	pointLight.Draw(m_gfx);
 	//
 	model1.Draw(m_gfx);
-	model1.SpwanControlWindow();
-	
 	model2.Draw(m_gfx);
+
+	model1.SpwanControlWindow();
 	model2.SpwanControlWindow();
+	gLight.SpwanControlWindow();
+	pointLight.SpwanControlWindow();
 	//
 	m_gfx.EndFrame();
 }

@@ -44,6 +44,9 @@ void PointLight::SpwanControlWindow() noexcept
 		ImGui::ColorEdit3("LightColor", &m_diffuseColor.x);
 		ImGui::Text("LightIntensity");
 		ImGui::SliderFloat("Intensity", &m_diffuseIntensity, 0.0f, 10.0f, "%.2f");
+		ImGui::SliderFloat("AttConst", &m_attConst, 0.0f, 2.0f, "%.1f");
+		ImGui::SliderFloat("AttLinear", &m_attLinear, 0.0f, 2.0f, "%.1f");
+		ImGui::SliderFloat("AttQuad", &m_attQuad, 0.0f, 2.0f, "%.1f");
 	}
 	ImGui::End();
 }

@@ -23,7 +23,9 @@
 
 
 
-Scene::Mesh::Mesh(Graphics& gfx, std::vector<std::shared_ptr<Bindable>>& binds)
+Scene::Mesh::Mesh(Graphics& gfx, ModelCBuffer& mcb, std::vector<std::shared_ptr<Bindable>>& binds)
+	:
+	m_PCBuffer(gfx, 2u)
 {
 	AddBind(Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 	for (auto& b : binds)
@@ -33,15 +35,22 @@ Scene::Mesh::Mesh(Graphics& gfx, std::vector<std::shared_ptr<Bindable>>& binds)
 	AddBind(std::make_shared<TransformCbuf>(gfx, *this));
 }
 
-void Scene::Mesh::Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) noexcept(!IS_DEBUG)
+void Scene::Mesh::Draw(Graphics& gfx, const ModelCBuffer& mcb, DirectX::FXMMATRIX accumulateTransform) noexcept(!IS_DEBUG)
 {
 	DirectX::XMStoreFloat4x4(&m_transform, accumulateTransform);
+	Update(gfx, mcb);
 	Drawable::Draw(gfx);
 }
 
 DirectX::XMMATRIX Scene::Mesh::GetTransformXM() const noexcept
 {
 	return DirectX::XMLoadFloat4x4(&m_transform);
+}
+
+void Scene::Mesh::Update(Graphics& gfx, const ModelCBuffer& mcb) noexcept
+{
+	m_PCBuffer.Update(gfx, mcb);
+	m_PCBuffer.Bind(gfx);
 }
 
 Scene::Node::Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform)
@@ -54,7 +63,7 @@ Scene::Node::Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMesh
 	DirectX::XMStoreFloat4x4(&m_AppliedTransform, DirectX::XMMatrixIdentity());
 }
 
-void Scene::Node::Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG)
+void Scene::Node::Draw(Graphics& gfx, const ModelCBuffer& mcb, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG)
 {
 	auto build = 
 		DirectX::XMLoadFloat4x4(&m_AppliedTransform) * 
@@ -62,11 +71,11 @@ void Scene::Node::Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) co
 		accumulateTransform;
 	for (const auto pm : m_pMeshes)
 	{
-		pm->Draw(gfx, build);
+		pm->Draw(gfx, mcb, build);
 	}
 	for (const auto& pc : m_pChilds)
 	{
-		pc->Draw(gfx, build);
+		pc->Draw(gfx, mcb, build);
 	}
 }
 
@@ -104,13 +113,14 @@ void Scene::Node::SetAppliedTransform(DirectX::XMMATRIX transform)
 	DirectX::XMStoreFloat4x4(&m_AppliedTransform, transform);
 }
 
-void Scene::Model::ModelWindow::Show(const char* WindowName, const Node& node) noexcept(!IS_DEBUG)
+void Scene::Model::ModelWindow::Show(const char* WindowName, const Node& node, ModelCBuffer& mcb) noexcept(!IS_DEBUG)
 {
 	int nodeIndexTracker = 0;
 	if (ImGui::Begin(WindowName))
 	{
 		ImGui::Columns(2, nullptr, true);
 		node.ShowTree(m_SelectedIndex, m_pSelectedNode);
+		ImGui::Checkbox("enable normal", reinterpret_cast<bool*>(&mcb.enNormal));
 		ImGui::NextColumn();
 		if (m_pSelectedNode != nullptr)
 		{
@@ -126,6 +136,7 @@ void Scene::Model::ModelWindow::Show(const char* WindowName, const Node& node) n
 			ImGui::Text("Scale");
 			ImGui::SliderFloat("Scale", &transform.scale, 0.0f, 1.0f, "%.3f");
 		}
+		
 	}
 	ImGui::End();
 }
@@ -165,7 +176,7 @@ Scene::Model::Model(Graphics& gfx,RenderOption& option)
 
 	for (unsigned int i = 0; i < pScene->mNumMeshes; i++)
 	{
-		m_pMeshes.emplace_back(ParseMesh(gfx, *pScene->mMeshes[i], option, pScene->mMaterials));		
+		m_pMeshes.emplace_back(ParseMesh(gfx, *pScene->mMeshes[i], option, pScene->mMaterials, m_CBuffer));
 	}
 	int next_id = 0;
 	m_pRoot = ParseNode(next_id, *pScene->mRootNode);
@@ -173,7 +184,7 @@ Scene::Model::Model(Graphics& gfx,RenderOption& option)
 	m_pWindow->m_transform.insert({ *(m_pWindow->m_SelectedIndex),  Model::ModelWindow::TransformParams{} });
 }
 
-std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, RenderOption& option, const aiMaterial* const* pMaterial)
+std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, RenderOption& option, const aiMaterial* const* pMaterial, ModelCBuffer& mcb)
 {
 	std::vector<std::shared_ptr<Bindable>> binds;
 	Vertex::DataBuffer vtxb(
@@ -273,17 +284,13 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 	binds.emplace_back(InputLayout::Resolve(gfx, vtxb.GetLayout(), pvsbc));
 	binds.emplace_back(PixelShader::Resolve(gfx, option.szPSPath));
 	
-	struct ModelCBuffer
-	{
-		alignas(16) DirectX::XMFLOAT3 m_Ambient = { 0.45f, 0.45f, 0.45f };
-		float specular_intesity = 0.6f;
-		float specular_pow = 20.0f;
-	} mcb;
+
 	//mcb.m_Ambient = DirectX::XMFLOAT3(diffuseColor.x, diffuseColor.y, diffuseColor.z);
-	mcb.specular_intesity = (specColor.x + specColor.y + specColor.z) / 3.0f;
-	mcb.specular_pow = shininess;
-	binds.emplace_back(PixelConstantBuffer<ModelCBuffer>::Resolve(gfx, mcb, 2u)); 
-	return std::make_unique<Mesh>(gfx, binds);
+	//mcb.enNormal = TRUE;
+	//mcb.specular_intesity = (specColor.x + specColor.y + specColor.z) / 3.0f;
+	//mcb.specular_pow = shininess;
+	//binds.emplace_back(std::make_shared<PixelConstantBuffer<ModelCBuffer>>(gfx, mcb, 2u)); 
+	return std::make_unique<Mesh>(gfx, mcb, binds);
 }
 
 std::unique_ptr<Scene::Node> Scene::Model::ParseNode(int& next_id, const aiNode& node)
@@ -300,7 +307,7 @@ std::unique_ptr<Scene::Node> Scene::Model::ParseNode(int& next_id, const aiNode&
 	}
 	std::unique_ptr<Node> pNode = std::make_unique<Node>(
 		next_id,
-		String2Utf8String(std::string(node.mName.C_Str())), 
+		ANSI_TO_UTF8_STR(std::string(node.mName.C_Str())), 
 		std::move(curMeshPtrs), transform);
 	for (UINT i = 0 ; i < node.mNumChildren; i++)
 	{
@@ -311,7 +318,8 @@ std::unique_ptr<Scene::Node> Scene::Model::ParseNode(int& next_id, const aiNode&
 
 void Scene::Model::SpwanControlWindow() noexcept
 {
-	m_pWindow->Show(m_szModelName.c_str(), *m_pRoot);
+	m_pWindow->Show(m_szModelName.c_str(), *m_pRoot, m_CBuffer);
+
 }
 
 void Scene::Model::Draw(Graphics& gfx) const
@@ -320,7 +328,8 @@ void Scene::Model::Draw(Graphics& gfx) const
 	{
 		pNode->SetAppliedTransform(m_pWindow->GetTransform());
 	}
-	m_pRoot->Draw(gfx, DirectX::XMMatrixIdentity());
+	
+	m_pRoot->Draw(gfx, m_CBuffer, DirectX::XMMatrixIdentity());
 }
 
 void Scene::Model::SetPos(float x, float y, float z) noexcept

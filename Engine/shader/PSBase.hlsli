@@ -56,6 +56,7 @@ cbuffer OBJCBuf : register(b2)
     float3 ambient;
     float specular_intensity;
     float specular_pow;
+    bool enNormal;
 };
 
 float3 GenNormal(
@@ -65,7 +66,6 @@ float3 GenNormal(
 )
 {
     float3 normalT = normalize(SampleNormal * 2.0f - 1.0f);
-    //normalT.z = -normalT.z;
     tangent = normalize(unitNormal - dot(tangent, unitNormal) * unitNormal);
     float3 bitangent = cross(unitNormal, tangent);
     float3x3 TBN = float3x3(tangent, bitangent, unitNormal);
@@ -97,11 +97,7 @@ LightComponent GetLight(
 	// the vector take part in the dot product caculation is the unity vector
 	// so the result is the cos(theta) between the two vector
     float3 Diffuse = DiffuseColor * DiffuseIntensity * max(0.0f, dot(dirToLight, VertexNormal));
-    if (enableAtt)
-    {
-        const float att = 1.0f / (AttConst + AttLinear * distToLight + AttQuad * (distToLight * distToLight));
-        Diffuse *= att;
-    }
+
     // the reflection vector
     const float3 r = 2.0f * VertexNormal * dot(vToLight, VertexNormal) - vToLight;
     float3 Specular = Diffuse * pow(max(0.0f, dot(normalize(-r), normalize(VertexPos))), SpecularPow);
@@ -109,6 +105,12 @@ LightComponent GetLight(
     {
         Specular *= SpecularIntensity;
 
+    }
+    if (enableAtt)
+    {
+        const float att = 1.0f / (AttConst + AttLinear * distToLight + AttQuad * (distToLight * distToLight));
+        Diffuse *= att;
+        Specular *= att;
     }
     lc.Diffuse = Diffuse;
     lc.Specular = Specular;

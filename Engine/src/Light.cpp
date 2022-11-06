@@ -2,7 +2,7 @@
 #include "imgui.h"
 PointLight::PointLight(Graphics& gfx)
 	:
-	m_pos(0.0f, 5.0f, 0.0f),
+	m_pos(0.0f, 20.0f, 0.0f),
 	m_PSCbuf(gfx)
 {
 	Scene::RenderOption op;
@@ -46,6 +46,7 @@ void PointLight::SpwanControlWindow() noexcept
 		ImGui::ColorEdit3("AmbientColor", &m_ambient.x);
 		ImGui::Text("LightIntensity");
 		ImGui::SliderFloat("Intensity", &m_diffuseIntensity, 0.0f, 10.0f, "%.2f");
+		ImGui::Text("Attenuation");
 		ImGui::SliderFloat("AttConst", &m_attConst, 0.0f, 0.1f, "%.5f");
 		ImGui::SliderFloat("AttLinear", &m_attLinear, 0.0f, 0.1f, "%.5f");
 		ImGui::SliderFloat("AttQuad", &m_attQuad, 0.0f, 0.1f, "%.5f");

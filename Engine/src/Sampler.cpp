@@ -10,7 +10,9 @@ Sampler::Sampler(Graphics& gfx)
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-
+	sampDesc.MinLOD = 0.0f;
+	sampDesc.MipLODBias = 0.0f;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	GFX_THROW_INFO(GetDevice(gfx)->CreateSamplerState(&sampDesc, &m_pSampler));
 
 }

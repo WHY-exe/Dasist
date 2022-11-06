@@ -26,9 +26,9 @@ private:
 	DirectX::XMFLOAT3 m_ambient = {0.3f, 0.3f, 0.3f};
 	DirectX::XMFLOAT3 m_diffuseColor = {1.0f, 1.0f, 1.0f};
 	float m_diffuseIntensity = 1.0f;
-	float m_attConst = 1.0f;
-	float m_attLinear = 1.0f;
-	float m_attQuad = 1.0f;
+	float m_attConst = 0.0001f;
+	float m_attLinear = 0.0001f;
+	float m_attQuad = 0.00005f;
 	PixelConstantBuffer<PointLightCBuffer> m_PSCbuf;
 	Scene::Model m_lightBall;
 };

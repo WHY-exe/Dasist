@@ -9,7 +9,7 @@ PointLight::PointLight(Graphics& gfx)
 	op.szModelPath = "res\\model\\sphere.obj";
 	op.szPSPath = L"res\\cso\\lightBall.cso";
 	m_lightBall = Scene::Model(gfx, op);
-	m_lightBall.Scale(0.003f);
+	m_lightBall.Scale(0.3f);
 }
 
 void PointLight::Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept
@@ -20,7 +20,8 @@ void PointLight::Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept
 	m_PSCbuf.Update(
 		gfx, 
 		PointLightCBuffer(
-			ViewPos,
+			ViewPos,			
+			m_ambient,
 			m_diffuseColor,
 			m_diffuseIntensity,
 			m_attConst,
@@ -38,15 +39,16 @@ void PointLight::SpwanControlWindow() noexcept
 	if (ImGui::Begin("Point light"))
 	{
 		ImGui::Text("Position");
-		ImGui::SliderFloat("X", &m_pos.x, -80.0f, 80.0f, "%.1f");
-		ImGui::SliderFloat("Y", &m_pos.y, -80.0f, 80.0f, "%.1f");
-		ImGui::SliderFloat("Z", &m_pos.z, -80.0f, 80.0f, "%.1f");
-		ImGui::ColorEdit3("LightColor", &m_diffuseColor.x);
+		ImGui::SliderFloat("X", &m_pos.x, -2000.0f, 2000.0f, "%.1f");
+		ImGui::SliderFloat("Y", &m_pos.y, -2000.0f, 2000.0f, "%.1f");
+		ImGui::SliderFloat("Z", &m_pos.z, -2000.0f, 2000.0f, "%.1f");
+		ImGui::ColorEdit3("DiffuseColor", &m_diffuseColor.x);
+		ImGui::ColorEdit3("AmbientColor", &m_ambient.x);
 		ImGui::Text("LightIntensity");
 		ImGui::SliderFloat("Intensity", &m_diffuseIntensity, 0.0f, 10.0f, "%.2f");
-		ImGui::SliderFloat("AttConst", &m_attConst, 0.0f, 2.0f, "%.1f");
-		ImGui::SliderFloat("AttLinear", &m_attLinear, 0.0f, 2.0f, "%.1f");
-		ImGui::SliderFloat("AttQuad", &m_attQuad, 0.0f, 2.0f, "%.1f");
+		ImGui::SliderFloat("AttConst", &m_attConst, 0.0f, 0.1f, "%.5f");
+		ImGui::SliderFloat("AttLinear", &m_attLinear, 0.0f, 0.1f, "%.5f");
+		ImGui::SliderFloat("AttQuad", &m_attQuad, 0.0f, 0.1f, "%.5f");
 	}
 	ImGui::End();
 }
@@ -72,7 +74,8 @@ void GlobalLight::Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept
 	m_PSCbuf.Update(
 		gfx,
 		GlobalLightCBuffer(
-			ViewPos,
+			ViewPos,			
+			m_ambient,
 			m_diffuseColor,
 			m_diffuseIntensity
 		)
@@ -85,10 +88,11 @@ void GlobalLight::SpwanControlWindow() noexcept
 	if (ImGui::Begin("GlobalLight"))
 	{
 		ImGui::Text("Position");
-		ImGui::SliderFloat("X", &m_pos.x, -80.0f, 80.0f, "%.1f");
-		ImGui::SliderFloat("Y", &m_pos.y, -80.0f, 80.0f, "%.1f");
-		ImGui::SliderFloat("Z", &m_pos.z, -80.0f, 80.0f, "%.1f");
-		ImGui::ColorEdit3("LightColor", &m_diffuseColor.x);
+		ImGui::SliderFloat("X", &m_pos.x, -2000.0f, 2000.0f, "%.1f");
+		ImGui::SliderFloat("Y", &m_pos.y, -2000.0f, 2000.0f, "%.1f");
+		ImGui::SliderFloat("Z", &m_pos.z, -2000.0f, 2000.0f, "%.1f");
+		ImGui::ColorEdit3("DiffuseColor", &m_diffuseColor.x);
+		ImGui::ColorEdit3("AmbientColor", &m_ambient.x);
 		ImGui::Text("LightIntensity");
 		ImGui::SliderFloat("Intensity", &m_diffuseIntensity, 0.0f, 10.0f, "%.2f");
 	}

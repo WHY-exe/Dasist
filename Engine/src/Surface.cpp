@@ -11,7 +11,8 @@ Surface::Surface(const std::string file_path)
 {
 	if (m_pPixelBuffer.get() == nullptr)
 	{
-		throw std::logic_error("stb_image error:检查文件格式或文件路径");
+		using namespace std::string_literals;
+		throw std::logic_error("stb_image error:检查文件格式或文件路径\n" + "文件路径："s + file_path);
 	}
 }
 

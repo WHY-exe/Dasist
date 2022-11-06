@@ -15,6 +15,7 @@
 #include "imgui.h"
 #include "StrTransf.h"
 #include "VS_PS_TFCB.h"
+#include <filesystem>
 #ifndef NDEBUG
 #pragma comment(lib, "assimp-vc142-mtd.lib")
 #else
@@ -186,6 +187,8 @@ Scene::Model::Model(Graphics& gfx,RenderOption& option)
 
 std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, RenderOption& option, const aiMaterial* const* pMaterial, ModelCBuffer& mcb)
 {
+	const std::filesystem::path& ModelPath = option.szModelPath;
+	std::string szTexRootPath = ModelPath.parent_path().string();
 	std::vector<std::shared_ptr<Bindable>> binds;
 	Vertex::DataBuffer vtxb(
 		Vertex::Layout()
@@ -197,19 +200,29 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 	float shininess = 30.0f;
 	DirectX::XMFLOAT4 specColor = { 0.18f,0.18f,0.18f,1.0f };
 	DirectX::XMFLOAT4 diffuseColor = { 0.45f,0.45f,0.85f,1.0f };
+	DirectX::XMFLOAT4 ambientColor = { 0.45f, 0.45f, 0.45f, 1.0f };
 	if (mesh.mMaterialIndex >= 0)
 	{
+		using namespace std::string_literals;
 		bool hasNormal = false, hasTex = false, hasSpec = false;
 		
 		std::wstring szPSPath = L"res\\cso\\PS";
 		std::wstring szVSPath = L"res\\cso\\VSTex";
-		using namespace std::string_literals;
+		
 		auto& material = *pMaterial[mesh.mMaterialIndex];
 		aiString texPath;
+		if (material.GetTexture(aiTextureType_AMBIENT, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
+		{
+			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 3));
+			mcb.hasAmbient = TRUE;
+		}
+		else
+		{
+			material.Get(AI_MATKEY_COLOR_AMBIENT, reinterpret_cast<aiColor3D&>(ambientColor));
+		}
 		if (material.GetTexture(aiTextureType_DIFFUSE, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
 		{
-			std::string szTexPath = "./res/model/"s + texPath.C_Str();
-			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexPath)));
+			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str())));
 			hasTex = true;
 		}
 		else
@@ -218,8 +231,8 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		}
 		if (material.GetTexture(aiTextureType_SPECULAR, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
 		{
-			std::string szTexPath = "./res/model/"s + texPath.C_Str();
-			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexPath), 1));
+
+			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 1));
 			hasSpec = true;
 		}
 		else
@@ -228,8 +241,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		}
 		if (material.GetTexture(aiTextureType_NORMALS, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
 		{
-			std::string szTexPath = "./res/model/"s + texPath.C_Str();
-			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexPath), 2));
+			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 2));
 			hasNormal = true;
 		}
 		else {
@@ -250,7 +262,10 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		}
 		szPSPath += L".cso";
 		szVSPath += L".cso";
-		option.szPSPath = szPSPath;
+		if (option.szPSPath.empty())
+		{
+			option.szPSPath = szPSPath;
+		}
 		option.szVSPath = szVSPath;
 		binds.emplace_back(Sampler::Resolve(gfx));
 	}
@@ -283,13 +298,9 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 	binds.emplace_back(std::move(pvs));
 	binds.emplace_back(InputLayout::Resolve(gfx, vtxb.GetLayout(), pvsbc));
 	binds.emplace_back(PixelShader::Resolve(gfx, option.szPSPath));
-	
-
-	//mcb.m_Ambient = DirectX::XMFLOAT3(diffuseColor.x, diffuseColor.y, diffuseColor.z);
-	//mcb.enNormal = TRUE;
-	//mcb.specular_intesity = (specColor.x + specColor.y + specColor.z) / 3.0f;
-	//mcb.specular_pow = shininess;
-	//binds.emplace_back(std::make_shared<PixelConstantBuffer<ModelCBuffer>>(gfx, mcb, 2u)); 
+	mcb.ambient = ambientColor;
+	mcb.spec_color = specColor;
+	mcb.spec_pow = shininess;
 	return std::make_unique<Mesh>(gfx, mcb, binds);
 }
 

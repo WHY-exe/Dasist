@@ -12,7 +12,7 @@ float4 main(VSOut vso) : SV_Target
         pLightViewPos, vso.ViewPos, ViewNormal,
         pDiffuseColor, pDiffuseIntensity,
         specular_intensity, specular_pow,
-        false, true, pAttConst, pAttLinear, pAttQuad
+        true, pAttConst, pAttLinear, pAttQuad
     );
     float3 Ambient = ambient * (pDiffuseColor + gDiffuseColor);
     return float4(saturate(gLight.Diffuse + pLight.Diffuse + ambient) + (pLight.Specular + gLight.Specular), 1.0f);

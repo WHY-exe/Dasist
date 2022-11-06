@@ -21,8 +21,6 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
     sd.BufferDesc.RefreshRate.Denominator = 0;
     sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
     sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-    sd.SampleDesc.Count = 1;
-    sd.SampleDesc.Quality = 0;
     sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     sd.OutputWindow = hWnd;
     sd.SampleDesc.Count = 1;
@@ -52,6 +50,8 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
         &m_pContext
     ));
     GetBackBufferAndCreateRenderTarget();
+
+    CreateAndSetBlendState();
 
     CreateAndSetStencilDepthView(nWinWidth, nWinHeight);
 
@@ -91,6 +91,28 @@ void Graphics::GetBackBufferAndCreateRenderTarget()
         nullptr,
         &m_pTarget
     ));
+}
+
+void Graphics::CreateAndSetBlendState()
+{
+    INIT_GFX_EXCEPTION;
+    D3D11_BLEND_DESC desc = {};
+    desc.AlphaToCoverageEnable = FALSE;
+    desc.IndependentBlendEnable = FALSE;
+    // ÊÇ·ñ¿ªÆô»ìºÏ
+    desc.RenderTarget[0].BlendEnable = FALSE;
+    desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_COLOR;
+    desc.RenderTarget[0].DestBlend = D3D11_BLEND_DEST_COLOR;
+    desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+    desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+
+    GFX_THROW_INFO(m_pDevice->CreateBlendState(&desc, &m_pBlendState));
+    m_pContext->OMSetBlendState(m_pBlendState.Get(), nullptr, 0xffffffff);
+
 }
 
 void Graphics::CreateAndSetViewPort(int nWinWidth, int nWinHeight)

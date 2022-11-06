@@ -13,17 +13,19 @@ namespace Scene
 {
 	struct ModelCBuffer
 	{
-		alignas(16) DirectX::XMFLOAT3 m_Ambient = { 0.45f, 0.45f, 0.45f };
-		float specular_intesity = 0.6f;
-		float specular_pow = 20.0f;
+		DirectX::XMFLOAT4 ambient;
+		DirectX::XMFLOAT4 spec_color;
+		float spec_intesity = 0.6f;
+		float spec_pow = 20.0f;
 		BOOL enNormal = TRUE;
+		BOOL hasAmbient = FALSE;
 	};
 	struct RenderOption 
 	{
 		std::string szModelPath;
 		std::string szModelName = "Model";
-		std::wstring szVSPath = L"res\\cso\\TexVS.cso";
-		std::wstring szPSPath = L"res\\cso\\PixelShader.cso";
+		std::wstring szVSPath;
+		std::wstring szPSPath;
 	};
 	class Mesh:public Drawable
 	{

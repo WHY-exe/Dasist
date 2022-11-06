@@ -94,7 +94,7 @@ void Window::InitWindow(std::wstring szWinTitile, int nWidth, int nHeight)
 	m_pGfx->SetProjection(
 		DirectX::XMMatrixPerspectiveLH(
 			1.0f, (float)m_nHeight / (float)m_nWidth,
-			0.5f, 100.0f
+			0.5f, 10000.0f
 		)
 	);
 	// Ê¹ÓÃÓ²¼þraw input
@@ -344,7 +344,7 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			m_pGfx->SetProjection(
 				DirectX::XMMatrixPerspectiveLH(
 					1.0f, (float)m_nHeight / (float)m_nWidth,
-					0.5f, 100.0f
+					0.5f, 10000.0f
 				)
 			);
 		}

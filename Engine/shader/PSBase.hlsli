@@ -1,6 +1,8 @@
 Texture2D dmap : register(t0);
 Texture2D spec : register(t1);
 Texture2D nmap : register(t2);
+Texture2D amap : register(t3);
+
 SamplerState splr;
 
 struct VSOut
@@ -36,6 +38,7 @@ struct LightAttri
 cbuffer pointLightCBuf : register(b0)
 {
     float3 pLightViewPos;
+    float3 pAmbientColor;
     float3 pDiffuseColor;
     float pDiffuseIntensity;
     float pAttConst;
@@ -47,16 +50,19 @@ cbuffer pointLightCBuf : register(b0)
 cbuffer GlobalLightCBuf : register(b1)
 {
     float3 gLightViewPos;
+    float3 gAmbientColor;
     float3 gDiffuseColor;
     float gDiffuseIntensity;
 };
 
 cbuffer OBJCBuf : register(b2)
 {
-    float3 ambient;
+    float4 ambient;
+    float4 spec_color;
     float specular_intensity;
     float specular_pow;
     bool enNormal;
+    bool hasAmbient;
 };
 
 float3 GenNormal(
@@ -80,7 +86,6 @@ LightComponent GetLight(
     float3 DiffuseIntensity,
     float SpecularIntensity,
     float SpecularPow,    
-    bool enableSpecMap = false,
     bool enableAtt = false,
     float AttConst = 1.0f,
     float AttLinear = 0.0f,
@@ -100,12 +105,7 @@ LightComponent GetLight(
 
     // the reflection vector
     const float3 r = 2.0f * VertexNormal * dot(vToLight, VertexNormal) - vToLight;
-    float3 Specular = Diffuse * pow(max(0.0f, dot(normalize(-r), normalize(VertexPos))), SpecularPow);
-    if (!enableSpecMap)
-    {
-        Specular *= SpecularIntensity;
-
-    }
+    float3 Specular = Diffuse * SpecularIntensity * pow(max(0.0f, dot(normalize(-r), normalize(VertexPos))), SpecularPow);
     if (enableAtt)
     {
         const float att = 1.0f / (AttConst + AttLinear * distToLight + AttQuad * (distToLight * distToLight));
@@ -122,7 +122,7 @@ LightComponent GetLight( LightAttri la)
     if (! la.enableAtt )
         return GetLight(la.lightViewPos, la.VertexPos, la.VertexNormal,
     la.DiffuseColor, la.DiffuseIntensity, la.SpecularIntensity, la.SpecularPow,
-    la.enableSpecMap, la.enableAtt,  la.AttConst, la.AttLinear, la.AttQuad);
+    la.enableAtt,  la.AttConst, la.AttLinear, la.AttQuad);
     else
         return GetLight(la.lightViewPos, la.VertexPos, la.VertexNormal,
     la.DiffuseColor, la.DiffuseIntensity, la.SpecularIntensity, la.SpecularPow, la.enableSpecMap);

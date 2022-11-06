@@ -4,7 +4,7 @@
 #include <algorithm>
 Camera::Camera()
 	:
-	m_pos(0.0f, 12.0f, -25.0f),
+	m_pos(0.0f, 100.0f, -25.0f),
 	m_rot(0.0f, 0.0f, 0.0f)
 {
 }

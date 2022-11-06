@@ -15,13 +15,13 @@ App::App()
 	gLight(m_gfx)
 {
 	Scene::RenderOption op1;
-	op1.szModelPath = "res\\model\\nano.obj";
-	op1.szModelName = "Nano";
+	op1.szModelPath = "res\\model\\Sponza\\sponza.obj";
+	op1.szModelName = "sponza";
 	model1 = Scene::Model(m_gfx, op1);
-	Scene::RenderOption op2;
-	op2.szModelPath = "res\\model\\cube.obj";
-	op2.szModelName = "cube_brick_wall";
-	model2 = Scene::Model(m_gfx, op2);
+	//Scene::RenderOption op2;
+	//op2.szModelPath = "res\\model\\brick_wall\\brick_cube.obj";
+	//op2.szModelName = "cube_brick_wall";
+	//model2 = Scene::Model(m_gfx, op2);
 }
 
 WPARAM App::Run()
@@ -50,10 +50,10 @@ void App::DoFrame()
 	pointLight.Draw(m_gfx);
 	//
 	model1.Draw(m_gfx);
-	model2.Draw(m_gfx);
+	//model2.Draw(m_gfx);
 
 	model1.SpwanControlWindow();
-	model2.SpwanControlWindow();
+	//model2.SpwanControlWindow();
 	gLight.SpwanControlWindow();
 	pointLight.SpwanControlWindow();
 	//
@@ -74,27 +74,27 @@ void App::DoWinLogic()
 		m_wnd.EnableCursor();
 	if (m_wnd.kbd.KeyIsPressed('W'))
 	{
-		cam.Translate(0.0f, 0.0f, 0.1f);
+		cam.Translate(0.0f, 0.0f, 10.0f);
 	}
 	if (m_wnd.kbd.KeyIsPressed('A'))
 	{
-		cam.Translate(-0.1f, 0.0f, 0.0f);
+		cam.Translate(-10.0f, 0.0f, 0.0f);
 	}
 	if (m_wnd.kbd.KeyIsPressed('R'))
 	{
-		cam.Translate(0.0f, 0.1f, 0.0f);
+		cam.Translate(0.0f, 10.0f, 0.0f);
 	}
 	if (m_wnd.kbd.KeyIsPressed('S'))
 	{
-		cam.Translate(0.0f, 0.0f, -0.1f);
+		cam.Translate(0.0f, 0.0f, -10.0f);
 	}
 	if (m_wnd.kbd.KeyIsPressed('D'))
 	{
-		cam.Translate(0.1f, 0.0f, 0.0f);
+		cam.Translate(10.0f, 0.0f, 0.0f);
 	}
 	if (m_wnd.kbd.KeyIsPressed('F'))
 	{
-		cam.Translate(0.0f, -0.1f, 0.0f);
+		cam.Translate(0.0f, -10.0f, 0.0f);
 	}
 
 

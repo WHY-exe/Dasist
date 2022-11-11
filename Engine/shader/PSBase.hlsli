@@ -63,6 +63,7 @@ cbuffer OBJCBuf : register(b2)
     float specular_pow;
     bool enNormal;
     bool hasAmbient;
+    bool hasGloss;
 };
 
 float3 GenNormal(

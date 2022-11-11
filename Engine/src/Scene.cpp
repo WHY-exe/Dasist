@@ -15,6 +15,8 @@
 #include "imgui.h"
 #include "StrTransf.h"
 #include "VS_PS_TFCB.h"
+#include "Blender.h"
+#include "Rasterizer.h"
 #include <filesystem>
 #ifndef NDEBUG
 #pragma comment(lib, "assimp-vc142-mtd.lib")
@@ -26,7 +28,7 @@
 
 Scene::Mesh::Mesh(Graphics& gfx, ModelCBuffer& mcb, std::vector<std::shared_ptr<Bindable>>& binds)
 	:
-	m_PCBuffer(gfx, 2u)
+	m_PCBuffer(gfx, mcb, 2u)
 {
 	AddBind(Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 	for (auto& b : binds)
@@ -204,16 +206,21 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 	if (mesh.mMaterialIndex >= 0)
 	{
 		using namespace std::string_literals;
-		bool hasNormal = false, hasTex = false, hasSpec = false;
-		
+		bool hasNormal = false, hasTex = false, hasSpec = false, hasAlpha = false, showTwoSide = false, hasAlphaGloss = false;
+
 		std::wstring szPSPath = L"res\\cso\\PS";
 		std::wstring szVSPath = L"res\\cso\\VSTex";
-		
+
 		auto& material = *pMaterial[mesh.mMaterialIndex];
 		aiString texPath;
 		if (material.GetTexture(aiTextureType_AMBIENT, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
 		{
-			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 3));
+			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 3);
+			if (tex->HasAlpha())
+			{
+				hasAlpha = true;
+			}
+			binds.emplace_back(tex);
 			mcb.hasAmbient = TRUE;
 		}
 		else
@@ -222,7 +229,12 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		}
 		if (material.GetTexture(aiTextureType_DIFFUSE, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
 		{
-			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str())));
+			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()));
+			if (tex->HasAlpha())
+			{
+				hasAlpha = true;
+			}
+			binds.emplace_back(tex);
 			hasTex = true;
 		}
 		else
@@ -231,17 +243,20 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		}
 		if (material.GetTexture(aiTextureType_SPECULAR, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
 		{
-
-			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 1));
+			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 1);
+			hasAlphaGloss = tex->HasAlpha();
+			binds.emplace_back(tex);
 			hasSpec = true;
+			mcb.hasGloss = hasAlphaGloss ? TRUE : FALSE;
 		}
-		else
+		if(!hasAlphaGloss)
 		{
 			material.Get(AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor3D&>(specColor));
 		}
 		if (material.GetTexture(aiTextureType_NORMALS, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
 		{
-			binds.emplace_back(Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 2));
+			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 2);
+			binds.emplace_back(tex);
 			hasNormal = true;
 		}
 		else {
@@ -267,9 +282,11 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			option.szPSPath = szPSPath;
 		}
 		option.szVSPath = szVSPath;
+		showTwoSide = hasAlpha;
 		binds.emplace_back(Sampler::Resolve(gfx));
+		binds.emplace_back(Blender::Resolve(gfx, false));
+		binds.emplace_back(Rasterizer::Resolve(gfx, showTwoSide));
 	}
-
 	for (unsigned int i = 0; i < mesh.mNumVertices; i++)
 	{
 		vtxb.EmplaceBack(

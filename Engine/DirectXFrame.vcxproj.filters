@@ -134,6 +134,12 @@
     <ClCompile Include="src\VS_PS_TFCB.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\Blender.cpp">
+      <Filter>Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rasterizer.cpp">
+      <Filter>Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Console.h">
@@ -270,6 +276,12 @@
     </ClInclude>
     <ClInclude Include="src\VS_PS_TFCB.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Blender.h">
+      <Filter>Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rasterizer.h">
+      <Filter>Bindable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

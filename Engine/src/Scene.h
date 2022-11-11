@@ -19,6 +19,8 @@ namespace Scene
 		float spec_pow = 20.0f;
 		BOOL enNormal = TRUE;
 		BOOL hasAmbient = FALSE;
+		BOOL hasGloss = FALSE;
+		DirectX::XMFLOAT3 padding;
 	};
 	struct RenderOption 
 	{

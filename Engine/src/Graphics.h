@@ -45,7 +45,6 @@ public:
 	void EndFrame();
 public:
 	void GetBackBufferAndCreateRenderTarget();
-	void CreateAndSetBlendState();
 	void CreateAndSetViewPort(int nWinWidth = 0, int nWinHeight = 0);
 	void CreateAndSetStencilDepthView(int nWinWidth = 0, int nWinHeight = 0);
 	void ResizeFrameBuffer(UINT bufferWidth, UINT bufferHeight);
@@ -61,7 +60,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		m_pContext;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_pTarget;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>  m_pDSV;
-	Microsoft::WRL::ComPtr<ID3D11BlendState> m_pBlendState;
 };
 
 

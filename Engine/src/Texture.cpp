@@ -7,6 +7,8 @@ Texture::Texture(Graphics& gfx, const std::wstring& szPath, unsigned int slot)
 {
 	IMPORT_INFOMAN(gfx);
 	Surface s(UTF8_TO_ANSI_STR(szPath));
+	m_hasAlpha = s.HasAlpha();
+
 	D3D11_TEXTURE2D_DESC texDesc = {};
 	texDesc.Width = s.GetWidth();
 	texDesc.Height = s.GetHeight();
@@ -49,7 +51,7 @@ void Texture::Bind(Graphics& gfx) noexcept
 	GetContext(gfx)->PSSetShaderResources(m_slot, 1u, m_pTexView.GetAddressOf());
 }
 
-std::shared_ptr<Bindable> Texture::Resolve(Graphics& gfx, const std::wstring& path, unsigned int slot) noexcept(!IS_DEBUG)
+std::shared_ptr<Texture> Texture::Resolve(Graphics& gfx, const std::wstring& path, unsigned int slot) noexcept(!IS_DEBUG)
 {
 	return CodeX::Resolve<Texture>(gfx, path, slot);
 }
@@ -63,4 +65,9 @@ std::wstring Texture::GenUID(const std::wstring& path, unsigned int slot) noexce
 std::wstring Texture::GetUID() const noexcept
 {
 	return GenUID(m_Path, m_slot);
+}
+
+bool Texture::HasAlpha() const noexcept
+{
+	return m_hasAlpha;
 }

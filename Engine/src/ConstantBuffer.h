@@ -12,6 +12,7 @@ public:
         // the pointer point to the memory of data that will be updated
         D3D11_MAPPED_SUBRESOURCE msr;
         // lock the memory and give the msr the pointer
+        // 如果在这里出错，请保证绑定的数据大小为16字节的倍数，可以通过加padding来实现
         GFX_THROW_INFO(
             GetContext(gfx)->Map(
                 m_pBuffer.Get(), 0u,

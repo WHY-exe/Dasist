@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DynamicConstantBuffer.cpp" />
     <ClCompile Include="src\Rasterizer.cpp" />
     <ClCompile Include="src\Blender.cpp" />
     <ClCompile Include="src\Scene.cpp" />
@@ -59,6 +60,7 @@
     <ClCompile Include="src\VS_PS_TFCB.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DynamicConstantBuffer.h" />
     <ClInclude Include="src\Rasterizer.h" />
     <ClInclude Include="src\Blender.h" />
     <ClInclude Include="src\BindableCodex.h" />
@@ -113,6 +115,12 @@
     <ClInclude Include="src\VS_PS_TFCB.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="shader\PSTexSpecNormAlpha.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="shader\PSTexSpecNorm.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

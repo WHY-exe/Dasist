@@ -192,13 +192,26 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 	const std::filesystem::path& ModelPath = option.szModelPath;
 	std::string szTexRootPath = ModelPath.parent_path().string();
 	std::vector<std::shared_ptr<Bindable>> binds;
-	Vertex::DataBuffer vtxb(
-		Vertex::Layout()
-		.Append(Vertex::Layout::Position3D)
-		.Append(Vertex::Layout::Normal)
-		.Append(Vertex::Layout::Tex2D)
-		.Append(Vertex::Layout::Tangent)
-	);
+	Vertex::Layout vlayout = Vertex::Layout();
+
+	if (mesh.HasPositions())
+	{
+		vlayout.Append(Vertex::Position3D);
+	}
+	if (mesh.HasNormals())
+	{
+		vlayout.Append(Vertex::Normal);
+	}
+	if (mesh.HasTextureCoords(0))
+	{
+		vlayout.Append(Vertex::Tex2D);
+	}
+	if (mesh.HasNormals())
+	{
+		vlayout.Append(Vertex::Tangent);
+	}
+
+	Vertex::DataBuffer vtxb(vlayout);
 	float shininess = 30.0f;
 	DirectX::XMFLOAT4 specColor = { 0.18f,0.18f,0.18f,1.0f };
 	DirectX::XMFLOAT4 diffuseColor = { 0.45f,0.45f,0.85f,1.0f };
@@ -206,7 +219,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 	if (mesh.mMaterialIndex >= 0)
 	{
 		using namespace std::string_literals;
-		bool hasNormal = false, hasTex = false, hasSpec = false, hasAlpha = false, showTwoSide = false, hasAlphaGloss = false;
+		bool hasNormal = false, hasTex = false, hasSpec = false, hasAlpha = false,showTwoSide = false, hasAlphaGloss = false;
 
 		std::wstring szPSPath = L"res\\cso\\PS";
 		std::wstring szVSPath = L"res\\cso\\VSTex";
@@ -218,7 +231,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 3);
 			if (tex->HasAlpha())
 			{
-				hasAlpha = true;
+				hasAlpha = TRUE;
 			}
 			binds.emplace_back(tex);
 			mcb.hasAmbient = TRUE;
@@ -232,7 +245,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()));
 			if (tex->HasAlpha())
 			{
-				hasAlpha = true;
+				hasAlpha = TRUE;
 			}
 			binds.emplace_back(tex);
 			hasTex = true;
@@ -275,6 +288,10 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			szPSPath += L"Norm";
 			szVSPath += L"Norm";
 		}
+		if (hasAlpha)
+		{
+			szPSPath += L"Alpha";
+		}
 		szPSPath += L".cso";
 		szVSPath += L".cso";
 		if (option.szPSPath.empty())
@@ -284,17 +301,35 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		option.szVSPath = szVSPath;
 		showTwoSide = hasAlpha;
 		binds.emplace_back(Sampler::Resolve(gfx));
-		binds.emplace_back(Blender::Resolve(gfx, false));
+		binds.emplace_back(Blender::Resolve(gfx, hasAlpha));
 		binds.emplace_back(Rasterizer::Resolve(gfx, showTwoSide));
 	}
 	for (unsigned int i = 0; i < mesh.mNumVertices; i++)
 	{
-		vtxb.EmplaceBack(
-			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mVertices[i]),
-			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mNormals[i]),
-			*reinterpret_cast<DirectX::XMFLOAT2*>(&mesh.mTextureCoords[0][i]),
-			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mTangents[i])
-		);
+		for (size_t i_ele = 0; i_ele < vlayout.Count(); i_ele++)
+		{
+			switch (vlayout.ResolveByIndex(i_ele).GetType())
+			{
+			case Vertex::Position3D:
+				vtxb.EmplaceBack(*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mVertices[i]));
+				break;
+			case Vertex::Normal:
+				vtxb.EmplaceBack(*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mNormals[i]));
+				break;
+			case Vertex::Tex2D:
+				vtxb.EmplaceBack(*reinterpret_cast<DirectX::XMFLOAT2*>(&mesh.mTextureCoords[0][i]));
+				break;
+			case Vertex::Tangent:
+				vtxb.EmplaceBack(*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mTangents[i]));
+				break;
+			case Vertex::Bitangent:
+				vtxb.EmplaceBack(*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mBitangents[i]));
+				break;
+			default:
+				assert("Bad Element Type" && false);
+				break;
+			}
+		}
 	}
 	binds.emplace_back(VertexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), vtxb));
 	std::vector<UINT> indicies;

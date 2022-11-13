@@ -11,33 +11,32 @@ Blender::Blender(Graphics& gfx, bool enBlend, std::optional<float> factor)
     {
         m_factors.emplace();
         m_factors->fill(*factor);
-
-        D3D11_BLEND_DESC blenddesc = {};
-        blenddesc.AlphaToCoverageEnable = FALSE;
-        blenddesc.IndependentBlendEnable = FALSE;
-        // 是否开启混合
-        blenddesc.RenderTarget[0].BlendEnable = enBlend ? TRUE : FALSE;
-        blenddesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-        blenddesc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
-        if (enBlend)
-        {
-            blenddesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_COLOR;
-            blenddesc.RenderTarget[0].DestBlend = D3D11_BLEND_DEST_COLOR;
-            if (factor)
-            {
-                blenddesc.RenderTarget[0].SrcBlend = D3D11_BLEND_BLEND_FACTOR;
-                blenddesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_BLEND_FACTOR;
-            }
-        }
-        blenddesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-        blenddesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-        blenddesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-        blenddesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-        blenddesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-        GFX_THROW_INFO(GetDevice(gfx)->CreateBlendState(&blenddesc, &m_pBlendState));
-
     }
-}
+    D3D11_BLEND_DESC blenddesc = {};
+    blenddesc.AlphaToCoverageEnable = enBlend ? TRUE : FALSE;
+    blenddesc.IndependentBlendEnable = enBlend ? TRUE : FALSE;
+    // 是否开启混合
+    blenddesc.RenderTarget[0].BlendEnable = enBlend ? TRUE : FALSE;
+    blenddesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+    blenddesc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+
+    if (enBlend)
+    {
+        blenddesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+        blenddesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+        if (factor)
+        {
+            blenddesc.RenderTarget[0].SrcBlend = D3D11_BLEND_BLEND_FACTOR;
+            blenddesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_BLEND_FACTOR;
+        }    
+        blenddesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+        blenddesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+    }
+    blenddesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    blenddesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    blenddesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+    GFX_THROW_INFO(GetDevice(gfx)->CreateBlendState(&blenddesc, &m_pBlendState));
+ }
 
 void Blender::Bind(Graphics& gfx) noexcept
 {

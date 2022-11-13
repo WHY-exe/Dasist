@@ -9,8 +9,10 @@ float4 main(VSOut vso) : SV_Target
    
     [flatten]
     if (enNormal)
-       ViewNormal = GenNormal(nmap.Sample(splr, vso.tc).xyz, normalize(vso.viewNorm), vso.tan);
-
+        ViewNormal = GenNormal(nmap.Sample(splr, vso.tc).xyz, normalize(vso.viewNorm), vso.tan);
+    [flatten]
+    if (dot(ViewNormal, vso.ViewPos.rgb) >= 0.0f)
+        ViewNormal = -ViewNormal;
     LightComponent gLight = GetLight(
          gLightViewPos, vso.ViewPos, ViewNormal,
          gDiffuseColor, gDiffuseIntensity,

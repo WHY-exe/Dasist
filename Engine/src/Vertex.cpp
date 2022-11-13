@@ -6,7 +6,7 @@ Vertex::Layout::Element::Element(ElementType type, size_t offset)
 	m_offset(offset)
 {}
 
-Vertex::Layout::ElementType Vertex::Layout::Element::GetType() const noexcept
+Vertex::ElementType Vertex::Layout::Element::GetType() const noexcept
 {
 	return m_type;
 }
@@ -156,6 +156,11 @@ size_t Vertex::Layout::Size() const noexcept(!IS_DEBUG)
 	return m_Elements.empty() ? 0u : m_Elements.back().GetOffsetAfter();
 }
 
+size_t Vertex::Layout::Count() const noexcept
+{
+	return m_Elements.size();
+}
+
 const std::vector<D3D11_INPUT_ELEMENT_DESC>& Vertex::Layout::GetD3DLayout() const
 {
 	return m_d3d_desc;
@@ -213,7 +218,7 @@ size_t Vertex::DataBuffer::Size() const noexcept
 Vertex::Data Vertex::DataBuffer::Back()
 {
 	assert(m_Buffer.size() != 0u);
-	return Vertex::Data(m_Buffer.data() + m_Buffer.size() - m_layout.Size(), m_layout);
+	return Vertex::Data(m_Buffer.data() + m_Buffer.size() - ( m_layout.Size() - m_layout.ResolveByIndex(m_CurAttrIndex).GetOffset()), m_layout);
 }
 
 Vertex::ConstData Vertex::DataBuffer::Back() const noexcept(!IS_DEBUG)

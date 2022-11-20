@@ -1,6 +1,6 @@
 #include "VSBase.hlsli"
 // the sinature of the main function in the vertex shader must be the same
-VSOut main(float3 pos : Position3D, float3 fn : Normal, float2 tc : Tex2D, float3 tan : Tangent)
+VSOut main(float3 pos : Position3D, float3 fn : Normal, float3 tan : Tangent, float2 tc : Tex2D)
 {
     VSOut vso;
     vso.tc = tc;

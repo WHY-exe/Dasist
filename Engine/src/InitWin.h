@@ -1,5 +1,5 @@
 #pragma once
-// include	before include somthing include Windows.h
+// include this file before include somthing include Windows.h
 #define _WIN32_WINNT 0x0601
 #include <sdkddkver.h>
 // trun off windows switch that create by Windows.h

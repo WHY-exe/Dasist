@@ -61,7 +61,6 @@ cbuffer OBJCBuf : register(b2)
     float4 spec_color;
     float specular_intensity;
     float specular_pow;
-    bool enNormal;
     bool hasAmbient;
     bool hasGloss;
 };

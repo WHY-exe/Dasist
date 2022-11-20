@@ -2,14 +2,9 @@
 
 float4 main(VSOut vso) : SV_Target
 {
-    const float4 SpecularSample = spec.Sample(splr, vso.tc);
-    const float3 SpecularReflectionColor = SpecularSample.rgb;
-    const float SpecularPower = pow(2.0f, SpecularSample.a * 13.0f);
+    const float SpecularPower = specular_pow;
     float3 ViewNormal = vso.viewNorm;
-
-    [flatten]
-    if (dot(ViewNormal, vso.ViewPos.rgb) >= 0.0f)
-        ViewNormal = -ViewNormal;
+   
     LightComponent gLight = GetLight(
          gLightViewPos, vso.ViewPos, ViewNormal,
          gDiffuseColor, gDiffuseIntensity,
@@ -33,5 +28,5 @@ float4 main(VSOut vso) : SV_Target
     float4 matSpecColor = spec_color;
     return float4(saturate(gLight.Diffuse + pLight.Diffuse) * matDiffuse.rgb +
                 saturate(gAmbientColor + pAmbientColor) * matAmbient.rgb +
-                saturate(pLight.Specular + gLight.Specular) * SpecularReflectionColor, max(matDiffuse.a, matAmbient.a));
+                saturate(pLight.Specular + gLight.Specular), max(matDiffuse.a, matAmbient.a));
 }

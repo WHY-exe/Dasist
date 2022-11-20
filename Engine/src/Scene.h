@@ -11,17 +11,6 @@
 #include "ConstantBuffer.h"
 namespace Scene
 {
-	struct ModelCBuffer
-	{
-		DirectX::XMFLOAT4 ambient;
-		DirectX::XMFLOAT4 spec_color;
-		float spec_intesity = 0.6f;
-		float spec_pow = 20.0f;
-		BOOL enNormal = TRUE;
-		BOOL hasAmbient = FALSE;
-		BOOL hasGloss = FALSE;
-		DirectX::XMFLOAT3 padding;
-	};
 	struct RenderOption 
 	{
 		std::string szModelPath;
@@ -32,20 +21,18 @@ namespace Scene
 	class Mesh:public Drawable
 	{
 	public:
-		Mesh(Graphics& gfx, ModelCBuffer& mcb, std::vector<std::shared_ptr<Bindable>>& binds);
-		void Draw(Graphics& gfx, const  ModelCBuffer& mcb, DirectX::FXMMATRIX accumulateTransform) noexcept(!IS_DEBUG);
+		Mesh(Graphics& gfx, std::vector<std::shared_ptr<Bindable>>& binds);
+		void Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) noexcept(!IS_DEBUG);
 		DirectX::XMMATRIX GetTransformXM() const noexcept override;
-		void Update(Graphics& gfx, const  ModelCBuffer& mcb) noexcept;
 	private:
 		DirectX::XMFLOAT4X4 m_transform;
-		PixelConstantBuffer<ModelCBuffer> m_PCBuffer;
 	};
 	class Node
 	{
 		friend class Model;
 	public:
 		Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform);
-		void Draw(Graphics& gfx, const ModelCBuffer& mcb, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG);
+		void Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG);
 	private:
 		void AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG);
 		void ShowTree(std::optional<int>& selectedIndex, Node*& pSelectedNode) const noexcept(!IS_DEBUG);
@@ -65,7 +52,7 @@ namespace Scene
 		{
 			friend class Model;
 		public:
-			void Show(const char* WindowName, const Node& node, ModelCBuffer& mcb) noexcept(!IS_DEBUG);
+			void Show(const char* WindowName, const Node& node) noexcept(!IS_DEBUG);
 			DirectX::XMMATRIX GetTransform() noexcept;
 			Node* GetSelectedNode() const noexcept;
 		private:
@@ -87,7 +74,7 @@ namespace Scene
 	public:
 		Model() = default;
 		Model(Graphics& gfx, RenderOption& option);
-		static std::unique_ptr<Mesh> ParseMesh(Graphics& gfx, const aiMesh& mesh, RenderOption& option, const aiMaterial* const* pMaterial, ModelCBuffer& mcb);
+		static std::unique_ptr<Mesh> ParseMesh(Graphics& gfx, const aiMesh& mesh, RenderOption& option, const aiMaterial* const* pMaterial);
 		std::unique_ptr<Node> ParseNode(int& next_id, const aiNode& node);
 		void SpwanControlWindow() noexcept;
 		void SetPos(float x, float y, float z) noexcept;
@@ -99,7 +86,6 @@ namespace Scene
 		std::vector<std::unique_ptr<Mesh>> m_pMeshes;
 		std::unique_ptr<ModelWindow> m_pWindow;
 		std::unique_ptr<Node> m_pRoot;
-		ModelCBuffer m_CBuffer;
 	};
 };
 

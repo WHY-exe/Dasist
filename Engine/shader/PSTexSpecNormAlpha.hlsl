@@ -6,10 +6,6 @@ float4 main(VSOut vso) : SV_Target
     const float3 SpecularReflectionColor = SpecularSample.rgb;
     const float SpecularPower = pow(2.0f, SpecularSample.a * 13.0f);
     float3 ViewNormal = vso.viewNorm;
-   
-    [flatten]
-    if (enNormal)
-        ViewNormal = GenNormal(nmap.Sample(splr, vso.tc).xyz, normalize(vso.viewNorm), vso.tan);
     [flatten]
     if (dot(ViewNormal, vso.ViewPos.rgb) >= 0.0f)
         ViewNormal = -ViewNormal;

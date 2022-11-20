@@ -140,7 +140,10 @@
     <ClCompile Include="src\Rasterizer.cpp">
       <Filter>Bindable</Filter>
     </ClCompile>
-    <ClCompile Include="DynamicConstantBuffer.cpp">
+    <ClCompile Include="src\DynamicConstantBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LayoutCodeX.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -286,8 +289,14 @@
     <ClInclude Include="src\Rasterizer.h">
       <Filter>Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="DynamicConstantBuffer.h">
+    <ClInclude Include="src\DynamicConstantBuffer.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LayoutCodeX.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConstatntBufferEx.h">
+      <Filter>Bindable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -316,6 +325,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="shader\PSTexSpecNormAlpha.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\PSTexNormAlpha.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

@@ -17,6 +17,7 @@
 #include "VS_PS_TFCB.h"
 #include "Blender.h"
 #include "Rasterizer.h"
+#include "ConstatntBufferEx.h"
 #include <filesystem>
 #ifndef NDEBUG
 #pragma comment(lib, "assimp-vc142-mtd.lib")
@@ -26,9 +27,7 @@
 
 
 
-Scene::Mesh::Mesh(Graphics& gfx, ModelCBuffer& mcb, std::vector<std::shared_ptr<Bindable>>& binds)
-	:
-	m_PCBuffer(gfx, mcb, 2u)
+Scene::Mesh::Mesh(Graphics& gfx, std::vector<std::shared_ptr<Bindable>>& binds)
 {
 	AddBind(Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 	for (auto& b : binds)
@@ -38,10 +37,9 @@ Scene::Mesh::Mesh(Graphics& gfx, ModelCBuffer& mcb, std::vector<std::shared_ptr<
 	AddBind(std::make_shared<TransformCbuf>(gfx, *this));
 }
 
-void Scene::Mesh::Draw(Graphics& gfx, const ModelCBuffer& mcb, DirectX::FXMMATRIX accumulateTransform) noexcept(!IS_DEBUG)
+void Scene::Mesh::Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) noexcept(!IS_DEBUG)
 {
 	DirectX::XMStoreFloat4x4(&m_transform, accumulateTransform);
-	Update(gfx, mcb);
 	Drawable::Draw(gfx);
 }
 
@@ -50,11 +48,6 @@ DirectX::XMMATRIX Scene::Mesh::GetTransformXM() const noexcept
 	return DirectX::XMLoadFloat4x4(&m_transform);
 }
 
-void Scene::Mesh::Update(Graphics& gfx, const ModelCBuffer& mcb) noexcept
-{
-	m_PCBuffer.Update(gfx, mcb);
-	m_PCBuffer.Bind(gfx);
-}
 
 Scene::Node::Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform)
 	:
@@ -66,7 +59,7 @@ Scene::Node::Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMesh
 	DirectX::XMStoreFloat4x4(&m_AppliedTransform, DirectX::XMMatrixIdentity());
 }
 
-void Scene::Node::Draw(Graphics& gfx, const ModelCBuffer& mcb, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG)
+void Scene::Node::Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG)
 {
 	auto build = 
 		DirectX::XMLoadFloat4x4(&m_AppliedTransform) * 
@@ -74,11 +67,11 @@ void Scene::Node::Draw(Graphics& gfx, const ModelCBuffer& mcb, DirectX::FXMMATRI
 		accumulateTransform;
 	for (const auto pm : m_pMeshes)
 	{
-		pm->Draw(gfx, mcb, build);
+		pm->Draw(gfx, build);
 	}
 	for (const auto& pc : m_pChilds)
 	{
-		pc->Draw(gfx, mcb, build);
+		pc->Draw(gfx, build);
 	}
 }
 
@@ -116,14 +109,13 @@ void Scene::Node::SetAppliedTransform(DirectX::XMMATRIX transform)
 	DirectX::XMStoreFloat4x4(&m_AppliedTransform, transform);
 }
 
-void Scene::Model::ModelWindow::Show(const char* WindowName, const Node& node, ModelCBuffer& mcb) noexcept(!IS_DEBUG)
+void Scene::Model::ModelWindow::Show(const char* WindowName, const Node& node) noexcept(!IS_DEBUG)
 {
 	int nodeIndexTracker = 0;
 	if (ImGui::Begin(WindowName))
 	{
 		ImGui::Columns(2, nullptr, true);
 		node.ShowTree(m_SelectedIndex, m_pSelectedNode);
-		ImGui::Checkbox("enable normal", reinterpret_cast<bool*>(&mcb.enNormal));
 		ImGui::NextColumn();
 		if (m_pSelectedNode != nullptr)
 		{
@@ -179,7 +171,7 @@ Scene::Model::Model(Graphics& gfx,RenderOption& option)
 
 	for (unsigned int i = 0; i < pScene->mNumMeshes; i++)
 	{
-		m_pMeshes.emplace_back(ParseMesh(gfx, *pScene->mMeshes[i], option, pScene->mMaterials, m_CBuffer));
+		m_pMeshes.emplace_back(ParseMesh(gfx, *pScene->mMeshes[i], option, pScene->mMaterials));
 	}
 	int next_id = 0;
 	m_pRoot = ParseNode(next_id, *pScene->mRootNode);
@@ -187,7 +179,7 @@ Scene::Model::Model(Graphics& gfx,RenderOption& option)
 	m_pWindow->m_transform.insert({ *(m_pWindow->m_SelectedIndex),  Model::ModelWindow::TransformParams{} });
 }
 
-std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, RenderOption& option, const aiMaterial* const* pMaterial, ModelCBuffer& mcb)
+std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, RenderOption& option, const aiMaterial* const* pMaterial)
 {
 	const std::filesystem::path& ModelPath = option.szModelPath;
 	std::string szTexRootPath = ModelPath.parent_path().string();
@@ -200,110 +192,13 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 	}
 	if (mesh.HasNormals())
 	{
-		vlayout.Append(Vertex::Normal);
+		vlayout.Append(Vertex::Normal).Append(Vertex::Tangent);
 	}
 	if (mesh.HasTextureCoords(0))
 	{
 		vlayout.Append(Vertex::Tex2D);
 	}
-	if (mesh.HasNormals())
-	{
-		vlayout.Append(Vertex::Tangent);
-	}
-
 	Vertex::DataBuffer vtxb(vlayout);
-	float shininess = 30.0f;
-	DirectX::XMFLOAT4 specColor = { 0.18f,0.18f,0.18f,1.0f };
-	DirectX::XMFLOAT4 diffuseColor = { 0.45f,0.45f,0.85f,1.0f };
-	DirectX::XMFLOAT4 ambientColor = { 0.45f, 0.45f, 0.45f, 1.0f };
-	if (mesh.mMaterialIndex >= 0)
-	{
-		using namespace std::string_literals;
-		bool hasNormal = false, hasTex = false, hasSpec = false, hasAlpha = false,showTwoSide = false, hasAlphaGloss = false;
-
-		std::wstring szPSPath = L"res\\cso\\PS";
-		std::wstring szVSPath = L"res\\cso\\VSTex";
-
-		auto& material = *pMaterial[mesh.mMaterialIndex];
-		aiString texPath;
-		if (material.GetTexture(aiTextureType_AMBIENT, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
-		{
-			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 3);
-			if (tex->HasAlpha())
-			{
-				hasAlpha = TRUE;
-			}
-			binds.emplace_back(tex);
-			mcb.hasAmbient = TRUE;
-		}
-		else
-		{
-			material.Get(AI_MATKEY_COLOR_AMBIENT, reinterpret_cast<aiColor3D&>(ambientColor));
-		}
-		if (material.GetTexture(aiTextureType_DIFFUSE, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
-		{
-			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()));
-			if (tex->HasAlpha())
-			{
-				hasAlpha = TRUE;
-			}
-			binds.emplace_back(tex);
-			hasTex = true;
-		}
-		else
-		{
-			material.Get(AI_MATKEY_COLOR_DIFFUSE, reinterpret_cast<aiColor3D&>(diffuseColor));
-		}
-		if (material.GetTexture(aiTextureType_SPECULAR, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
-		{
-			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 1);
-			hasAlphaGloss = tex->HasAlpha();
-			binds.emplace_back(tex);
-			hasSpec = true;
-			mcb.hasGloss = hasAlphaGloss ? TRUE : FALSE;
-		}
-		if(!hasAlphaGloss)
-		{
-			material.Get(AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor3D&>(specColor));
-		}
-		if (material.GetTexture(aiTextureType_NORMALS, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
-		{
-			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 2);
-			binds.emplace_back(tex);
-			hasNormal = true;
-		}
-		else {
-			material.Get(AI_MATKEY_SHININESS, shininess);
-		}
-		if (hasTex)
-		{
-			szPSPath += L"Tex";
-		}
-		if (hasSpec)
-		{
-			szPSPath += L"Spec";
-		}
-		if (hasNormal)
-		{
-			szPSPath += L"Norm";
-			szVSPath += L"Norm";
-		}
-		if (hasAlpha)
-		{
-			szPSPath += L"Alpha";
-		}
-		szPSPath += L".cso";
-		szVSPath += L".cso";
-		if (option.szPSPath.empty())
-		{
-			option.szPSPath = szPSPath;
-		}
-		option.szVSPath = szVSPath;
-		showTwoSide = hasAlpha;
-		binds.emplace_back(Sampler::Resolve(gfx));
-		binds.emplace_back(Blender::Resolve(gfx, hasAlpha));
-		binds.emplace_back(Rasterizer::Resolve(gfx, showTwoSide));
-	}
 	for (unsigned int i = 0; i < mesh.mNumVertices; i++)
 	{
 		for (size_t i_ele = 0; i_ele < vlayout.Count(); i_ele++)
@@ -345,15 +240,107 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 	}
 	binds.emplace_back(IndexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), indicies));
 
-	auto pvs = VertexShader::Resolve(gfx, option.szVSPath);
-	auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
-	binds.emplace_back(std::move(pvs));
-	binds.emplace_back(InputLayout::Resolve(gfx, vtxb.GetLayout(), pvsbc));
-	binds.emplace_back(PixelShader::Resolve(gfx, option.szPSPath));
-	mcb.ambient = ambientColor;
-	mcb.spec_color = specColor;
-	mcb.spec_pow = shininess;
-	return std::make_unique<Mesh>(gfx, mcb, binds);
+	float shininess = 30.0f;
+	DirectX::XMFLOAT4 specColor = { 0.18f,0.18f,0.18f,1.0f };
+	DirectX::XMFLOAT4 diffuseColor = { 0.45f,0.45f,0.85f,1.0f };
+	DirectX::XMFLOAT4 ambientColor = { 0.45f, 0.45f, 0.45f, 1.0f };
+	if (mesh.mMaterialIndex >= 0)
+	{
+		using namespace std::string_literals;
+		DCBuf::RawLayout cBufferLayout;
+		cBufferLayout.Add<DCBuf::Float4>("Ambient");
+		cBufferLayout.Add<DCBuf::Float4>("SpecColor");
+		cBufferLayout.Add<DCBuf::Float>("SpecIntensity");
+		cBufferLayout.Add<DCBuf::Float>("SpecPow");
+		cBufferLayout.Add<DCBuf::Bool>("hasAmbient");
+		cBufferLayout.Add<DCBuf::Bool>("hasGloss");
+
+		DCBuf::Buffer buffer = DCBuf::Buffer(std::move(cBufferLayout));
+
+		bool hasNormal = false, hasTex = false, hasAmbient = false,hasSpec = false, 
+			hasAlpha = false,showTwoSide = false, hasAlphaGloss = false;
+
+		std::wstring szPSPath = L"res\\cso\\PS";
+		std::wstring szVSPath = L"res\\cso\\VSTex";
+
+		auto& material = *pMaterial[mesh.mMaterialIndex];
+		aiString texPath;
+		if (material.GetTexture(aiTextureType_AMBIENT, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
+		{
+			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 3);
+			if (tex->HasAlpha() && !hasAlpha)
+			{
+				hasAlpha = TRUE;
+			}
+			binds.emplace_back(tex);
+			hasAmbient = TRUE;
+		}
+		else
+		{
+			material.Get(AI_MATKEY_COLOR_AMBIENT, reinterpret_cast<aiColor3D&>(ambientColor));
+		}
+		if (material.GetTexture(aiTextureType_DIFFUSE, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
+		{
+			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()));
+			if (tex->HasAlpha() && !hasAlpha)
+			{
+				hasAlpha = TRUE;
+			}
+			binds.emplace_back(tex);
+			hasTex = true;
+		}
+		else
+		{
+			material.Get(AI_MATKEY_COLOR_DIFFUSE, reinterpret_cast<aiColor3D&>(diffuseColor));
+		}
+		if (material.GetTexture(aiTextureType_SPECULAR, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
+		{
+			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 1);
+			hasAlphaGloss = tex->HasAlpha();
+			binds.emplace_back(tex);
+			hasSpec = true;
+		}
+		if(!hasAlphaGloss)
+		{
+			material.Get(AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor3D&>(specColor));
+		}
+		if (material.GetTexture(aiTextureType_NORMALS, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
+		{
+			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 2);
+			binds.emplace_back(tex);
+			hasNormal = true;
+		}
+		else {
+			material.Get(AI_MATKEY_SHININESS, shininess);
+		}
+		binds.emplace_back(Blender::Resolve(gfx, hasAlpha));
+		binds.emplace_back(Rasterizer::Resolve(gfx, showTwoSide));
+		binds.emplace_back(Sampler::Resolve(gfx));
+
+		szPSPath += std::wstring(hasTex ? L"Tex" : L"") + (hasSpec ? L"Spec" : L"") + (hasNormal ? L"Norm" : L"") + (hasAlpha ? L"Alpha" : L"") + L".cso";
+		szVSPath += std::wstring(hasNormal ? L"Norm" : L"") + L".cso";
+
+		if (option.szPSPath.empty())
+		{
+			option.szPSPath = szPSPath;
+		}
+		option.szVSPath = szVSPath;
+		showTwoSide = hasAlpha;
+		auto pvs = VertexShader::Resolve(gfx, option.szVSPath);
+		auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
+		binds.emplace_back(std::move(pvs));
+		binds.emplace_back(InputLayout::Resolve(gfx, vtxb.GetLayout(), pvsbc));
+		binds.emplace_back(PixelShader::Resolve(gfx, option.szPSPath));
+
+		buffer["Ambient"] = ambientColor;
+		buffer["SpecColor"] = specColor;
+		buffer["SpecIntensity"] = 0.5f;		
+		buffer["SpecPow"] = shininess;
+		buffer["hasAmbient"] = (BOOL)hasAmbient;
+		buffer["hasGloss"] = (BOOL)hasAlphaGloss;
+		binds.emplace_back(std::make_shared<CachingPixelConstantBuffer>(gfx, buffer, 3u));
+	}
+	return std::make_unique<Mesh>(gfx, binds);
 }
 
 std::unique_ptr<Scene::Node> Scene::Model::ParseNode(int& next_id, const aiNode& node)
@@ -381,7 +368,7 @@ std::unique_ptr<Scene::Node> Scene::Model::ParseNode(int& next_id, const aiNode&
 
 void Scene::Model::SpwanControlWindow() noexcept
 {
-	m_pWindow->Show(m_szModelName.c_str(), *m_pRoot, m_CBuffer);
+	m_pWindow->Show(m_szModelName.c_str(), *m_pRoot);
 
 }
 
@@ -392,7 +379,7 @@ void Scene::Model::Draw(Graphics& gfx) const
 		pNode->SetAppliedTransform(m_pWindow->GetTransform());
 	}
 	
-	m_pRoot->Draw(gfx, m_CBuffer, DirectX::XMMatrixIdentity());
+	m_pRoot->Draw(gfx, DirectX::XMMatrixIdentity());
 }
 
 void Scene::Model::SetPos(float x, float y, float z) noexcept

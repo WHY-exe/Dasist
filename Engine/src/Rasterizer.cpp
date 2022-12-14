@@ -1,6 +1,7 @@
 #include "Rasterizer.h"
 #include "BindableCodex.h"
 #include "GfxThrowMacro.h"
+#include <string>
 #include <typeinfo>
 
 Rasterizer::Rasterizer(Graphics& gfx, bool twoside)
@@ -43,5 +44,6 @@ std::wstring Rasterizer::GetUID() noexcept
 
 std::wstring Rasterizer::GenUID(bool twoside) noexcept
 {
-	return ANSI_TO_UTF8_STR(typeid(Rasterizer).name() + '#' + std::to_string(twoside));
+	using namespace std::string_literals;
+	return ANSI_TO_UTF8_STR(typeid(Rasterizer).name() + "#"s + "TwoSide"s + std::string(twoside ? "T"s : "F"s));
 }

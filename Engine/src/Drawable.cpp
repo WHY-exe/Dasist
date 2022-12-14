@@ -1,5 +1,5 @@
 #include "Drawable.h"
-
+#include "ConstantBufferEx.h"
 void Drawable::Draw(Graphics& gfx)
 {
 	for (auto& b: m_binds)
@@ -8,6 +8,7 @@ void Drawable::Draw(Graphics& gfx)
 		{
 			b->Bind(gfx);
 		}
+
 	}
 	gfx.DrawIndexed(m_pIndexBuffer->GetSize());
 }

@@ -17,7 +17,8 @@
 #include "VS_PS_TFCB.h"
 #include "Blender.h"
 #include "Rasterizer.h"
-#include "ConstatntBufferEx.h"
+#include "ConstantBufferEx.h"
+#include "MathTool.h"
 #include <filesystem>
 #ifndef NDEBUG
 #pragma comment(lib, "assimp-vc142-mtd.lib")
@@ -27,11 +28,20 @@
 
 
 
+CachingPixelConstantBuffer* Scene::Mesh::GetMaterial() const noexcept
+{
+	return m_material;
+}
+
 Scene::Mesh::Mesh(Graphics& gfx, std::vector<std::shared_ptr<Bindable>>& binds)
 {
 	AddBind(Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 	for (auto& b : binds)
 	{
+		if (auto pt = dynamic_cast<CachingPixelConstantBuffer*>(b.get()))
+		{
+			m_material = pt;
+		}
 		AddBind(std::move(b));
 	}
 	AddBind(std::make_shared<TransformCbuf>(gfx, *this));
@@ -48,6 +58,25 @@ DirectX::XMMATRIX Scene::Mesh::GetTransformXM() const noexcept
 	return DirectX::XMLoadFloat4x4(&m_transform);
 }
 
+
+int Scene::Node::GetId() const noexcept
+{
+	return m_id;
+}
+
+const DirectX::XMFLOAT4X4& Scene::Node::GetAppliedTransform() const noexcept
+{
+	return m_AppliedTransform;
+}
+
+const DCBuf::Buffer* Scene::Node::GetMaterialConstant() const noexcept
+{
+	if (m_pMeshes.size() == 0)
+	{
+		return nullptr;
+	}
+	return &(m_pMeshes.front()->GetMaterial()->GetBuffer());
+}
 
 Scene::Node::Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform)
 	:
@@ -74,6 +103,12 @@ void Scene::Node::Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) co
 		pc->Draw(gfx, build);
 	}
 }
+void Scene::Node::SetAppliedMaterialConstant(const DCBuf::Buffer& buffer) const noexcept(!IS_DEBUG)
+{
+	auto pcb = m_pMeshes.front()->GetMaterial();
+	assert(pcb != nullptr);
+	pcb->SetBuffer(buffer);
+}
 
 void Scene::Node::AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG)
 {
@@ -81,16 +116,16 @@ void Scene::Node::AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG)
 	m_pChilds.emplace_back(std::move(child));
 }
 
-void Scene::Node::ShowTree(std::optional<int>& selectedIndex, Node*& pSelectedNode) const noexcept(!IS_DEBUG)
+void Scene::Node::ShowTree(Node*& pSelectedNode) const noexcept(!IS_DEBUG)
 {
+	const int selected_id = (pSelectedNode == nullptr) ? -1 : pSelectedNode->GetId();
 	const auto imgui_flags = ImGuiTreeNodeFlags_OpenOnArrow 
-		| ((m_id == selectedIndex.value_or(-1)) ? ImGuiTreeNodeFlags_Selected : 0)
+		| ((m_id == selected_id) ? ImGuiTreeNodeFlags_Selected : 0)
 		| ((m_pChilds.empty() ? ImGuiTreeNodeFlags_Leaf : 0));
 	// render the node
 	const auto expand = ImGui::TreeNodeEx((void*)(intptr_t)m_id, imgui_flags, m_szNodeName.c_str());
-	if (ImGui::IsItemClicked())
+	if (ImGui::IsItemClicked() || ImGui::IsItemActivated())
 	{
-		selectedIndex = m_id;
 		pSelectedNode = const_cast<Node*>(this);
 	}
 	// render the child node if root expanded
@@ -98,7 +133,7 @@ void Scene::Node::ShowTree(std::optional<int>& selectedIndex, Node*& pSelectedNo
 	{
 		for (auto& child : m_pChilds)
 		{
-			child->ShowTree(selectedIndex, pSelectedNode);
+			child->ShowTree(pSelectedNode);
 		}
 		ImGui::TreePop();
 	}
@@ -109,40 +144,95 @@ void Scene::Node::SetAppliedTransform(DirectX::XMMATRIX transform)
 	DirectX::XMStoreFloat4x4(&m_AppliedTransform, transform);
 }
 
+
 void Scene::Model::ModelWindow::Show(const char* WindowName, const Node& node) noexcept(!IS_DEBUG)
 {
-	int nodeIndexTracker = 0;
 	if (ImGui::Begin(WindowName))
 	{
 		ImGui::Columns(2, nullptr, true);
-		node.ShowTree(m_SelectedIndex, m_pSelectedNode);
+		node.ShowTree(m_pSelectedNode);
+
 		ImGui::NextColumn();
-		if (m_pSelectedNode != nullptr)
+		auto selected_node_id = m_pSelectedNode->GetId();
+		if (m_pSelectedNode)
 		{
-			auto& transform = m_transform[*m_SelectedIndex];
-			ImGui::Text("Position");
-			ImGui::SliderFloat("X", &transform.x, -80.0f, 80.0f, "%.1f");
-			ImGui::SliderFloat("Y", &transform.y, -80.0f, 80.0f, "%.1f");
-			ImGui::SliderFloat("Z", &transform.z, -80.0f, 80.0f, "%.1f");
-			ImGui::Text("Angle");
-			ImGui::SliderAngle("AngleX", &transform.roll, -180.0f, 180.0f, "%.1f");
-			ImGui::SliderAngle("AngleY", &transform.yaw, -180.0f, 180.0f, "%.1f");
-			ImGui::SliderAngle("AngleZ", &transform.pitch, -180.0f, 180.0f, "%.1f");
-			ImGui::Text("Scale");
-			ImGui::SliderFloat("Scale", &transform.scale, 0.0f, 1.0f, "%.3f");
+			auto i = m_WindowData.find(selected_node_id);
+			if (i == m_WindowData.end())
+			{
+				const auto& nodeTransform = m_pSelectedNode->GetAppliedTransform();
+				const auto euler_angle = math_tool::ExtraEulerAngle(nodeTransform);
+				const auto translation = math_tool::ExtraTranslation(nodeTransform);
+				TransformParams tp;
+				tp.pitch = euler_angle.x;
+				tp.yaw = euler_angle.y;
+				tp.roll = euler_angle.z;
+				tp.x = translation.x;
+				tp.y = translation.y;
+				tp.x = translation.z;
+				auto pMatConstant = m_pSelectedNode->GetMaterialConstant();
+				auto buffer = pMatConstant != nullptr ? std::optional<DCBuf::Buffer>{*pMatConstant} : std::optional<DCBuf::Buffer>{};
+				NodeData node_data = {};
+				node_data.constant_data = std::move(buffer);
+				node_data.transform_data = tp;
+				std::tie(i, std::ignore) = m_WindowData.insert({ selected_node_id, std::move(node_data) });
+			}
+			{
+				bool& dirty = i->second.transformDirty;
+				auto dcheck = [&dirty](bool change) {dirty = dirty || change; };
+				auto& transform = i->second.transform_data;
+				ImGui::Text("Position");
+				dcheck(ImGui::SliderFloat("X", &transform.x, -80.0f, 80.0f, "%.1f"));
+				dcheck(ImGui::SliderFloat("Y", &transform.y, -80.0f, 80.0f, "%.1f"));
+				dcheck(ImGui::SliderFloat("Z", &transform.z, -80.0f, 80.0f, "%.1f"));
+				ImGui::Text("Angle");
+				dcheck(ImGui::SliderAngle("AngleX", &transform.roll, -180.0f, 180.0f, "%.1f"));
+				dcheck(ImGui::SliderAngle("AngleY", &transform.yaw, -180.0f, 180.0f, "%.1f"));
+				dcheck(ImGui::SliderAngle("AngleZ", &transform.pitch, -180.0f, 180.0f, "%.1f"));
+				ImGui::Text("Scale");
+				dcheck(ImGui::SliderFloat("Scale", &transform.scale, 0.0f, 1.0f, "%.3f"));
+			}
+			if (i->second.constant_data)
+			{
+				auto& material_data = *i->second.constant_data;
+				bool& dirty = i->second.materialCbufDirty;
+				auto dcheck = [&dirty](bool change) {dirty = dirty || change; };
+				ImGui::Text("Material");
+				if (auto v = material_data["enNormal"]; v.Exists())
+				{
+					dcheck(ImGui::Checkbox("Normal Map", &v));
+				}
+			}
+			ImGui::End();
 		}
-		
 	}
-	ImGui::End();
+}
+
+void Scene::Model::ModelWindow::AppliedParameters() noexcept
+{
+	if (auto& trans_d = m_WindowData[m_pSelectedNode->GetId()].transformDirty)
+	{
+		m_pSelectedNode->SetAppliedTransform(GetTransform());
+		trans_d = false;
+	}
+	
+	if (auto& mat_d =  m_WindowData[m_pSelectedNode->GetId()].materialCbufDirty)
+	{ 
+		m_pSelectedNode->SetAppliedMaterialConstant(*GetMaterialConstant());
+		mat_d = false;
+	}
 }
 
 DirectX::XMMATRIX Scene::Model::ModelWindow::GetTransform() noexcept
 {
-	const auto& transform = m_transform.at(*m_SelectedIndex);
+	const auto& transform = m_WindowData[m_pSelectedNode->GetId()].transform_data;
 	return
 		DirectX::XMMatrixRotationRollPitchYaw(transform.roll, transform.yaw, transform.pitch) *
 		DirectX::XMMatrixScaling(transform.scale, transform.scale, transform.scale) *
 		DirectX::XMMatrixTranslation(transform.x, transform.y, transform.z);
+}
+std::optional<DCBuf::Buffer>& Scene::Model::ModelWindow::GetMaterialConstant() noexcept
+{
+	return m_WindowData[m_pSelectedNode->GetId()].constant_data;
 }
 
 Scene::Node* Scene::Model::ModelWindow::GetSelectedNode() const noexcept
@@ -176,7 +266,6 @@ Scene::Model::Model(Graphics& gfx,RenderOption& option)
 	int next_id = 0;
 	m_pRoot = ParseNode(next_id, *pScene->mRootNode);
 	m_pWindow->m_pSelectedNode = const_cast<Node*>(m_pRoot.get());
-	m_pWindow->m_transform.insert({ *(m_pWindow->m_SelectedIndex),  Model::ModelWindow::TransformParams{} });
 }
 
 std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, RenderOption& option, const aiMaterial* const* pMaterial)
@@ -254,11 +343,11 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		cBufferLayout.Add<DCBuf::Float>("SpecPow");
 		cBufferLayout.Add<DCBuf::Bool>("hasAmbient");
 		cBufferLayout.Add<DCBuf::Bool>("hasGloss");
-
+		cBufferLayout.Add<DCBuf::Bool>("enNormal");
 		DCBuf::Buffer buffer = DCBuf::Buffer(std::move(cBufferLayout));
 
-		bool hasNormal = false, hasTex = false, hasAmbient = false,hasSpec = false, 
-			hasAlpha = false,showTwoSide = false, hasAlphaGloss = false;
+		bool hasNormal = false, hasTex = false, hasAmbient = false, hasSpec = false, 
+			hasAlpha = false, showTwoSide = false, hasAlphaGloss = false;
 
 		std::wstring szPSPath = L"res\\cso\\PS";
 		std::wstring szVSPath = L"res\\cso\\VSTex";
@@ -270,10 +359,10 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 3);
 			if (tex->HasAlpha() && !hasAlpha)
 			{
-				hasAlpha = TRUE;
+				hasAlpha = true;
 			}
 			binds.emplace_back(tex);
-			hasAmbient = TRUE;
+			hasAmbient = true;
 		}
 		else
 		{
@@ -284,7 +373,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()));
 			if (tex->HasAlpha() && !hasAlpha)
 			{
-				hasAlpha = TRUE;
+				hasAlpha = true;
 			}
 			binds.emplace_back(tex);
 			hasTex = true;
@@ -313,33 +402,36 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		else {
 			material.Get(AI_MATKEY_SHININESS, shininess);
 		}
-		binds.emplace_back(Blender::Resolve(gfx, hasAlpha));
-		binds.emplace_back(Rasterizer::Resolve(gfx, showTwoSide));
-		binds.emplace_back(Sampler::Resolve(gfx));
-
 		szPSPath += std::wstring(hasTex ? L"Tex" : L"") + (hasSpec ? L"Spec" : L"") + (hasNormal ? L"Norm" : L"") + (hasAlpha ? L"Alpha" : L"") + L".cso";
 		szVSPath += std::wstring(hasNormal ? L"Norm" : L"") + L".cso";
-
+		showTwoSide = hasAlpha;
+		binds.emplace_back(Blender::Resolve(gfx, hasAlpha));
+		binds.emplace_back(Rasterizer::Resolve(gfx, showTwoSide));
 		if (option.szPSPath.empty())
 		{
 			option.szPSPath = szPSPath;
 		}
 		option.szVSPath = szVSPath;
-		showTwoSide = hasAlpha;
-		auto pvs = VertexShader::Resolve(gfx, option.szVSPath);
+		
+		auto pvs = VertexShader::Resolve(gfx, szVSPath);
 		auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
 		binds.emplace_back(std::move(pvs));
 		binds.emplace_back(InputLayout::Resolve(gfx, vtxb.GetLayout(), pvsbc));
-		binds.emplace_back(PixelShader::Resolve(gfx, option.szPSPath));
+		binds.emplace_back(PixelShader::Resolve(gfx, szPSPath));
+		
+		binds.emplace_back(Sampler::Resolve(gfx));
 
 		buffer["Ambient"] = ambientColor;
 		buffer["SpecColor"] = specColor;
 		buffer["SpecIntensity"] = 0.5f;		
 		buffer["SpecPow"] = shininess;
-		buffer["hasAmbient"] = (BOOL)hasAmbient;
-		buffer["hasGloss"] = (BOOL)hasAlphaGloss;
-		binds.emplace_back(std::make_shared<CachingPixelConstantBuffer>(gfx, buffer, 3u));
+		buffer["hasAmbient"] = hasAmbient;
+		buffer["hasGloss"] = hasAlphaGloss;
+		buffer["enNormal"] = true;
+		binds.emplace_back(std::make_shared<CachingPixelConstantBuffer>(gfx, buffer, 2u));
 	}
+	option.szPSPath.clear();
+	option.szVSPath.clear();
 	return std::make_unique<Mesh>(gfx, binds);
 }
 
@@ -369,22 +461,18 @@ std::unique_ptr<Scene::Node> Scene::Model::ParseNode(int& next_id, const aiNode&
 void Scene::Model::SpwanControlWindow() noexcept
 {
 	m_pWindow->Show(m_szModelName.c_str(), *m_pRoot);
-
 }
 
 void Scene::Model::Draw(Graphics& gfx) const
 {
-	if (auto pNode = m_pWindow->GetSelectedNode())
-	{
-		pNode->SetAppliedTransform(m_pWindow->GetTransform());
-	}
-	
+	m_pWindow->AppliedParameters();
 	m_pRoot->Draw(gfx, DirectX::XMMatrixIdentity());
 }
 
 void Scene::Model::SetPos(float x, float y, float z) noexcept
 {
-	auto& transform = m_pWindow->m_transform[*(m_pWindow->m_SelectedIndex)];
+	auto& transform = m_pWindow->m_WindowData[m_pWindow->m_pSelectedNode->m_id].transform_data;
+	m_pWindow->m_WindowData[m_pWindow->m_pSelectedNode->m_id].transformDirty = true;
 	transform.x = x;
 	transform.y = y;
 	transform.z = z;
@@ -392,13 +480,15 @@ void Scene::Model::SetPos(float x, float y, float z) noexcept
 
 void Scene::Model::Scale(float scale) noexcept
 {
-	auto& transform = m_pWindow->m_transform[*(m_pWindow->m_SelectedIndex)];
+	auto& transform = m_pWindow->m_WindowData[m_pWindow->m_pSelectedNode->m_id].transform_data;
+	m_pWindow->m_WindowData[m_pWindow->m_pSelectedNode->m_id].transformDirty = true;
 	transform.scale = scale;
 }
 
 void Scene::Model::SetPos(DirectX::XMFLOAT3 pos) noexcept
 {
-	auto& transform = m_pWindow->m_transform[*(m_pWindow->m_SelectedIndex)];
+	auto& transform = m_pWindow->m_WindowData[m_pWindow->m_pSelectedNode->m_id].transform_data;
+	m_pWindow->m_WindowData[m_pWindow->m_pSelectedNode->m_id].transformDirty = true;
 	transform.x = pos.x;
 	transform.y = pos.y;
 	transform.z = pos.z;

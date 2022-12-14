@@ -8,7 +8,8 @@
 #include <optional>
 #include <unordered_map>
 #include "Drawable.h"
-#include "ConstantBuffer.h"
+#include "DynamicConstantBuffer.h"
+#include "ConstantBufferEx.h"
 namespace Scene
 {
 	struct RenderOption 
@@ -23,8 +24,10 @@ namespace Scene
 	public:
 		Mesh(Graphics& gfx, std::vector<std::shared_ptr<Bindable>>& binds);
 		void Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) noexcept(!IS_DEBUG);
+		CachingPixelConstantBuffer* GetMaterial() const noexcept;
 		DirectX::XMMATRIX GetTransformXM() const noexcept override;
 	private:
+		CachingPixelConstantBuffer* m_material;
 		DirectX::XMFLOAT4X4 m_transform;
 	};
 	class Node
@@ -33,10 +36,14 @@ namespace Scene
 	public:
 		Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform);
 		void Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG);
+		int GetId() const noexcept;
+		const DirectX::XMFLOAT4X4& GetAppliedTransform() const noexcept;
+		const DCBuf::Buffer* GetMaterialConstant() const noexcept;
 	private:
 		void AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG);
-		void ShowTree(std::optional<int>& selectedIndex, Node*& pSelectedNode) const noexcept(!IS_DEBUG);
+		void ShowTree(Node*& pSelectedNode) const noexcept(!IS_DEBUG);
 		void SetAppliedTransform(DirectX::XMMATRIX transform);
+		void SetAppliedMaterialConstant(const DCBuf::Buffer& buffer) const noexcept(!IS_DEBUG);
 	private:
 		int m_id;
 		std::vector<Mesh*> m_pMeshes;
@@ -54,10 +61,11 @@ namespace Scene
 		public:
 			void Show(const char* WindowName, const Node& node) noexcept(!IS_DEBUG);
 			DirectX::XMMATRIX GetTransform() noexcept;
+			std::optional<DCBuf::Buffer>& GetMaterialConstant() noexcept;
 			Node* GetSelectedNode() const noexcept;
+			void AppliedParameters() noexcept;
 		private:
-			std::optional<int> m_SelectedIndex = { 0 };
-			Node* m_pSelectedNode;
+			Node* m_pSelectedNode = nullptr;
 			struct TransformParams
 			{
 				float roll = 0.0f;
@@ -68,9 +76,15 @@ namespace Scene
 				float z = 0.0f;
 				float scale = 1.0f;
 			};
-			std::unordered_map<int, TransformParams> m_transform;
+			struct NodeData 
+			{
+				bool transformDirty = false;
+				TransformParams transform_data;
+				bool materialCbufDirty = false;
+				std::optional<DCBuf::Buffer> constant_data;
+			};
+			std::unordered_map<int, NodeData> m_WindowData;
 		};
-
 	public:
 		Model() = default;
 		Model(Graphics& gfx, RenderOption& option);

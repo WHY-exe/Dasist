@@ -146,6 +146,9 @@
     <ClCompile Include="src\LayoutCodeX.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\MathTool.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Console.h">
@@ -295,7 +298,10 @@
     <ClInclude Include="src\LayoutCodeX.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\ConstatntBufferEx.h">
+    <ClInclude Include="src\ConstantBufferEx.h">
+      <Filter>Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stencil.h">
       <Filter>Bindable</Filter>
     </ClInclude>
   </ItemGroup>
@@ -328,6 +334,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="shader\PSTexNormAlpha.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\PSTexSpecAlpha.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

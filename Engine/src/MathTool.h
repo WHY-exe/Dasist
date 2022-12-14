@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <DirectXMath.h>
 #define PI (float)3.14159265f
 #define PI_D (double)3.1415926535897932
 
@@ -20,4 +21,6 @@ namespace math_tool {
 		return mod;
 
 	}
+	DirectX::XMFLOAT3 ExtraEulerAngle(const DirectX::XMFLOAT4X4 matrix);
+	DirectX::XMFLOAT3 ExtraTranslation(const DirectX::XMFLOAT4X4 matrix);
 }

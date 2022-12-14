@@ -63,7 +63,8 @@ std::shared_ptr<Blender> Blender::Resolve(Graphics& gfx, bool enBlend, std::opti
 
 std::wstring Blender::GenUID(bool enBlend, std::optional<float> factor) noexcept
 {
-    return ANSI_TO_UTF8_STR(typeid(Blender).name() + '#' + std::to_string(enBlend) + (factor ? "#f" + std::to_string(*factor) : ""));
+    using namespace std::string_literals;
+    return ANSI_TO_UTF8_STR(typeid(Blender).name() + "#"s + "Enblend"s + std::string(enBlend ? "T"s : "F"s) + std::string(factor ? "#f"s + std::to_string(*factor) : ""s));
 }
 
 std::wstring Blender::GetUID() const noexcept

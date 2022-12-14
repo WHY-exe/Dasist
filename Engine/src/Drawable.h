@@ -13,6 +13,19 @@ public:
 	void Draw(Graphics& gfx);
 	virtual DirectX::XMMATRIX GetTransformXM() const noexcept = 0;
 	virtual ~Drawable() = default;
+	template <typename T>
+	T* QueryBindable() noexcept
+	{
+		for (auto& i : m_binds)
+		{
+			if (auto pt = dynamic_cast<T*>(i.get()))
+			{
+				return pt;
+			}
+		}
+		return nullptr;
+	}
+
 protected:
 	void AddBind(std::shared_ptr<Bindable> bind) noexcept(!IS_DEBUG);
 private:

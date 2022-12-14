@@ -372,8 +372,9 @@ namespace DCBuf
 	Buffer::Buffer(Buffer&& buffer) noexcept(!IS_DEBUG)
 		:
 		m_pLayoutRoot(std::move(buffer.m_pLayoutRoot)),
-		m_Data(std::move(m_Data))
+		m_Data(std::move(buffer.m_Data))
 	{}
+
 	ElementRef Buffer::operator[](const std::string& key) noexcept(!IS_DEBUG)
 	{
 		return { 0u, m_Data.data(), &(*m_pLayoutRoot)[key] };
@@ -382,6 +383,12 @@ namespace DCBuf
 	ConstElementRef Buffer::operator[](const std::string& key) const noexcept(!IS_DEBUG)
 	{
 		return const_cast<Buffer&>(*this)[key];
+	}
+	Buffer& Buffer::operator=(const Buffer& right) noexcept(!IS_DEBUG)
+	{
+		m_pLayoutRoot = right.ShareLayoutRoot();
+		m_Data = right.m_Data;
+		return *this;
 	}
 	size_t Buffer::GetSizeInBytes() const noexcept
 	{

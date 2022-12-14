@@ -5,7 +5,7 @@
 class PixelConstantBufferEx : public Bindable
 {
 public:
-	void Update(Graphics& gfx, DCBuf::Buffer& buffer)
+	void Update(Graphics& gfx, const DCBuf::Buffer& buffer)
 	{
         IMPORT_INFOMAN(gfx);
         // the pointer point to the memory of data that will be updated
@@ -18,7 +18,7 @@ public:
                 &msr
             )
         );
-        memcpy(msr.pData, &buffer, buffer.GetSizeInBytes());
+        memcpy(msr.pData, buffer.GetData(), buffer.GetSizeInBytes());
         GetContext(gfx)->Unmap(m_pBuffer.Get(), 0u);
 	}
     void Bind(Graphics& gfx) noexcept override
@@ -61,7 +61,9 @@ public:
         :
         PixelConstantBufferEx(gfx, nullptr, *layoutRoot.ShareRoot(), slot),
         m_Buffer(layoutRoot)
-    {}
+    {
+        m_dirty = true;
+    }
     CachingPixelConstantBuffer(Graphics& gfx, const DCBuf::Buffer& buffer, UINT slot)
         :
         PixelConstantBufferEx(gfx, &buffer, buffer.GetRootLayoutElement(), slot),
@@ -75,23 +77,27 @@ public:
     {
         return m_Buffer;
     }
+    DCBuf::Buffer& GetBuffer() noexcept
+    {
+        return m_Buffer;
+    }
     void SetBuffer(const DCBuf::Buffer& src_buffer) noexcept
     {
         m_Buffer.CopyFrom(src_buffer);
-        dirty = true;
+        m_dirty = true;
     }
     void Bind(Graphics& gfx) noexcept override
     {
-        if (dirty)
+        if (m_dirty)
         {
             Update(gfx, m_Buffer);
-            dirty = false;
+            m_dirty = false;
         }
         PixelConstantBufferEx::Bind(gfx);
     }
 private:
     DCBuf::Buffer m_Buffer;
-    bool dirty = false;
+    bool m_dirty = false;
 };
 
 class NoCachePixelConstantBuffer : public PixelConstantBufferEx

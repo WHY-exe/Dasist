@@ -68,8 +68,8 @@ namespace DCBuf
 	};
 	template<> struct Map<Bool>
 	{
-		using SysType = BOOL;
-		static constexpr size_t hlsl_size = sizeof(SysType);
+		using SysType = bool;
+		static constexpr size_t hlsl_size = sizeof(BOOL);
 		static constexpr const char* code = "BL";
 		static constexpr bool valid = true;
 	};
@@ -266,7 +266,7 @@ namespace DCBuf
 			operator T* () const noexcept(!IS_DEBUG)
 			{
 				static_assert(ReverseMap<std::remove_const_t<T>>::valid, "Unsupported Systype used in pointer conversion");
-				return &static_cast<const T&>(*m_ref);
+				return &static_cast<T&>(*m_ref);
 			}
 		private:
 			Ptr(ElementRef* ref) noexcept;
@@ -310,6 +310,7 @@ namespace DCBuf
 	class Buffer
 	{
 	public:
+		Buffer() = default;
 		Buffer(RawLayout&& layout) noexcept;
 		Buffer(const CookedLayout& layout) noexcept;
 		Buffer(CookedLayout&& layout) noexcept;
@@ -317,6 +318,7 @@ namespace DCBuf
 		Buffer(Buffer&& buffer) noexcept(!IS_DEBUG);
 		ElementRef operator[](const std::string& key) noexcept(!IS_DEBUG);
 		ConstElementRef operator[](const std::string& key) const noexcept(!IS_DEBUG);
+		Buffer& operator=(const Buffer& right) noexcept(!IS_DEBUG);
 		size_t GetSizeInBytes() const noexcept;
 		const char* GetData() const noexcept;
 		const LayoutElement& GetRootLayoutElement() const noexcept;

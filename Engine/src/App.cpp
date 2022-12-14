@@ -18,10 +18,10 @@ App::App()
 	op1.szModelPath = "res\\model\\Sponza\\sponza.obj";
 	op1.szModelName = "sponza";
 	model1 = Scene::Model(m_gfx, op1);
-	Scene::RenderOption op2;
-	op2.szModelPath = "res\\model\\Lumie\\Lumie.pmx";
-	op2.szModelName = "lumie";
-	model2 = Scene::Model(m_gfx, op2);
+	//Scene::RenderOption op2;
+	//op2.szModelPath = "res\\model\\Lumie\\Lumie.pmx";
+	//op2.szModelName = "lumie";
+	//model2 = Scene::Model(m_gfx, op2);
 }
 
 WPARAM App::Run()
@@ -50,10 +50,10 @@ void App::DoFrame()
 	pointLight.Draw(m_gfx);
 	//
 	model1.Draw(m_gfx);
-	model2.Draw(m_gfx);
+	//model2.Draw(m_gfx);
 
 	model1.SpwanControlWindow();
-	model2.SpwanControlWindow();
+	//model2.SpwanControlWindow();
 	gLight.SpwanControlWindow();
 	pointLight.SpwanControlWindow();
 	//

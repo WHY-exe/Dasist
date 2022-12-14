@@ -14,6 +14,7 @@ float4 main(VSOut vso) : SV_Target
         specular_intensity, specular_pow,
         true, pAttConst, pAttLinear, pAttQuad
     );
-    float3 Ambient = ambient.rgb * (pDiffuseColor + gDiffuseColor);
+    float3 Ambient = ambient.rgb;
+
     return float4(saturate(gLight.Diffuse + pLight.Diffuse + ambient.rgb) + (pLight.Specular + gLight.Specular), 1.0f);
 }

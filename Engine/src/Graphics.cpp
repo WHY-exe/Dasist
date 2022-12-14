@@ -177,7 +177,6 @@ void Graphics::BeginFrame()
     m_pContext->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), m_pDSV.Get());
 }
 
-
 void Graphics::EndFrame()
 {
     ImGui::Render();

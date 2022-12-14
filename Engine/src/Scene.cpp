@@ -58,7 +58,6 @@ DirectX::XMMATRIX Scene::Mesh::GetTransformXM() const noexcept
 	return DirectX::XMLoadFloat4x4(&m_transform);
 }
 
-
 int Scene::Node::GetId() const noexcept
 {
 	return m_id;
@@ -143,7 +142,6 @@ void Scene::Node::SetAppliedTransform(DirectX::XMMATRIX transform)
 {
 	DirectX::XMStoreFloat4x4(&m_AppliedTransform, transform);
 }
-
 
 void Scene::Model::ModelWindow::Show(const char* WindowName, const Node& node) noexcept(!IS_DEBUG)
 {
@@ -230,6 +228,7 @@ DirectX::XMMATRIX Scene::Model::ModelWindow::GetTransform() noexcept
 		DirectX::XMMatrixScaling(transform.scale, transform.scale, transform.scale) *
 		DirectX::XMMatrixTranslation(transform.x, transform.y, transform.z);
 }
+
 std::optional<DCBuf::Buffer>& Scene::Model::ModelWindow::GetMaterialConstant() noexcept
 {
 	return m_WindowData[m_pSelectedNode->GetId()].constant_data;

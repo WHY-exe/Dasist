@@ -1,36 +1,52 @@
 #include "Light.h"
+
 #include "imgui.h"
 PointLight::PointLight(Graphics& gfx)
 	:
-	m_pos(0.0f, 20.0f, 0.0f),
-	m_PSCbuf(gfx)
+	m_pos(0.0f, 20.0f, 0.0f)
 {
 	Scene::RenderOption op;
 	op.szModelPath = "res\\model\\sphere.obj";
 	op.szPSPath = L"res\\cso\\lightBall.cso";
 	m_lightBall = Scene::Model(gfx, op);
 	m_lightBall.Scale(0.3f);
+
+	DCBuf::RawLayout cBufferLayout;
+	cBufferLayout.Add<DCBuf::Float4>("LightPos");
+	cBufferLayout.Add<DCBuf::Float3>("Ambient");
+	cBufferLayout.Add<DCBuf::Float3>("DiffuseColor");
+	cBufferLayout.Add<DCBuf::Float>("DiffuseIntensity");
+	cBufferLayout.Add<DCBuf::Float>("attConst");
+	cBufferLayout.Add<DCBuf::Float>("attLin");
+	cBufferLayout.Add<DCBuf::Float>("attQuad");
+	m_cBuffer = DCBuf::Buffer(std::move(cBufferLayout));
+
+	m_cBuffer["LightPos"] = m_pos;
+	m_cBuffer["Ambient"] = m_ambient;
+	m_cBuffer["DiffuseColor"] = m_diffuseColor;
+	m_cBuffer["DiffuseIntensity"] = m_diffuseIntensity;
+	m_cBuffer["attConst"] = m_attConst;
+	m_cBuffer["attLin"] = m_attLinear;
+	m_cBuffer["attQuad"] = m_attQuad;
+
+	m_PSCbuf = std::make_unique<CachingPixelConstantBuffer>(gfx, m_cBuffer, 0u);
 }
 
 void PointLight::Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept
-{
+{	
 	const auto worPos = DirectX::XMLoadFloat3(&m_pos);
 	DirectX::XMFLOAT3 ViewPos;
 	DirectX::XMStoreFloat3(&ViewPos, DirectX::XMVector3Transform(worPos, viewTF));
-	m_PSCbuf.Update(
-		gfx, 
-		PointLightCBuffer(
-			ViewPos,			
-			m_ambient,
-			m_diffuseColor,
-			m_diffuseIntensity,
-			m_attConst,
-			m_attLinear,
-			m_attQuad
+	m_cBuffer["LightPos"] = ViewPos;
+	m_cBuffer["Ambient"] = m_ambient;
+	m_cBuffer["DiffuseColor"] = m_diffuseColor;
+	m_cBuffer["DiffuseIntensity"] = m_diffuseIntensity;
+	m_cBuffer["attConst"] = m_attConst;
+	m_cBuffer["attLin"] = m_attLinear;
+	m_cBuffer["attQuad"] = m_attQuad;
 
-		)
-	);
-	m_PSCbuf.Bind(gfx);
+	m_PSCbuf->SetBuffer(m_cBuffer);
+	m_PSCbuf->Bind(gfx);
 	m_lightBall.SetPos(m_pos);
 }
 
@@ -62,26 +78,35 @@ void PointLight::Draw(Graphics& gfx) noexcept
 GlobalLight::GlobalLight(Graphics& gfx)
 	:
 	m_pos(0.0f, 10.0f, 0.0f),
-	m_rot(0.0f, 0.0f, 0.0f),
-	m_PSCbuf(gfx, 1u)
+	m_rot(0.0f, 0.0f, 0.0f)
 {
+	DCBuf::RawLayout cBufferLayout;
+	cBufferLayout.Add<DCBuf::Float3>("LightPos");
+	cBufferLayout.Add<DCBuf::Float3>("Ambient");
+	cBufferLayout.Add<DCBuf::Float3>("DiffuseColor");
+	cBufferLayout.Add<DCBuf::Float>("DiffuseIntensity");
+
+	m_cBuffer = DCBuf::Buffer(std::move(cBufferLayout));
+
+	m_cBuffer["LightPos"] = m_pos;
+	m_cBuffer["Ambient"] = m_ambient;
+	m_cBuffer["DiffuseColor"] = m_diffuseColor;
+	m_cBuffer["DiffuseIntensity"] = m_diffuseIntensity;
+	m_PSCbuf = std::make_unique<CachingPixelConstantBuffer>(gfx, m_cBuffer, 1u);
 }
 
 void GlobalLight::Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept
 {
+	
 	const auto worPos = DirectX::XMLoadFloat3(&m_pos);
 	DirectX::XMFLOAT3 ViewPos;
 	DirectX::XMStoreFloat3(&ViewPos, DirectX::XMVector3Transform(worPos, viewTF));
-	m_PSCbuf.Update(
-		gfx,
-		GlobalLightCBuffer(
-			ViewPos,			
-			m_ambient,
-			m_diffuseColor,
-			m_diffuseIntensity
-		)
-	);
-	m_PSCbuf.Bind(gfx);
+	m_cBuffer["LightPos"] = ViewPos;
+	m_cBuffer["Ambient"] = m_ambient;
+	m_cBuffer["DiffuseColor"] = m_diffuseColor;
+	m_cBuffer["DiffuseIntensity"] = m_diffuseIntensity;
+	m_PSCbuf->SetBuffer(m_cBuffer);
+	m_PSCbuf->Bind(gfx);
 }
 
 void GlobalLight::SpwanControlWindow() noexcept

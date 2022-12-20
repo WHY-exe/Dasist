@@ -7,6 +7,17 @@
 #include <typeinfo>
 #include <d3d11.h>
 #include <DirectXMath.h>
+#define VTX_ELEMENT_TYPE\
+	X(Position2D)\
+	X(Position3D)\
+	X(Tex2D)\
+	X(Normal)\
+	X(Float3Color)\
+	X(Float4Color)\
+	X(Byte4Color)\
+	X(Tangent)\
+	X(Bitangent)
+
 namespace Vertex {
 	struct BGRAColor
 	{
@@ -17,15 +28,9 @@ namespace Vertex {
 	};
 	enum ElementType
 	{
-		Position2D,
-		Position3D,
-		Tex2D,
-		Normal,
-		Float3Color,
-		Float4Color,
-		Byte4Color,
-		Tangent,
-		Bitangent
+#define X(el) el,
+		VTX_ELEMENT_TYPE
+#undef X
 	};
 	template <ElementType type> struct Map;
 
@@ -150,33 +155,9 @@ namespace Vertex {
 			auto pAttribute = m_pBuffer;
 			switch (element.GetType())
 			{
-			case Position3D:
-				SetAttribute<Position3D>(pAttribute, std::forward<T>(val));
-				break;
-			case Position2D:
-				SetAttribute<Position2D>(pAttribute, std::forward<T>(val));
-				break;
-			case Tex2D:
-				SetAttribute<Tex2D>(pAttribute, std::forward<T>(val));
-				break;
-			case Normal:
-				SetAttribute<Normal>(pAttribute, std::forward<T>(val));
-				break;
-			case Bitangent:
-				SetAttribute<Bitangent>(pAttribute, std::forward<T>(val));
-				break;
-			case Tangent:
-				SetAttribute<Tangent>(pAttribute, std::forward<T>(val));
-				break;
-			case Float4Color:
-				SetAttribute<Float4Color>(pAttribute, std::forward<T>(val));
-				break;
-			case Float3Color:
-				SetAttribute<Float3Color>(pAttribute, std::forward<T>(val));
-				break;
-			case Byte4Color:
-				SetAttribute<Byte4Color>(pAttribute, std::forward<T>(val));
-				break;
+			#define X(el) case el: SetAttribute<el>(pAttribute, std::forward<T>(val));break;
+				VTX_ELEMENT_TYPE
+			#undef X
 			default:
 				assert("Bad Element Type" && false);
 				break;
@@ -252,3 +233,6 @@ namespace Vertex {
 		Layout m_layout;
 	};
 }
+#ifndef VTX_IMPL_SRC
+#undef VTX_ELEMENT_TYPE
+#endif

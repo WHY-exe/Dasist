@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="源文件">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="头文件">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Shader">
       <UniqueIdentifier>{8b432477-48cd-4910-9afc-080e109bd86e}</UniqueIdentifier>
     </Filter>
@@ -18,291 +10,430 @@
     <Filter Include="Drawable">
       <UniqueIdentifier>{3d1fedd7-f0e0-47b1-98d2-8b9b9eb49212}</UniqueIdentifier>
     </Filter>
-    <Filter Include="第三方库">
-      <UniqueIdentifier>{ddc2bb1b-9252-4550-881a-e42ad52207f9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="res">
       <UniqueIdentifier>{77bcfea0-0818-43fc-9aa6-faa8762d4839}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Drawable\Pass">
+      <UniqueIdentifier>{348525b2-1a18-445c-8236-43d5be54ab1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drawable\Tecnique">
+      <UniqueIdentifier>{bb49beaf-ec74-4361-aca9-32212e1644fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drawable\Pass\Job">
+      <UniqueIdentifier>{5cb81bf2-661c-4a40-958c-c04d99e714e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drawable\Tecnique\Step">
+      <UniqueIdentifier>{699989b6-aa6d-46f9-8d14-47620b7c31f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Window">
+      <UniqueIdentifier>{705553e0-2259-49a6-8e4e-ff763e84628b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{9542e8b4-3615-4415-ad53-7a44640154c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageLoading">
+      <UniqueIdentifier>{b6afb50b-38dc-4124-98c0-5863ea016ec6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdPartyLib">
+      <UniqueIdentifier>{ddc2bb1b-9252-4550-881a-e42ad52207f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdPartyLib\ImGui_for_dx11_win32">
+      <UniqueIdentifier>{da1e1a38-14c3-4439-8e55-5a5dcdf1c842}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdPartyLib\stbImage">
+      <UniqueIdentifier>{ffe7ada6-a9d0-42e6-ba4c-13c9df9d4533}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindable\BindableBase">
+      <UniqueIdentifier>{3b5509d0-6a8c-485a-9569-2a0ee18a70e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindable\SharedBindablePool">
+      <UniqueIdentifier>{6c931008-52fd-4342-98e0-c5171f4e8fe3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindable\Blender">
+      <UniqueIdentifier>{2c6bfaec-cb23-43b3-9d00-cc86dc7a8509}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindable\ConstantBuffer4Shader">
+      <UniqueIdentifier>{b1ad17fd-43f9-4940-b84b-5e82960cf982}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindable\VertexShader">
+      <UniqueIdentifier>{f5292b82-89f5-4a09-9cb7-077fd34786e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindable\PixelShader">
+      <UniqueIdentifier>{33031839-8d1a-45f3-8ccd-1597048cc658}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindable\InputLayout">
+      <UniqueIdentifier>{9a5dc74f-3428-4c39-8a61-0fe3fe36bccf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindable\IndexBuffer">
+      <UniqueIdentifier>{1a5ce06c-2101-49a8-b265-508ecf713f82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindable\ConstantBuffer4Shader\VSCB">
+      <UniqueIdentifier>{e1e83e93-e451-4e52-93ca-9138e0744ab1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindable\Rasterizer">
+      <UniqueIdentifier>{2c07a8a1-3de5-44b8-95f8-dd90a00fb8e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindable\Sampler">
+      <UniqueIdentifier>{8daaffdc-9ef5-481d-acea-b397c4ab18c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindable\Stencil">
+      <UniqueIdentifier>{3359955b-a640-4582-b36e-bd56c4b39911}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindable\Texture">
+      <UniqueIdentifier>{39973283-f622-4bd5-bbbf-86ce3cde8da9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindable\Topology">
+      <UniqueIdentifier>{6e76fb97-1799-4c9d-beed-775338320cbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindable\VertexBuffer">
+      <UniqueIdentifier>{d508f529-bee4-41b3-a4f7-4588bbd3cf44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DynamicBuffer4VertexData">
+      <UniqueIdentifier>{2184fc30-6121-4168-8c3f-7d9425a7b1c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DynamicBuffer4ShaderConstant">
+      <UniqueIdentifier>{c466b397-2350-43a0-9502-518852a6e37f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tool">
+      <UniqueIdentifier>{06fae4f8-7cef-49cb-bec4-f4b1be7f705d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{d5ad1037-54b5-4cd0-8562-372b8cade371}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light">
+      <UniqueIdentifier>{6655e4fb-551a-483d-8edf-33b2705daa2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Exception">
+      <UniqueIdentifier>{cf2cd777-27fe-4838-96a0-fcc0731a0a65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EntryPoint4App">
+      <UniqueIdentifier>{930b10b9-b795-477f-8a38-b5fb746ee906}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dx11GfxBase">
+      <UniqueIdentifier>{60b8e5f9-6e7e-48d9-b7ee-ae98773e74d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drawable\FrameCommander">
+      <UniqueIdentifier>{7f2f5382-8f7a-47f4-baa4-28d23b37b732}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drawable\DrawableInterface">
+      <UniqueIdentifier>{3548c690-44db-4522-ba2a-1ed74c0d834f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drawable\SceneLoading">
+      <UniqueIdentifier>{e9859239-b3ea-4d65-9080-8049c4d63245}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\WinMain.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="src\Job.cpp">
+      <Filter>Drawable\Pass\Job</Filter>
     </ClCompile>
     <ClCompile Include="src\Window.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Exception.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Keyboard.cpp">
-      <Filter>源文件</Filter>
+      <Filter>Window</Filter>
     </ClCompile>
     <ClCompile Include="src\Mouse.cpp">
-      <Filter>源文件</Filter>
+      <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="src\Timer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DxgiInfoManager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WinException.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Bindable.cpp">
-      <Filter>Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="src\IndexBuffer.cpp">
-      <Filter>Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VertexBuffer.cpp">
-      <Filter>Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="src\InputLayout.cpp">
-      <Filter>Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VertexShader.cpp">
-      <Filter>Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PixelShader.cpp">
-      <Filter>Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Drawable.cpp">
-      <Filter>Drawable</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Topology.cpp">
-      <Filter>Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="src\TransformCbuf.cpp">
-      <Filter>Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Texture.cpp">
-      <Filter>Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Sampler.cpp">
-      <Filter>Bindable</Filter>
+    <ClCompile Include="src\Keyboard.cpp">
+      <Filter>Input</Filter>
     </ClCompile>
     <ClCompile Include="src\Surface.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_widgets.cpp">
-      <Filter>第三方库</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_tables.cpp">
-      <Filter>第三方库</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_impl_win32.cpp">
-      <Filter>第三方库</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_impl_dx11.cpp">
-      <Filter>第三方库</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_draw.cpp">
-      <Filter>第三方库</Filter>
+      <Filter>ImageLoading</Filter>
     </ClCompile>
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui.cpp">
-      <Filter>第三方库</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ImguiManager.cpp">
-      <Filter>源文件</Filter>
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClCompile>
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui_demo.cpp">
-      <Filter>源文件</Filter>
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\Camera.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="src\ImguiManager.cpp">
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\Light.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_widgets.cpp">
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\App.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_tables.cpp">
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\Vertex.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_impl_win32.cpp">
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene.cpp">
-      <Filter>Drawable</Filter>
+    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_impl_dx11.cpp">
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\StrTransf.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="src\vendor\imgui_for_dx11\imgui_draw.cpp">
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\VS_PS_TFCB.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="src\Bindable.cpp">
+      <Filter>Bindable\BindableBase</Filter>
     </ClCompile>
     <ClCompile Include="src\Blender.cpp">
-      <Filter>Bindable</Filter>
+      <Filter>Bindable\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TransformCbuf.cpp">
+      <Filter>Bindable\ConstantBuffer4Shader\VSCB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VS_PS_TFCB.cpp">
+      <Filter>Bindable\ConstantBuffer4Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VertexShader.cpp">
+      <Filter>Bindable\VertexShader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PixelShader.cpp">
+      <Filter>Bindable\PixelShader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InputLayout.cpp">
+      <Filter>Bindable\InputLayout</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IndexBuffer.cpp">
+      <Filter>Bindable\IndexBuffer</Filter>
     </ClCompile>
     <ClCompile Include="src\Rasterizer.cpp">
-      <Filter>Bindable</Filter>
+      <Filter>Bindable\Rasterizer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Sampler.cpp">
+      <Filter>Bindable\Sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>Bindable\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Topology.cpp">
+      <Filter>Bindable\Topology</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VertexBuffer.cpp">
+      <Filter>Bindable\VertexBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Vertex.cpp">
+      <Filter>DynamicBuffer4VertexData</Filter>
     </ClCompile>
     <ClCompile Include="src\DynamicConstantBuffer.cpp">
-      <Filter>源文件</Filter>
+      <Filter>DynamicBuffer4ShaderConstant</Filter>
     </ClCompile>
-    <ClCompile Include="src\LayoutCodeX.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="src\Timer.cpp">
+      <Filter>Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StrTransf.cpp">
+      <Filter>Tool</Filter>
     </ClCompile>
     <ClCompile Include="src\MathTool.cpp">
-      <Filter>源文件</Filter>
+      <Filter>Tool</Filter>
     </ClCompile>
+    <ClCompile Include="src\LayoutCodeX.cpp">
+      <Filter>DynamicBuffer4ShaderConstant</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Light.cpp">
+      <Filter>Light</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WinException.cpp">
+      <Filter>Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Exception.cpp">
+      <Filter>Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DxgiInfoManager.cpp">
+      <Filter>Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="src\App.cpp">
+      <Filter>EntryPoint4App</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics.cpp">
+      <Filter>dx11GfxBase</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Step.cpp">
+      <Filter>Drawable\Tecnique\Step</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Technique.cpp">
+      <Filter>Drawable\Tecnique</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FrameCommander.cpp">
+      <Filter>Drawable\FrameCommander</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pass.cpp">
+      <Filter>Drawable\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stencil.cpp">
+      <Filter>Bindable\Stencil</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NullPixelShader.cpp">
+      <Filter>Bindable\PixelShader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Drawable.cpp">
+      <Filter>Drawable\DrawableInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene.cpp">
+      <Filter>Drawable\SceneLoading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Console.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="src\Job.h">
+      <Filter>Drawable\Pass\Job</Filter>
     </ClInclude>
     <ClInclude Include="src\Window.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Exception.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\resource.h">
-      <Filter>头文件</Filter>
+      <Filter>Window</Filter>
     </ClInclude>
     <ClInclude Include="src\Keyboard.h">
-      <Filter>头文件</Filter>
+      <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="src\Mouse.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\App.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Timer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\InitWin.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DxgiInfoManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WinException.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\StrTransf.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ObjModel.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GfxThrowMacro.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Bindable.h">
-      <Filter>Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IndexBuffer.h">
-      <Filter>Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VertexBuffer.h">
-      <Filter>Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ConstantBuffer.h">
-      <Filter>Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\InputLayout.h">
-      <Filter>Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VertexShader.h">
-      <Filter>Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PixelShader.h">
-      <Filter>Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Drawable.h">
-      <Filter>Drawable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Topology.h">
-      <Filter>Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\TransformCbuf.h">
-      <Filter>Bindable</Filter>
+      <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="src\Surface.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Sampler.h">
-      <Filter>Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Texture.h">
-      <Filter>Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ImguiManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\vendor\stb\stb_image.h">
-      <Filter>第三方库</Filter>
+      <Filter>ImageLoading</Filter>
     </ClInclude>
     <ClInclude Include="src\vendor\imgui_for_dx11\imconfig.h">
-      <Filter>第三方库</Filter>
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClInclude>
     <ClInclude Include="src\vendor\imgui_for_dx11\imgui.h">
-      <Filter>第三方库</Filter>
-    </ClInclude>
-    <ClInclude Include="src\vendor\imgui_for_dx11\imgui_impl_dx11.h">
-      <Filter>第三方库</Filter>
-    </ClInclude>
-    <ClInclude Include="src\vendor\imgui_for_dx11\imgui_impl_win32.h">
-      <Filter>第三方库</Filter>
-    </ClInclude>
-    <ClInclude Include="src\vendor\imgui_for_dx11\imgui_internal.h">
-      <Filter>第三方库</Filter>
-    </ClInclude>
-    <ClInclude Include="src\vendor\imgui_for_dx11\imstb_rectpack.h">
-      <Filter>第三方库</Filter>
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClInclude>
     <ClInclude Include="src\vendor\imgui_for_dx11\imstb_truetype.h">
-      <Filter>第三方库</Filter>
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClInclude>
     <ClInclude Include="src\vendor\imgui_for_dx11\imstb_textedit.h">
-      <Filter>第三方库</Filter>
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\Camera.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="src\vendor\imgui_for_dx11\imstb_rectpack.h">
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\Light.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="src\ImguiManager.h">
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\Vertex.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="src\vendor\imgui_for_dx11\imgui_internal.h">
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene.h">
-      <Filter>Drawable</Filter>
+    <ClInclude Include="src\vendor\imgui_for_dx11\imgui_impl_win32.h">
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\MathTool.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="src\vendor\imgui_for_dx11\imgui_impl_dx11.h">
+      <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\stb\stb_image.h">
+      <Filter>ThirdPartyLib\stbImage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Bindable.h">
+      <Filter>Bindable\BindableBase</Filter>
     </ClInclude>
     <ClInclude Include="src\BindableCodex.h">
-      <Filter>Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VS_PS_TFCB.h">
-      <Filter>头文件</Filter>
+      <Filter>Bindable\SharedBindablePool</Filter>
     </ClInclude>
     <ClInclude Include="src\Blender.h">
-      <Filter>Bindable</Filter>
+      <Filter>Bindable\Blender</Filter>
     </ClInclude>
-    <ClInclude Include="src\Rasterizer.h">
-      <Filter>Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DynamicConstantBuffer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LayoutCodeX.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="src\ConstantBuffer.h">
+      <Filter>Bindable\ConstantBuffer4Shader</Filter>
     </ClInclude>
     <ClInclude Include="src\ConstantBufferEx.h">
-      <Filter>Bindable</Filter>
+      <Filter>Bindable\ConstantBuffer4Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TransformCbuf.h">
+      <Filter>Bindable\ConstantBuffer4Shader\VSCB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VS_PS_TFCB.h">
+      <Filter>Bindable\ConstantBuffer4Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexShader.h">
+      <Filter>Bindable\VertexShader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PixelShader.h">
+      <Filter>Bindable\PixelShader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\InputLayout.h">
+      <Filter>Bindable\InputLayout</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IndexBuffer.h">
+      <Filter>Bindable\IndexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rasterizer.h">
+      <Filter>Bindable\Rasterizer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Sampler.h">
+      <Filter>Bindable\Sampler</Filter>
     </ClInclude>
     <ClInclude Include="src\Stencil.h">
-      <Filter>Bindable</Filter>
+      <Filter>Bindable\Stencil</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Texture.h">
+      <Filter>Bindable\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Topology.h">
+      <Filter>Bindable\Topology</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexBuffer.h">
+      <Filter>Bindable\VertexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Vertex.h">
+      <Filter>DynamicBuffer4VertexData</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DynamicConstantBuffer.h">
+      <Filter>DynamicBuffer4ShaderConstant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Timer.h">
+      <Filter>Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\StrTransf.h">
+      <Filter>Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MathTool.h">
+      <Filter>Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Console.h">
+      <Filter>Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\InitWin.h">
+      <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LayoutCodeX.h">
+      <Filter>DynamicBuffer4ShaderConstant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Camera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Light.h">
+      <Filter>Light</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WinException.h">
+      <Filter>Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GfxThrowMacro.h">
+      <Filter>Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Exception.h">
+      <Filter>Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DxgiInfoManager.h">
+      <Filter>Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="src\resource.h">
+      <Filter>res</Filter>
+    </ClInclude>
+    <ClInclude Include="src\App.h">
+      <Filter>EntryPoint4App</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics.h">
+      <Filter>dx11GfxBase</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Step.h">
+      <Filter>Drawable\Tecnique\Step</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FrameCommander.h">
+      <Filter>Drawable\FrameCommander</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Technique.h">
+      <Filter>Drawable\Tecnique</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pass.h">
+      <Filter>Drawable\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NullPixelShader.h">
+      <Filter>Bindable\PixelShader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Drawable.h">
+      <Filter>Drawable\DrawableInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene.h">
+      <Filter>Drawable\SceneLoading</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

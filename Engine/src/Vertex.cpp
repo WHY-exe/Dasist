@@ -1,3 +1,4 @@
+#define VTX_IMPL_SRC
 #include "Vertex.h"
 
 Vertex::Layout::Element::Element(ElementType type, size_t offset)
@@ -30,33 +31,9 @@ constexpr size_t Vertex::Layout::Element::SizeOf(ElementType type) noexcept(!IS_
 {
 	switch (type)
 	{
-	case ElementType::Position2D:
-		return sizeof(Map<Position2D>::SysType);
-		break;
-	case ElementType::Position3D:
-		return sizeof(Map<Position3D>::SysType);
-		break;
-	case ElementType::Tex2D:
-		return sizeof(Map<Tex2D>::SysType);
-		break;
-	case ElementType::Normal:
-		return sizeof(Map<Normal>::SysType);
-		break;
-	case ElementType::Float3Color:
-		return sizeof(Map<Float3Color>::SysType);
-		break;
-	case ElementType::Float4Color:
-		return sizeof(Map<Float4Color>::SysType);
-		break;
-	case ElementType::Tangent:
-		return sizeof(Map<Tangent>::SysType);
-		break;
-	case ElementType::Bitangent:
-		return sizeof(Map<Bitangent>::SysType);
-		break;
-	case ElementType::Byte4Color:
-		return sizeof(Map<Byte4Color>::SysType);
-		break;
+#define X(el) case el : return sizeof(Map<el>::SysType);break;
+		VTX_ELEMENT_TYPE;
+#undef X
 	}
 	assert("Invalid Element Type" && false);
 	return 0u;
@@ -66,33 +43,9 @@ D3D11_INPUT_ELEMENT_DESC Vertex::Layout::Element::GetLayoutDesc() const noexcept
 {
 	switch (m_type)
 	{
-	case ElementType::Position2D:
-		return GenDesc<Position2D>(m_offset);
-		break;
-	case ElementType::Position3D:
-		return GenDesc<Position3D>(m_offset);
-		break;
-	case ElementType::Tex2D:
-		return GenDesc<Tex2D>(m_offset);
-		break;
-	case Normal:
-		return GenDesc<Normal>(m_offset);
-		break;
-	case ElementType::Tangent:
-		return GenDesc<Tangent>(m_offset);
-		break;
-	case ElementType::Bitangent:
-		return GenDesc<Bitangent>(m_offset);
-		break;
-	case ElementType::Float3Color:
-		return GenDesc<Float3Color>(m_offset);
-		break;
-	case ElementType::Float4Color:
-		return GenDesc<Float4Color>(m_offset);
-		break;
-	case Byte4Color:
-		return GenDesc<Byte4Color>(m_offset);
-		break;
+#define X(el) case el : GenDesc<el>(m_offset);break;
+		VTX_ELEMENT_TYPE;
+#undef X
 	}
 	assert("Invalid element type" && false);
 	return { "INVALID", 0u, DXGI_FORMAT_UNKNOWN, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0u };
@@ -102,24 +55,9 @@ const char* Vertex::Layout::Element::GetCode() const noexcept
 {
 	switch (m_type)
 	{
-	case Position2D:
-		return Map<Position2D>::code;
-	case Position3D:
-		return Map<Position3D>::code;
-	case Tex2D:
-		return Map<Tex2D>::code;
-	case Normal:
-		return Map<Normal>::code;
-	case Float3Color:
-		return Map<Float3Color>::code;
-	case ElementType::Tangent:
-		return Map<Tangent>::code;
-	case ElementType::Bitangent:
-		return Map<Bitangent>::code;
-	case Float4Color:
-		return Map<Float4Color>::code;
-	case Byte4Color:
-		return Map<Byte4Color>::code;
+#define X(el) case el : Map<el>::code;break;
+		VTX_ELEMENT_TYPE;
+#undef X
 	}
 	assert("Invalid element type" && false);
 	return "Invalid";

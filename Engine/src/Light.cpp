@@ -12,7 +12,7 @@ PointLight::PointLight(Graphics& gfx)
 	m_lightBall.Scale(0.3f);
 
 	DCBuf::RawLayout cBufferLayout;
-	cBufferLayout.Add<DCBuf::Float4>("LightPos");
+	cBufferLayout.Add<DCBuf::Float3>("LightPos");
 	cBufferLayout.Add<DCBuf::Float3>("Ambient");
 	cBufferLayout.Add<DCBuf::Float3>("DiffuseColor");
 	cBufferLayout.Add<DCBuf::Float>("DiffuseIntensity");

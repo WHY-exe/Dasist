@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,9 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\NullPixelShader.cpp" />
+    <ClCompile Include="src\FrameCommander.cpp" />
+    <ClCompile Include="src\Job.cpp" />
     <ClCompile Include="src\MathTool.cpp" />
     <ClCompile Include="src\LayoutCodeX.cpp" />
     <ClCompile Include="src\DynamicConstantBuffer.cpp" />
+    <ClCompile Include="src\Pass.cpp" />
     <ClCompile Include="src\Rasterizer.cpp" />
     <ClCompile Include="src\Blender.cpp" />
     <ClCompile Include="src\Scene.cpp" />
@@ -40,6 +44,8 @@
     <ClCompile Include="src\Mouse.cpp" />
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\Keyboard.cpp" />
+    <ClCompile Include="src\Stencil.cpp" />
+    <ClCompile Include="src\Technique.cpp" />
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui.cpp" />
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui_demo.cpp" />
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui_draw.cpp" />
@@ -60,11 +66,16 @@
     <ClCompile Include="src\Vertex.cpp" />
     <ClCompile Include="src\StrTransf.cpp" />
     <ClCompile Include="src\VS_PS_TFCB.cpp" />
+    <ClCompile Include="src\Step.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\NullPixelShader.h" />
+    <ClInclude Include="src\FrameCommander.h" />
+    <ClInclude Include="src\Job.h" />
     <ClInclude Include="src\ConstantBufferEx.h" />
     <ClInclude Include="src\LayoutCodeX.h" />
     <ClInclude Include="src\DynamicConstantBuffer.h" />
+    <ClInclude Include="src\Pass.h" />
     <ClInclude Include="src\Rasterizer.h" />
     <ClInclude Include="src\Blender.h" />
     <ClInclude Include="src\BindableCodex.h" />
@@ -85,12 +96,12 @@
     <ClInclude Include="src\Graphics.h" />
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\InitWin.h" />
-    <ClInclude Include="src\ObjModel.h" />
     <ClInclude Include="src\Mouse.h" />
     <ClInclude Include="src\Keyboard.h" />
     <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Console.h" />
+    <ClInclude Include="src\Technique.h" />
     <ClInclude Include="src\vendor\imgui_for_dx11\imconfig.h" />
     <ClInclude Include="src\vendor\imgui_for_dx11\imgui.h" />
     <ClInclude Include="src\vendor\imgui_for_dx11\imgui_impl_dx11.h" />
@@ -118,6 +129,7 @@
     <ClInclude Include="src\Vertex.h" />
     <ClInclude Include="src\VS_PS_TFCB.h" />
     <ClInclude Include="src\Stencil.h" />
+    <ClInclude Include="src\Step.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\PSTexSpecAlpha.hlsl">

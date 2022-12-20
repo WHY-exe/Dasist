@@ -33,24 +33,10 @@ CachingPixelConstantBuffer* Scene::Mesh::GetMaterial() const noexcept
 	return m_material;
 }
 
-Scene::Mesh::Mesh(Graphics& gfx, std::vector<std::shared_ptr<Bindable>>& binds)
-{
-	AddBind(Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-	for (auto& b : binds)
-	{
-		if (auto pt = dynamic_cast<CachingPixelConstantBuffer*>(b.get()))
-		{
-			m_material = pt;
-		}
-		AddBind(std::move(b));
-	}
-	AddBind(std::make_shared<TransformCbuf>(gfx, *this));
-}
-
-void Scene::Mesh::Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) noexcept(!IS_DEBUG)
+void Scene::Mesh::Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG)
 {
 	DirectX::XMStoreFloat4x4(&m_transform, accumulateTransform);
-	Drawable::Draw(gfx);
+	Drawable::Submit(fc);
 }
 
 DirectX::XMMATRIX Scene::Mesh::GetTransformXM() const noexcept
@@ -77,6 +63,23 @@ const DCBuf::Buffer* Scene::Node::GetMaterialConstant() const noexcept
 	return &(m_pMeshes.front()->GetMaterial()->GetBuffer());
 }
 
+void Scene::Node::Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransform) const noexcept
+{
+	const auto build =
+		DirectX::XMLoadFloat4x4(&m_AppliedTransform) *
+		DirectX::XMLoadFloat4x4(&m_BaseTransform) * 
+		accumulateTransform;
+	for (const auto pm : m_pMeshes)
+	{
+		pm->Submit(fc, build);
+	}
+	for (const auto& pc : m_pChilds)
+	{
+		pc->Submit(fc, build);
+	}
+
+}
+
 Scene::Node::Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform)
 	:
 	m_id(id),
@@ -87,21 +90,6 @@ Scene::Node::Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMesh
 	DirectX::XMStoreFloat4x4(&m_AppliedTransform, DirectX::XMMatrixIdentity());
 }
 
-void Scene::Node::Draw(Graphics& gfx, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG)
-{
-	auto build = 
-		DirectX::XMLoadFloat4x4(&m_AppliedTransform) * 
-		DirectX::XMLoadFloat4x4(&m_BaseTransform) * 
-		accumulateTransform;
-	for (const auto pm : m_pMeshes)
-	{
-		pm->Draw(gfx, build);
-	}
-	for (const auto& pc : m_pChilds)
-	{
-		pc->Draw(gfx, build);
-	}
-}
 void Scene::Node::SetAppliedMaterialConstant(const DCBuf::Buffer& buffer) const noexcept(!IS_DEBUG)
 {
 	auto pcb = m_pMeshes.front()->GetMaterial();
@@ -167,6 +155,10 @@ void Scene::Model::ModelWindow::Show(const char* WindowName, const Node& node) n
 				tp.x = translation.x;
 				tp.y = translation.y;
 				tp.x = translation.z;
+				// TODO: a node would be expected to has control of the constant buffer the mesh it manage
+				// the meshes's constant buffer would be the seeting that applied to the node
+				// appearently, now it expects the node has only one mesh
+				// something needs to be improved later
 				auto pMatConstant = m_pSelectedNode->GetMaterialConstant();
 				auto buffer = pMatConstant != nullptr ? std::optional<DCBuf::Buffer>{*pMatConstant} : std::optional<DCBuf::Buffer>{};
 				NodeData node_data = {};
@@ -462,10 +454,9 @@ void Scene::Model::SpwanControlWindow() noexcept
 	m_pWindow->Show(m_szModelName.c_str(), *m_pRoot);
 }
 
-void Scene::Model::Draw(Graphics& gfx) const
+void Scene::Model::Submit(FrameCommander& fc) const noexcept(!IS_DEBUG)
 {
-	m_pWindow->AppliedParameters();
-	m_pRoot->Draw(gfx, DirectX::XMMatrixIdentity());
+	m_pRoot->Submit(fc, DirectX::XMMatrixIdentity());
 }
 
 void Scene::Model::SetPos(float x, float y, float z) noexcept

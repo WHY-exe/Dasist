@@ -28,7 +28,7 @@ public:
 	}
     VertexBuffer(Graphics& gfx, const Vertex::DataBuffer& buffer);
     VertexBuffer(Graphics& gfx, const std::wstring& tag, const Vertex::DataBuffer& buffer);
-    static std::shared_ptr<Bindable> Resolve(
+    static std::shared_ptr<VertexBuffer> Resolve(
         Graphics& gfx, const std::wstring& tag, 
         const Vertex::DataBuffer buffer) noexcept;
     template <typename...Ignore>

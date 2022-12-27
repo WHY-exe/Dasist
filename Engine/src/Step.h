@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "Bindable.h"
 #include <memory>
 class Step

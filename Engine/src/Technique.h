@@ -11,6 +11,6 @@ public:
 	void Activate() noexcept;
 	void Deactivate() noexcept;
 private:
-	bool m_activate = false;
+	bool m_activate = true;
 	std::vector<Step> m_Steps;
 };

@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "ImguiManager.h"
+#include "FrameCommander.h"
 #include "Scene.h"
 class App
 {
@@ -22,8 +23,8 @@ private:
 	Timer timer;
 private:
 	// user data
+	FrameCommander fc;
 	Scene::Model model1;
-	Scene::Model model2;
 	Camera cam;
 	PointLight pointLight;
 	GlobalLight gLight;

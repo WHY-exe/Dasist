@@ -6,7 +6,7 @@ class IndexBuffer : public Bindable
 public:
 	IndexBuffer(Graphics& gfx, const std::vector<UINT>& indicies);
 	IndexBuffer(Graphics& gfx, const std::wstring& tag, const std::vector<UINT>& indicies);
-	static std::shared_ptr<Bindable> Resolve(
+	static std::shared_ptr<IndexBuffer> Resolve(
 		Graphics& gfx, const std::wstring& tag,
 		const std::vector<UINT>& indicies) noexcept;
 	void Bind(Graphics& gfx) noexcept override;

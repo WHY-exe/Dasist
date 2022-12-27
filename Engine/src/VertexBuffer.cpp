@@ -25,7 +25,7 @@ VertexBuffer::VertexBuffer(Graphics& gfx, const std::wstring& tag, const Vertex:
 }
 
 
-std::shared_ptr<Bindable> VertexBuffer::Resolve(Graphics& gfx, const std::wstring& tag, const Vertex::DataBuffer buffer) noexcept
+std::shared_ptr<VertexBuffer> VertexBuffer::Resolve(Graphics& gfx, const std::wstring& tag, const Vertex::DataBuffer buffer) noexcept
 {
 	return CodeX::Resolve<VertexBuffer>(gfx, tag, buffer);
 }

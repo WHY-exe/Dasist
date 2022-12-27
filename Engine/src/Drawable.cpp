@@ -6,6 +6,21 @@ void Drawable::AddTechnique(Technique& tech) noexcept
 	m_Techs.push_back(std::move(tech));
 }
 
+void Drawable::AddVertexBuffer(std::shared_ptr<VertexBuffer> pvb) noexcept
+{
+	m_pVertexBuffer = pvb;
+}
+
+void Drawable::AddIndexBuffer(std::shared_ptr<IndexBuffer> pib) noexcept
+{
+	m_pIndexBuffer = pib;
+}
+
+void Drawable::AddTopology(std::shared_ptr<Topology> pt) noexcept
+{
+	m_pTopology = pt;
+}
+
 void Drawable::Bind(Graphics& gfx) const noexcept
 {
 	m_pVertexBuffer->Bind(gfx);

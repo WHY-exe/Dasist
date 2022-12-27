@@ -24,7 +24,7 @@ IndexBuffer::IndexBuffer(Graphics& gfx, const std::wstring& tag, const std::vect
 
 }
 
-std::shared_ptr<Bindable> IndexBuffer::Resolve(Graphics& gfx, const std::wstring& tag, const std::vector<UINT>& indicies) noexcept
+std::shared_ptr<IndexBuffer> IndexBuffer::Resolve(Graphics& gfx, const std::wstring& tag, const std::vector<UINT>& indicies) noexcept
 {
     return CodeX::Resolve<IndexBuffer>(gfx, tag, indicies);
 }

@@ -10,7 +10,6 @@ public:
 	PointLight(Graphics& gfx);
 	void Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept;
 	void SpwanControlWindow() noexcept;
-	void Draw(Graphics& gfx) noexcept;
 private:
 	DirectX::XMFLOAT3 m_pos;
 	DirectX::XMFLOAT3 m_ambient = {0.3f, 0.3f, 0.3f};

@@ -4,6 +4,7 @@
 class Pass
 {
 public:
+	void Accept(Job&& job) noexcept;
 	void Accept(const Job& job) noexcept;
 	void Excecute(Graphics& gfx) const noexcept;
 	void Reset() noexcept;

@@ -13,12 +13,10 @@
 #include "ConstantBufferEx.h"
 namespace Scene
 {
-	struct RenderOption 
+	struct ModelSetting 
 	{
 		std::string szModelPath;
 		std::string szModelName = "Model";
-		std::wstring szVSPath;
-		std::wstring szPSPath;
 	};
 	class Mesh:public Drawable
 	{
@@ -89,8 +87,8 @@ namespace Scene
 		};
 	public:
 		Model() = default;
-		Model(Graphics& gfx, RenderOption& option);
-		static std::unique_ptr<Mesh> ParseMesh(Graphics& gfx, const aiMesh& mesh, RenderOption& option, const aiMaterial* const* pMaterial);
+		Model(Graphics& gfx, ModelSetting& option);
+		static std::unique_ptr<Mesh> ParseMesh(Graphics& gfx, const aiMesh& mesh, ModelSetting& option, const aiMaterial* const* pMaterial);
 		void Submit(FrameCommander& fc) const noexcept(!IS_DEBUG);
 		std::unique_ptr<Node> ParseNode(int& next_id, const aiNode& node);
 		void SpwanControlWindow() noexcept;

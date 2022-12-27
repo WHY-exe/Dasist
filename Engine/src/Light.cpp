@@ -5,9 +5,8 @@ PointLight::PointLight(Graphics& gfx)
 	:
 	m_pos(0.0f, 20.0f, 0.0f)
 {
-	Scene::RenderOption op;
+	Scene::ModelSetting op;
 	op.szModelPath = "res\\model\\sphere.obj";
-	op.szPSPath = L"res\\cso\\lightBall.cso";
 	m_lightBall = Scene::Model(gfx, op);
 	m_lightBall.Scale(0.3f);
 
@@ -68,11 +67,6 @@ void PointLight::SpwanControlWindow() noexcept
 		ImGui::SliderFloat("AttQuad", &m_attQuad, 0.0f, 0.1f, "%.5f");
 	}
 	ImGui::End();
-}
-
-void PointLight::Draw(Graphics& gfx) noexcept
-{
-	m_lightBall.Draw(gfx);
 }
 
 GlobalLight::GlobalLight(Graphics& gfx)

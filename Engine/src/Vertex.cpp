@@ -43,7 +43,7 @@ D3D11_INPUT_ELEMENT_DESC Vertex::Layout::Element::GetLayoutDesc() const noexcept
 {
 	switch (m_type)
 	{
-#define X(el) case el : GenDesc<el>(m_offset);break;
+#define X(el) case el : return GenDesc<el>(m_offset);break;
 		VTX_ELEMENT_TYPE;
 #undef X
 	}
@@ -55,7 +55,7 @@ const char* Vertex::Layout::Element::GetCode() const noexcept
 {
 	switch (m_type)
 	{
-#define X(el) case el : Map<el>::code;break;
+#define X(el) case el : return Map<el>::code;break;
 		VTX_ELEMENT_TYPE;
 #undef X
 	}

@@ -16,6 +16,9 @@ public:
 	Drawable() = default;
 	Drawable(const Drawable&) = delete;
 	void AddTechnique(Technique& tech) noexcept;
+	void AddVertexBuffer(std::shared_ptr<VertexBuffer> pvb) noexcept;
+	void AddIndexBuffer(std::shared_ptr<IndexBuffer> pib) noexcept;
+	void AddTopology(std::shared_ptr<Topology> pt) noexcept;
 	virtual DirectX::XMMATRIX GetTransformXM() const noexcept = 0;
 	virtual ~Drawable() = default;
 	void Bind(Graphics& gfx) const noexcept;

@@ -14,10 +14,11 @@ App::App()
 	pointLight(m_gfx),
 	gLight(m_gfx)
 {
-	Scene::RenderOption op1;
+	Scene::ModelSetting op1;
 	op1.szModelPath = "res\\model\\Sponza\\sponza.obj";
 	op1.szModelName = "sponza";
 	model1 = Scene::Model(m_gfx, op1);
+	model1.Submit(fc);
 	//Scene::RenderOption op2;
 	//op2.szModelPath = "res\\model\\Lumie\\Lumie.pmx";
 	//op2.szModelName = "lumie";
@@ -46,14 +47,7 @@ void App::DoFrame()
 	m_gfx.SetCamera(cam.GetMatrix());
 	gLight.Update(m_gfx, cam.GetMatrix());
 	pointLight.Update(m_gfx, cam.GetMatrix());
-	
-	pointLight.Draw(m_gfx);
-	//
-	model1.Draw(m_gfx);
-	//model2.Draw(m_gfx);
-
-	model1.SpwanControlWindow();
-	//model2.SpwanControlWindow();
+	fc.Excecute(m_gfx);
 	gLight.SpwanControlWindow();
 	pointLight.SpwanControlWindow();
 	//

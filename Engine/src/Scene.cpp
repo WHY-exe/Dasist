@@ -27,7 +27,6 @@
 #endif // !_Debug
 
 
-
 CachingPixelConstantBuffer* Scene::Mesh::GetMaterial() const noexcept
 {
 	return m_material;
@@ -231,7 +230,7 @@ Scene::Node* Scene::Model::ModelWindow::GetSelectedNode() const noexcept
 	return m_pSelectedNode;
 }
 
-Scene::Model::Model(Graphics& gfx,RenderOption& option)
+Scene::Model::Model(Graphics& gfx,ModelSetting& option)
 	:
 	m_szModelName(option.szModelName),
 	m_pWindow(std::make_unique<ModelWindow>())
@@ -259,11 +258,13 @@ Scene::Model::Model(Graphics& gfx,RenderOption& option)
 	m_pWindow->m_pSelectedNode = const_cast<Node*>(m_pRoot.get());
 }
 
-std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, RenderOption& option, const aiMaterial* const* pMaterial)
+std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, ModelSetting& option, const aiMaterial* const* pMaterial)
 {
 	const std::filesystem::path& ModelPath = option.szModelPath;
 	std::string szTexRootPath = ModelPath.parent_path().string();
-	std::vector<std::shared_ptr<Bindable>> binds;
+	std::unique_ptr<Mesh> result = std::make_unique<Mesh>();
+	Step normalDraw(0);
+	Technique tech;
 	Vertex::Layout vlayout = Vertex::Layout();
 
 	if (mesh.HasPositions())
@@ -306,7 +307,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			}
 		}
 	}
-	binds.emplace_back(VertexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), vtxb));
+	result->AddVertexBuffer(VertexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), vtxb));
 	std::vector<UINT> indicies;
 	indicies.reserve((size_t)mesh.mNumFaces * 3);
 	for (unsigned int f = 0; f < mesh.mNumFaces; f++)
@@ -318,7 +319,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			indicies.push_back(face.mIndices[i]);
 		}
 	}
-	binds.emplace_back(IndexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), indicies));
+	result->AddIndexBuffer(IndexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), indicies));
 
 	float shininess = 30.0f;
 	DirectX::XMFLOAT4 specColor = { 0.18f,0.18f,0.18f,1.0f };
@@ -352,7 +353,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			{
 				hasAlpha = true;
 			}
-			binds.emplace_back(tex);
+			normalDraw.AddBind(tex);
 			hasAmbient = true;
 		}
 		else
@@ -366,7 +367,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			{
 				hasAlpha = true;
 			}
-			binds.emplace_back(tex);
+			normalDraw.AddBind(tex);
 			hasTex = true;
 		}
 		else
@@ -377,7 +378,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		{
 			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 1);
 			hasAlphaGloss = tex->HasAlpha();
-			binds.emplace_back(tex);
+			normalDraw.AddBind(tex);
 			hasSpec = true;
 		}
 		if(!hasAlphaGloss)
@@ -387,7 +388,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		if (material.GetTexture(aiTextureType_NORMALS, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
 		{
 			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 2);
-			binds.emplace_back(tex);
+			normalDraw.AddBind(tex);
 			hasNormal = true;
 		}
 		else {
@@ -396,21 +397,15 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		szPSPath += std::wstring(hasTex ? L"Tex" : L"") + (hasSpec ? L"Spec" : L"") + (hasNormal ? L"Norm" : L"") + (hasAlpha ? L"Alpha" : L"") + L".cso";
 		szVSPath += std::wstring(hasNormal ? L"Norm" : L"") + L".cso";
 		showTwoSide = hasAlpha;
-		binds.emplace_back(Blender::Resolve(gfx, hasAlpha));
-		binds.emplace_back(Rasterizer::Resolve(gfx, showTwoSide));
-		if (option.szPSPath.empty())
-		{
-			option.szPSPath = szPSPath;
-		}
-		option.szVSPath = szVSPath;
-		
+		normalDraw.AddBind(Blender::Resolve(gfx, hasAlpha));
+		normalDraw.AddBind(Rasterizer::Resolve(gfx, showTwoSide));
 		auto pvs = VertexShader::Resolve(gfx, szVSPath);
 		auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
-		binds.emplace_back(std::move(pvs));
-		binds.emplace_back(InputLayout::Resolve(gfx, vtxb.GetLayout(), pvsbc));
-		binds.emplace_back(PixelShader::Resolve(gfx, szPSPath));
-		
-		binds.emplace_back(Sampler::Resolve(gfx));
+		normalDraw.AddBind(std::move(pvs));
+		normalDraw.AddBind(InputLayout::Resolve(gfx, vtxb.GetLayout(), pvsbc));
+		normalDraw.AddBind(PixelShader::Resolve(gfx, szPSPath));
+
+		normalDraw.AddBind(Sampler::Resolve(gfx));
 
 		buffer["Ambient"] = ambientColor;
 		buffer["SpecColor"] = specColor;
@@ -419,11 +414,12 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		buffer["hasAmbient"] = hasAmbient;
 		buffer["hasGloss"] = hasAlphaGloss;
 		buffer["enNormal"] = true;
-		binds.emplace_back(std::make_shared<CachingPixelConstantBuffer>(gfx, buffer, 2u));
+		normalDraw.AddBind(std::make_shared<CachingPixelConstantBuffer>(gfx, buffer, 2u));
 	}
-	option.szPSPath.clear();
-	option.szVSPath.clear();
-	return std::make_unique<Mesh>(gfx, binds);
+	result->AddTopology(Topology::Resolve(gfx, D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP));
+	tech.AddStep(normalDraw);
+	result->AddTechnique(tech);
+	return result;
 }
 
 std::unique_ptr<Scene::Node> Scene::Model::ParseNode(int& next_id, const aiNode& node)

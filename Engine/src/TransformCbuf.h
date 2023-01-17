@@ -6,8 +6,6 @@ class TransformCbuf:public Bindable
 {
 public:
 	struct Transform {
-		DirectX::XMMATRIX modelWorldView;
-		DirectX::XMMATRIX modelWorldProjView;
 		DirectX::XMMATRIX modelCamView;
 		DirectX::XMMATRIX modelProjView;
 	};

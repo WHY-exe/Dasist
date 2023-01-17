@@ -21,7 +21,7 @@ TransformCbuf::Transform TransformCbuf::GetTransform(Graphics& gfx) const noexce
 	{
 		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * gfx.GetCamera()),
 		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * gfx.GetCamera() * gfx.GetProjection())
-	};;
+	};
 }
 void TransformCbuf::UpdateBindImpl(Graphics& gfx, const Transform& tf) const noexcept
 {

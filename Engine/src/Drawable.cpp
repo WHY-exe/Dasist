@@ -1,4 +1,5 @@
 #include "Drawable.h"
+#include "TransformCbuf.h"
 #include "ConstantBufferEx.h"
 
 void Drawable::AddTechnique(Technique& tech) noexcept
@@ -6,26 +7,22 @@ void Drawable::AddTechnique(Technique& tech) noexcept
 	m_Techs.push_back(std::move(tech));
 }
 
-void Drawable::AddVertexBuffer(std::shared_ptr<VertexBuffer> pvb) noexcept
+void Drawable::AddEssentialBind(std::shared_ptr<Bindable> bind) noexcept
 {
-	m_pVertexBuffer = pvb;
-}
-
-void Drawable::AddIndexBuffer(std::shared_ptr<IndexBuffer> pib) noexcept
-{
-	m_pIndexBuffer = pib;
-}
-
-void Drawable::AddTopology(std::shared_ptr<Topology> pt) noexcept
-{
-	m_pTopology = pt;
+	if (typeid(*bind) == typeid(IndexBuffer))
+	{
+		assert("Attempting to add index buffer a second time" && m_pIndexBuffer == nullptr);
+		m_pIndexBuffer = &static_cast<IndexBuffer&>(*bind);
+	}
+	m_essential_binds.push_back(std::move(bind));
 }
 
 void Drawable::Bind(Graphics& gfx) const noexcept
 {
-	m_pVertexBuffer->Bind(gfx);
-	m_pIndexBuffer->Bind(gfx);
-	m_pTopology->Bind(gfx);
+	for (auto& b : m_essential_binds)
+	{
+		b->Bind(gfx);
+	}
 }
 
 void Drawable::Submit(FrameCommander& frameCommander) const noexcept

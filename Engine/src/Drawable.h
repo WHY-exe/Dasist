@@ -16,18 +16,15 @@ public:
 	Drawable() = default;
 	Drawable(const Drawable&) = delete;
 	void AddTechnique(Technique& tech) noexcept;
-	void AddVertexBuffer(std::shared_ptr<VertexBuffer> pvb) noexcept;
-	void AddIndexBuffer(std::shared_ptr<IndexBuffer> pib) noexcept;
-	void AddTopology(std::shared_ptr<Topology> pt) noexcept;
+	void AddEssentialBind(std::shared_ptr<Bindable> bind) noexcept;
 	virtual DirectX::XMMATRIX GetTransformXM() const noexcept = 0;
 	virtual ~Drawable() = default;
 	void Bind(Graphics& gfx) const noexcept;
 	void Submit(FrameCommander& frameCommander) const noexcept;
 	UINT GetIndexSize() const noexcept;
 private:
-	std::shared_ptr<VertexBuffer> m_pVertexBuffer;
-	std::shared_ptr<IndexBuffer> m_pIndexBuffer;
-	std::shared_ptr<Topology> m_pTopology;	
+	const IndexBuffer* m_pIndexBuffer = nullptr;
+	std::vector<std::shared_ptr<Bindable>> m_essential_binds;
 	std::vector<Technique> m_Techs;
 };
 

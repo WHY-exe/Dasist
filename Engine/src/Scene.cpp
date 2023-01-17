@@ -307,7 +307,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			}
 		}
 	}
-	result->AddVertexBuffer(VertexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), vtxb));
+	result->AddEssentialBind(VertexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), vtxb));
 	std::vector<UINT> indicies;
 	indicies.reserve((size_t)mesh.mNumFaces * 3);
 	for (unsigned int f = 0; f < mesh.mNumFaces; f++)
@@ -319,7 +319,7 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 			indicies.push_back(face.mIndices[i]);
 		}
 	}
-	result->AddIndexBuffer(IndexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), indicies));
+	result->AddEssentialBind(IndexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), indicies));
 
 	float shininess = 30.0f;
 	DirectX::XMFLOAT4 specColor = { 0.18f,0.18f,0.18f,1.0f };
@@ -416,9 +416,11 @@ std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh
 		buffer["enNormal"] = true;
 		normalDraw.AddBind(std::make_shared<CachingPixelConstantBuffer>(gfx, buffer, 2u));
 	}
-	result->AddTopology(Topology::Resolve(gfx, D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP));
+	result->AddEssentialBind(Topology::Resolve(gfx, D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP));
+	result->AddEssentialBind(std::make_shared<TransformCbuf>(gfx, *result));
 	tech.AddStep(normalDraw);
 	result->AddTechnique(tech);
+
 	return result;
 }
 

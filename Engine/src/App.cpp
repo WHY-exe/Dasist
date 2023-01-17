@@ -48,6 +48,7 @@ void App::DoFrame()
 	gLight.Update(m_gfx, cam.GetMatrix());
 	pointLight.Update(m_gfx, cam.GetMatrix());
 	fc.Excecute(m_gfx);
+	model1.SpwanControlWindow();
 	gLight.SpwanControlWindow();
 	pointLight.SpwanControlWindow();
 	//

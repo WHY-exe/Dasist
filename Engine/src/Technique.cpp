@@ -1,5 +1,10 @@
 #include "Technique.h"
 #include "Drawable.h"
+Technique::Technique(const std::string& name) noexcept
+	:
+	m_Name(name)
+{
+}
 void Technique::Submit(FrameCommander& fc, const Drawable& d) const noexcept
 {
 	if (m_activate)
@@ -24,12 +29,25 @@ void Technique::AddStep(Step& step) noexcept
 	m_Steps.push_back(std::move(step));
 }
 
-void Technique::Activate() noexcept
+void Technique::SetActiveState(bool is_active) noexcept
 {
-	m_activate = true;
+	m_activate = is_active;
 }
 
-void Technique::Deactivate() noexcept
+bool Technique::IsActive() const noexcept
 {
-	m_activate = false;
+	return m_activate;
+}
+
+void Technique::Accept(TechProbe& probe) noexcept
+{
+	for (auto& i:m_Steps)
+	{
+		i.Accept(probe);
+	}
+}
+
+const std::string& Technique::GetTechName() const noexcept
+{
+	return m_Name;
 }

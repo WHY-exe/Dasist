@@ -32,3 +32,11 @@ void Step::Bind(Graphics& gfx) const
 		b->Bind(gfx);
 	}
 }
+
+void Step::Accept(TechProbe& probe) noexcept
+{
+	for (auto& i : m_Binds)
+	{
+		i->Accept(probe);
+	}
+}

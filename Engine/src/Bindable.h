@@ -2,6 +2,7 @@
 #include "Graphics.h"
 #include "StrTransf.h"
 #include "BindableCodex.h"
+#include "TechProbe.h"
 #include <string>
 class Bindable
 {
@@ -10,6 +11,7 @@ public:
 	virtual ~Bindable() = default;
 	virtual void InitializeParentReference(const class Drawable&) noexcept
 	{}
+	virtual void Accept(TechProbe& probe) noexcept {};
 	virtual std::wstring GetUID() const noexcept
 	{
 		return L"";

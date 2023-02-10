@@ -6,6 +6,7 @@
 #include <DirectXMath.h>
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "TechProbe.h"
 #include "Topology.h"
 #include "FrameCommander.h"
 #include "Technique.h"
@@ -20,6 +21,7 @@ public:
 	virtual DirectX::XMMATRIX GetTransformXM() const noexcept = 0;
 	virtual ~Drawable() = default;
 	void Bind(Graphics& gfx) const noexcept;
+	void Accept(TechProbe& probe) noexcept;
 	void Submit(FrameCommander& frameCommander) const noexcept;
 	UINT GetIndexSize() const noexcept;
 private:

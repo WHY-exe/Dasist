@@ -1,5 +1,6 @@
 #pragma once
 #include "Bindable.h"
+#include "TechProbe.h"
 #include <memory>
 class Step
 {
@@ -9,6 +10,7 @@ public:
 	void InitializeParentReference(const class Drawable& d) noexcept;
 	void Submit(const class FrameCommander& fc, const class Drawable& d) const;
 	void Bind(Graphics& gfx) const;
+	void Accept(TechProbe& probe) noexcept;
 private:
 	size_t m_pass_index;
 	std::vector<std::shared_ptr<Bindable>> m_Binds;

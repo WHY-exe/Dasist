@@ -19,6 +19,7 @@
 #include "Rasterizer.h"
 #include "ConstantBufferEx.h"
 #include "MathTool.h"
+#include "MeshData.h"
 #include <filesystem>
 #ifndef NDEBUG
 #pragma comment(lib, "assimp-vc142-mtd.lib")
@@ -26,12 +27,70 @@
 #pragma comment(lib, "assimp-vc142-mt.lib")
 #endif // !_Debug
 
-
-CachingPixelConstantBuffer* Scene::Mesh::GetMaterial() const noexcept
+Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_name) noexcept
 {
-	return m_material;
-}
+	DirectX::XMStoreFloat4x4(&m_transform, DirectX::XMMatrixIdentity());
+	AddEssentialBind(
+		VertexBuffer::Resolve(
+			gfx,
+			ANSI_TO_UTF8_STR(mesh_name),
+			*mesh_data.GetVertecies().get())
+	);
 
+	AddEssentialBind(
+		IndexBuffer::Resolve(
+			gfx,
+			ANSI_TO_UTF8_STR(mesh_name),
+			mesh_data.GetIndicies()
+		)
+	);
+	AddEssentialBind(Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+	AddEssentialBind(std::make_shared<TransformCbuf>(gfx, *this));
+	{
+		Technique shade("shade");
+		{
+			Step normalDraw(0);
+
+			auto texs = mesh_data.GetTextures();
+			if (texs.m_amTex.get())
+			{
+				normalDraw.AddBind(texs.m_amTex);
+			}
+			if (texs.m_difTex.get())
+			{
+				normalDraw.AddBind(texs.m_difTex);
+			}
+			if (texs.m_specTex.get())
+			{
+				normalDraw.AddBind(texs.m_specTex);
+			}
+			if (texs.m_normTex.get())
+			{
+				normalDraw.AddBind(texs.m_normTex);
+			}
+			normalDraw.AddBind(
+				Rasterizer::Resolve(
+					gfx,
+					mesh_data.GetTextures().m_hasAlpha)
+			);
+			auto pvs = VertexShader::Resolve(gfx, mesh_data.GetVSPath());
+			auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
+			normalDraw.AddBind(std::move(pvs));
+			normalDraw.AddBind(InputLayout::Resolve(gfx, mesh_data.GetVertecies()->GetLayout(), pvsbc));
+			normalDraw.AddBind(PixelShader::Resolve(gfx, mesh_data.GetPSPath()));
+
+			normalDraw.AddBind(Sampler::Resolve(gfx));
+			normalDraw.AddBind(
+				std::make_shared<CachingPixelConstantBuffer>(
+					gfx,
+					mesh_data.GetConstData(),
+					2u)
+			);
+			shade.AddStep(normalDraw);
+		}
+		AddTechnique(shade);
+	}
+}
 void Scene::Mesh::Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG)
 {
 	DirectX::XMStoreFloat4x4(&m_transform, accumulateTransform);
@@ -53,14 +112,6 @@ const DirectX::XMFLOAT4X4& Scene::Node::GetAppliedTransform() const noexcept
 	return m_AppliedTransform;
 }
 
-const DCBuf::Buffer* Scene::Node::GetMaterialConstant() const noexcept
-{
-	if (m_pMeshes.size() == 0)
-	{
-		return nullptr;
-	}
-	return &(m_pMeshes.front()->GetMaterial()->GetBuffer());
-}
 
 void Scene::Node::Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransform) const noexcept
 {
@@ -87,13 +138,6 @@ Scene::Node::Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMesh
 {
 	DirectX::XMStoreFloat4x4(&m_BaseTransform, transform);
 	DirectX::XMStoreFloat4x4(&m_AppliedTransform, DirectX::XMMatrixIdentity());
-}
-
-void Scene::Node::SetAppliedMaterialConstant(const DCBuf::Buffer& buffer) const noexcept(!IS_DEBUG)
-{
-	auto pcb = m_pMeshes.front()->GetMaterial();
-	assert(pcb != nullptr);
-	pcb->SetBuffer(buffer);
 }
 
 void Scene::Node::AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG)
@@ -141,56 +185,7 @@ void Scene::Model::ModelWindow::Show(const char* WindowName, const Node& node) n
 		auto selected_node_id = m_pSelectedNode->GetId();
 		if (m_pSelectedNode)
 		{
-			auto i = m_WindowData.find(selected_node_id);
-			if (i == m_WindowData.end())
-			{
-				const auto& nodeTransform = m_pSelectedNode->GetAppliedTransform();
-				const auto euler_angle = math_tool::ExtraEulerAngle(nodeTransform);
-				const auto translation = math_tool::ExtraTranslation(nodeTransform);
-				TransformParams tp;
-				tp.pitch = euler_angle.x;
-				tp.yaw = euler_angle.y;
-				tp.roll = euler_angle.z;
-				tp.x = translation.x;
-				tp.y = translation.y;
-				tp.x = translation.z;
-				// TODO: a node would be expected to has control of the constant buffer the mesh it manage
-				// the meshes's constant buffer would be the seeting that applied to the node
-				// appearently, now it expects the node has only one mesh
-				// something needs to be improved later
-				auto pMatConstant = m_pSelectedNode->GetMaterialConstant();
-				auto buffer = pMatConstant != nullptr ? std::optional<DCBuf::Buffer>{*pMatConstant} : std::optional<DCBuf::Buffer>{};
-				NodeData node_data = {};
-				node_data.constant_data = std::move(buffer);
-				node_data.transform_data = tp;
-				std::tie(i, std::ignore) = m_WindowData.insert({ selected_node_id, std::move(node_data) });
-			}
-			{
-				bool& dirty = i->second.transformDirty;
-				auto dcheck = [&dirty](bool change) {dirty = dirty || change; };
-				auto& transform = i->second.transform_data;
-				ImGui::Text("Position");
-				dcheck(ImGui::SliderFloat("X", &transform.x, -80.0f, 80.0f, "%.1f"));
-				dcheck(ImGui::SliderFloat("Y", &transform.y, -80.0f, 80.0f, "%.1f"));
-				dcheck(ImGui::SliderFloat("Z", &transform.z, -80.0f, 80.0f, "%.1f"));
-				ImGui::Text("Angle");
-				dcheck(ImGui::SliderAngle("AngleX", &transform.roll, -180.0f, 180.0f, "%.1f"));
-				dcheck(ImGui::SliderAngle("AngleY", &transform.yaw, -180.0f, 180.0f, "%.1f"));
-				dcheck(ImGui::SliderAngle("AngleZ", &transform.pitch, -180.0f, 180.0f, "%.1f"));
-				ImGui::Text("Scale");
-				dcheck(ImGui::SliderFloat("Scale", &transform.scale, 0.0f, 1.0f, "%.3f"));
-			}
-			if (i->second.constant_data)
-			{
-				auto& material_data = *i->second.constant_data;
-				bool& dirty = i->second.materialCbufDirty;
-				auto dcheck = [&dirty](bool change) {dirty = dirty || change; };
-				ImGui::Text("Material");
-				if (auto v = material_data["enNormal"]; v.Exists())
-				{
-					dcheck(ImGui::Checkbox("Normal Map", &v));
-				}
-			}
+			
 			ImGui::End();
 		}
 	}
@@ -202,12 +197,6 @@ void Scene::Model::ModelWindow::AppliedParameters() noexcept
 	{
 		m_pSelectedNode->SetAppliedTransform(GetTransform());
 		trans_d = false;
-	}
-	
-	if (auto& mat_d =  m_WindowData[m_pSelectedNode->GetId()].materialCbufDirty)
-	{ 
-		m_pSelectedNode->SetAppliedMaterialConstant(*GetMaterialConstant());
-		mat_d = false;
 	}
 }
 
@@ -260,168 +249,8 @@ Scene::Model::Model(Graphics& gfx,ModelSetting& option)
 
 std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, ModelSetting& option, const aiMaterial* const* pMaterial)
 {
-	const std::filesystem::path& ModelPath = option.szModelPath;
-	std::string szTexRootPath = ModelPath.parent_path().string();
-	std::unique_ptr<Mesh> result = std::make_unique<Mesh>();
-	Step normalDraw(0);
-	Technique tech;
-	Vertex::Layout vlayout = Vertex::Layout();
-
-	if (mesh.HasPositions())
-	{
-		vlayout.Append(Vertex::Position3D);
-	}
-	if (mesh.HasNormals())
-	{
-		vlayout.Append(Vertex::Normal).Append(Vertex::Tangent);
-	}
-	if (mesh.HasTextureCoords(0))
-	{
-		vlayout.Append(Vertex::Tex2D);
-	}
-	Vertex::DataBuffer vtxb(vlayout);
-	for (unsigned int i = 0; i < mesh.mNumVertices; i++)
-	{
-		for (size_t i_ele = 0; i_ele < vlayout.Count(); i_ele++)
-		{
-			switch (vlayout.ResolveByIndex(i_ele).GetType())
-			{
-			case Vertex::Position3D:
-				vtxb.EmplaceBack(*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mVertices[i]));
-				break;
-			case Vertex::Normal:
-				vtxb.EmplaceBack(*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mNormals[i]));
-				break;
-			case Vertex::Tex2D:
-				vtxb.EmplaceBack(*reinterpret_cast<DirectX::XMFLOAT2*>(&mesh.mTextureCoords[0][i]));
-				break;
-			case Vertex::Tangent:
-				vtxb.EmplaceBack(*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mTangents[i]));
-				break;
-			case Vertex::Bitangent:
-				vtxb.EmplaceBack(*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mBitangents[i]));
-				break;
-			default:
-				assert("Bad Element Type" && false);
-				break;
-			}
-		}
-	}
-	result->AddEssentialBind(VertexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), vtxb));
-	std::vector<UINT> indicies;
-	indicies.reserve((size_t)mesh.mNumFaces * 3);
-	for (unsigned int f = 0; f < mesh.mNumFaces; f++)
-	{
-		const aiFace& face = mesh.mFaces[f];
-		assert(face.mNumIndices == 3);
-		for (unsigned int i = 0; i < 3; i++)
-		{
-			indicies.push_back(face.mIndices[i]);
-		}
-	}
-	result->AddEssentialBind(IndexBuffer::Resolve(gfx, ANSI_TO_UTF8_STR(option.szModelName + std::string(mesh.mName.C_Str())), indicies));
-
-	float shininess = 30.0f;
-	DirectX::XMFLOAT4 specColor = { 0.18f,0.18f,0.18f,1.0f };
-	DirectX::XMFLOAT4 diffuseColor = { 0.45f,0.45f,0.85f,1.0f };
-	DirectX::XMFLOAT4 ambientColor = { 0.45f, 0.45f, 0.45f, 1.0f };
-	if (mesh.mMaterialIndex >= 0)
-	{
-		using namespace std::string_literals;
-		DCBuf::RawLayout cBufferLayout;
-		cBufferLayout.Add<DCBuf::Float4>("Ambient");
-		cBufferLayout.Add<DCBuf::Float4>("SpecColor");
-		cBufferLayout.Add<DCBuf::Float>("SpecIntensity");
-		cBufferLayout.Add<DCBuf::Float>("SpecPow");
-		cBufferLayout.Add<DCBuf::Bool>("hasAmbient");
-		cBufferLayout.Add<DCBuf::Bool>("hasGloss");
-		cBufferLayout.Add<DCBuf::Bool>("enNormal");
-		DCBuf::Buffer buffer = DCBuf::Buffer(std::move(cBufferLayout));
-
-		bool hasNormal = false, hasTex = false, hasAmbient = false, hasSpec = false, 
-			hasAlpha = false, showTwoSide = false, hasAlphaGloss = false;
-
-		std::wstring szPSPath = L"res\\cso\\PS";
-		std::wstring szVSPath = L"res\\cso\\VSTex";
-
-		auto& material = *pMaterial[mesh.mMaterialIndex];
-		aiString texPath;
-		if (material.GetTexture(aiTextureType_AMBIENT, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
-		{
-			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 3);
-			if (tex->HasAlpha() && !hasAlpha)
-			{
-				hasAlpha = true;
-			}
-			normalDraw.AddBind(tex);
-			hasAmbient = true;
-		}
-		else
-		{
-			material.Get(AI_MATKEY_COLOR_AMBIENT, reinterpret_cast<aiColor3D&>(ambientColor));
-		}
-		if (material.GetTexture(aiTextureType_DIFFUSE, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
-		{
-			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()));
-			if (tex->HasAlpha() && !hasAlpha)
-			{
-				hasAlpha = true;
-			}
-			normalDraw.AddBind(tex);
-			hasTex = true;
-		}
-		else
-		{
-			material.Get(AI_MATKEY_COLOR_DIFFUSE, reinterpret_cast<aiColor3D&>(diffuseColor));
-		}
-		if (material.GetTexture(aiTextureType_SPECULAR, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
-		{
-			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 1);
-			hasAlphaGloss = tex->HasAlpha();
-			normalDraw.AddBind(tex);
-			hasSpec = true;
-		}
-		if(!hasAlphaGloss)
-		{
-			material.Get(AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor3D&>(specColor));
-		}
-		if (material.GetTexture(aiTextureType_NORMALS, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
-		{
-			auto tex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 2);
-			normalDraw.AddBind(tex);
-			hasNormal = true;
-		}
-		else {
-			material.Get(AI_MATKEY_SHININESS, shininess);
-		}
-		szPSPath += std::wstring(hasTex ? L"Tex" : L"") + (hasSpec ? L"Spec" : L"") + (hasNormal ? L"Norm" : L"") + (hasAlpha ? L"Alpha" : L"") + L".cso";
-		szVSPath += std::wstring(hasNormal ? L"Norm" : L"") + L".cso";
-		showTwoSide = hasAlpha;
-		normalDraw.AddBind(Blender::Resolve(gfx, hasAlpha));
-		normalDraw.AddBind(Rasterizer::Resolve(gfx, showTwoSide));
-		auto pvs = VertexShader::Resolve(gfx, szVSPath);
-		auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
-		normalDraw.AddBind(std::move(pvs));
-		normalDraw.AddBind(InputLayout::Resolve(gfx, vtxb.GetLayout(), pvsbc));
-		normalDraw.AddBind(PixelShader::Resolve(gfx, szPSPath));
-
-		normalDraw.AddBind(Sampler::Resolve(gfx));
-
-		buffer["Ambient"] = ambientColor;
-		buffer["SpecColor"] = specColor;
-		buffer["SpecIntensity"] = 0.5f;		
-		buffer["SpecPow"] = shininess;
-		buffer["hasAmbient"] = hasAmbient;
-		buffer["hasGloss"] = hasAlphaGloss;
-		buffer["enNormal"] = true;
-		normalDraw.AddBind(std::make_shared<CachingPixelConstantBuffer>(gfx, buffer, 2u));
-	}
-	result->AddEssentialBind(Topology::Resolve(gfx, D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP));
-	result->AddEssentialBind(std::make_shared<TransformCbuf>(gfx, *result));
-	tech.AddStep(normalDraw);
-	result->AddTechnique(tech);
-
-	return result;
+	MeshData mesh_data = MeshData(gfx, option.szModelPath, mesh, pMaterial);
+	return std::make_unique<Mesh>(gfx, mesh_data, option.szModelName + std::string(mesh.mName.C_Str()));
 }
 
 std::unique_ptr<Scene::Node> Scene::Model::ParseNode(int& next_id, const aiNode& node)

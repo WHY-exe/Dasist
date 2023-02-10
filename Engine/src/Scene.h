@@ -11,6 +11,7 @@
 #include "FrameCommander.h"
 #include "DynamicConstantBuffer.h"
 #include "ConstantBufferEx.h"
+#include "MeshData.h"
 namespace Scene
 {
 	struct ModelSetting 
@@ -21,11 +22,10 @@ namespace Scene
 	class Mesh:public Drawable
 	{
 	public:
+		Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& model_path) noexcept;
 		void Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG);
-		CachingPixelConstantBuffer* GetMaterial() const noexcept;
 		DirectX::XMMATRIX GetTransformXM() const noexcept override;
 	private:
-		CachingPixelConstantBuffer* m_material;
 		mutable DirectX::XMFLOAT4X4 m_transform;
 	};
 
@@ -37,12 +37,10 @@ namespace Scene
 		void Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransform) const noexcept;
 		int GetId() const noexcept;
 		const DirectX::XMFLOAT4X4& GetAppliedTransform() const noexcept;
-		const DCBuf::Buffer* GetMaterialConstant() const noexcept;
 	private:
 		void AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG);
 		void ShowTree(Node*& pSelectedNode) const noexcept(!IS_DEBUG);
 		void SetAppliedTransform(DirectX::XMMATRIX transform);
-		void SetAppliedMaterialConstant(const DCBuf::Buffer& buffer) const noexcept(!IS_DEBUG);
 	private:
 		int m_id;
 		std::vector<Mesh*> m_pMeshes;

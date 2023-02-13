@@ -41,6 +41,7 @@ bool Technique::IsActive() const noexcept
 
 void Technique::Accept(TechProbe& probe) noexcept
 {
+	probe.SetTechnique(this);
 	for (auto& i:m_Steps)
 	{
 		i.Accept(probe);

@@ -78,8 +78,6 @@ namespace Scene
 			{
 				bool transformDirty = false;
 				TransformParams transform_data;
-				bool materialCbufDirty = false;
-				std::optional<DCBuf::Buffer> constant_data;
 			};
 			std::unordered_map<int, NodeData> m_WindowData;
 		};

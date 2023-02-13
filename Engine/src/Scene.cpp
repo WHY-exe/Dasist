@@ -185,7 +185,37 @@ void Scene::Model::ModelWindow::Show(const char* WindowName, const Node& node) n
 		auto selected_node_id = m_pSelectedNode->GetId();
 		if (m_pSelectedNode)
 		{
-			
+			auto i = m_WindowData.find(selected_node_id);
+			if (i == m_WindowData.end())
+			{
+				const auto& nodeTransform = m_pSelectedNode->GetAppliedTransform();
+				const auto euler_angle = math_tool::ExtraEulerAngle(nodeTransform);
+				const auto translation = math_tool::ExtraTranslation(nodeTransform);
+				TransformParams tp;
+				tp.pitch = euler_angle.x;
+				tp.yaw = euler_angle.y;
+				tp.roll = euler_angle.z;
+				tp.x = translation.x;
+				tp.y = translation.y;
+				tp.x = translation.z;
+				std::tie(i, std::ignore) = m_WindowData.insert({ selected_node_id, NodeData{ false, tp } });
+			}
+			{
+				bool& dirty = i->second.transformDirty;
+				auto dcheck = [&dirty](bool change) {dirty = dirty || change; };
+				auto& transform = i->second.transform_data;
+				ImGui::Text("Position");
+				dcheck(ImGui::SliderFloat("X", &transform.x, -80.0f, 80.0f, "%.1f"));
+				dcheck(ImGui::SliderFloat("Y", &transform.y, -80.0f, 80.0f, "%.1f"));
+				dcheck(ImGui::SliderFloat("Z", &transform.z, -80.0f, 80.0f, "%.1f"));
+				ImGui::Text("Angle");
+				dcheck(ImGui::SliderAngle("AngleX", &transform.roll, -180.0f, 180.0f, "%.1f"));
+				dcheck(ImGui::SliderAngle("AngleY", &transform.yaw, -180.0f, 180.0f, "%.1f"));
+				dcheck(ImGui::SliderAngle("AngleZ", &transform.pitch, -180.0f, 180.0f, "%.1f"));
+				ImGui::Text("Scale");
+				dcheck(ImGui::SliderFloat("Scale", &transform.scale, 0.0f, 1.0f, "%.3f"));			
+				
+			}
 			ImGui::End();
 		}
 	}
@@ -207,11 +237,6 @@ DirectX::XMMATRIX Scene::Model::ModelWindow::GetTransform() noexcept
 		DirectX::XMMatrixRotationRollPitchYaw(transform.roll, transform.yaw, transform.pitch) *
 		DirectX::XMMatrixScaling(transform.scale, transform.scale, transform.scale) *
 		DirectX::XMMatrixTranslation(transform.x, transform.y, transform.z);
-}
-
-std::optional<DCBuf::Buffer>& Scene::Model::ModelWindow::GetMaterialConstant() noexcept
-{
-	return m_WindowData[m_pSelectedNode->GetId()].constant_data;
 }
 
 Scene::Node* Scene::Model::ModelWindow::GetSelectedNode() const noexcept
@@ -283,6 +308,7 @@ void Scene::Model::SpwanControlWindow() noexcept
 
 void Scene::Model::Submit(FrameCommander& fc) const noexcept(!IS_DEBUG)
 {
+	m_pWindow->AppliedParameters();
 	m_pRoot->Submit(fc, DirectX::XMMatrixIdentity());
 }
 

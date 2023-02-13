@@ -121,7 +121,7 @@
     <Filter Include="Drawable\SceneLoading">
       <UniqueIdentifier>{e9859239-b3ea-4d65-9080-8049c4d63245}</UniqueIdentifier>
     </Filter>
-    <Filter Include="VisitorProbe">
+    <Filter Include="Drawable\VisitorProbe">
       <UniqueIdentifier>{865f8677-5816-4751-8b58-fb9a91163651}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -269,9 +269,12 @@
     </ClCompile>
     <ClCompile Include="src\WinMain.cpp" />
     <ClCompile Include="src\TechProbe.cpp">
-      <Filter>VisitorProbe</Filter>
+      <Filter>Drawable\VisitorProbe</Filter>
     </ClCompile>
     <ClCompile Include="src\MeshData.cpp">
+      <Filter>Drawable\SceneLoading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SceneProbe.cpp">
       <Filter>Drawable\SceneLoading</Filter>
     </ClCompile>
   </ItemGroup>
@@ -445,9 +448,12 @@
       <Filter>Drawable\SceneLoading</Filter>
     </ClInclude>
     <ClInclude Include="src\TechProbe.h">
-      <Filter>VisitorProbe</Filter>
+      <Filter>Drawable\VisitorProbe</Filter>
     </ClInclude>
     <ClInclude Include="src\MeshData.h">
+      <Filter>Drawable\SceneLoading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SceneProbe.h">
       <Filter>Drawable\SceneLoading</Filter>
     </ClInclude>
   </ItemGroup>

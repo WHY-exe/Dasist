@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\SceneProbe.cpp" />
     <ClCompile Include="src\MeshData.cpp" />
     <ClCompile Include="src\NullPixelShader.cpp" />
     <ClCompile Include="src\FrameCommander.cpp" />
@@ -71,6 +72,7 @@
     <ClCompile Include="src\Step.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\SceneProbe.h" />
     <ClInclude Include="src\MeshData.h" />
     <ClInclude Include="src\NullPixelShader.h" />
     <ClInclude Include="src\FrameCommander.h" />

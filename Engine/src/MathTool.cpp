@@ -1,5 +1,5 @@
 #include "MathTool.h"
-
+#include <cmath>
 namespace math_tool
 {
 	DirectX::XMFLOAT3 ExtraEulerAngle(const DirectX::XMFLOAT4X4 matrix)
@@ -22,5 +22,12 @@ namespace math_tool
 	{
 		return { matrix._41, matrix._42, matrix._43 };
 	}
-
+	DirectX::XMFLOAT3 ExtraScaling(const DirectX::XMFLOAT4X4 matrix)
+	{
+		return {
+			sqrt(matrix._11 * matrix._11 + matrix._21 * matrix._21 + matrix._31 * matrix._31),
+			sqrt(matrix._12 * matrix._12 + matrix._22 * matrix._22 + matrix._32 * matrix._32),
+			sqrt(matrix._13 * matrix._13 + matrix._23 * matrix._23 + matrix._33 * matrix._33),
+		};
+	}
 }

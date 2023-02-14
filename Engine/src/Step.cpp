@@ -33,7 +33,7 @@ void Step::Bind(Graphics& gfx) const
 	}
 }
 
-void Step::Accept(TechProbe& probe) noexcept
+void Step::Accept(Probe& probe) noexcept
 {
 	probe.SetStep(this);
 	for (auto& i : m_Binds)

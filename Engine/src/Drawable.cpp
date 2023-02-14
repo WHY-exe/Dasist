@@ -25,7 +25,7 @@ void Drawable::Bind(Graphics& gfx) const noexcept
 	}
 }
 
-void Drawable::Accept(TechProbe& probe) noexcept
+void Drawable::Accept(Probe& probe) noexcept
 {
 	for (auto& i : m_Techs)
 	{

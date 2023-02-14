@@ -8,6 +8,7 @@
 #include <optional>
 #include <unordered_map>
 #include "Drawable.h"
+#include "SceneProbe.h"
 #include "FrameCommander.h"
 #include "DynamicConstantBuffer.h"
 #include "ConstantBufferEx.h"
@@ -32,6 +33,7 @@ namespace Scene
 	class Node
 	{
 		friend class Model;
+		friend class TransformationProbe;
 	public:
 		Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform);
 		void Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransform) const noexcept;
@@ -39,6 +41,7 @@ namespace Scene
 		const DirectX::XMFLOAT4X4& GetAppliedTransform() const noexcept;
 	private:
 		void AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG);
+		void Accept(NodeProbe& probe) noexcept(!IS_DEBUG);
 		void ShowTree(Node*& pSelectedNode) const noexcept(!IS_DEBUG);
 		void SetAppliedTransform(DirectX::XMMATRIX transform);
 	private:
@@ -52,35 +55,6 @@ namespace Scene
 
 	class Model
 	{
-	private:
-		class ModelWindow
-		{
-			friend class Model;
-		public:
-			void Show(const char* WindowName, const Node& node) noexcept(!IS_DEBUG);
-			DirectX::XMMATRIX GetTransform() noexcept;
-			std::optional<DCBuf::Buffer>& GetMaterialConstant() noexcept;
-			Node* GetSelectedNode() const noexcept;
-			void AppliedParameters() noexcept;
-		private:
-			Node* m_pSelectedNode = nullptr;
-			struct TransformParams
-			{
-				float roll = 0.0f;
-				float pitch = 0.0f;
-				float yaw = 0.0f;
-				float x = 0.0f;
-				float y = 0.0f;
-				float z = 0.0f;
-				float scale = 1.0f;
-			};
-			struct NodeData 
-			{
-				bool transformDirty = false;
-				TransformParams transform_data;
-			};
-			std::unordered_map<int, NodeData> m_WindowData;
-		};
 	public:
 		Model() = default;
 		Model(Graphics& gfx, ModelSetting& option);
@@ -94,8 +68,10 @@ namespace Scene
 	private:
 		std::string m_szModelName;
 		std::vector<std::unique_ptr<Mesh>> m_pMeshes;
-		std::unique_ptr<ModelWindow> m_pWindow;
+		Node* m_pSelectedNode;
 		std::unique_ptr<Node> m_pRoot;
+		DirectX::XMFLOAT3 m_pos = {0.0f, 0.0f, 0.0f};
+		float m_scale = 1.0f;
 	};
 };
 

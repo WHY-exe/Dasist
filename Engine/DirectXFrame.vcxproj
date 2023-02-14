@@ -48,7 +48,7 @@
     <ClCompile Include="src\Keyboard.cpp" />
     <ClCompile Include="src\Stencil.cpp" />
     <ClCompile Include="src\Technique.cpp" />
-    <ClCompile Include="src\TechProbe.cpp" />
+    <ClCompile Include="src\Probe.cpp" />
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui.cpp" />
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui_demo.cpp" />
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui_draw.cpp" />
@@ -107,7 +107,7 @@
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Console.h" />
     <ClInclude Include="src\Technique.h" />
-    <ClInclude Include="src\TechProbe.h" />
+    <ClInclude Include="src\Probe.h" />
     <ClInclude Include="src\vendor\imgui_for_dx11\imconfig.h" />
     <ClInclude Include="src\vendor\imgui_for_dx11\imgui.h" />
     <ClInclude Include="src\vendor\imgui_for_dx11\imgui_impl_dx11.h" />

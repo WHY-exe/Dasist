@@ -1,6 +1,6 @@
 #pragma once
 #include "Step.h"
-#include "TechProbe.h"
+#include "Probe.h"
 #include "FrameCommander.h"
 #include <vector>
 class Technique
@@ -12,7 +12,7 @@ public:
 	void AddStep(Step& step) noexcept;
 	void SetActiveState(bool is_active) noexcept;
 	bool IsActive() const noexcept;
-	void Accept(TechProbe& probe) noexcept;
+	void Accept(Probe& probe) noexcept;
 	const std::string& GetTechName() const noexcept;
 private:
 	std::string m_Name;

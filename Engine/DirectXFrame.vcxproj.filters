@@ -268,14 +268,14 @@
       <Filter>Drawable\SceneLoading</Filter>
     </ClCompile>
     <ClCompile Include="src\WinMain.cpp" />
-    <ClCompile Include="src\TechProbe.cpp">
+    <ClCompile Include="src\Probe.cpp">
       <Filter>Drawable\VisitorProbe</Filter>
     </ClCompile>
     <ClCompile Include="src\MeshData.cpp">
       <Filter>Drawable\SceneLoading</Filter>
     </ClCompile>
     <ClCompile Include="src\SceneProbe.cpp">
-      <Filter>Drawable\SceneLoading</Filter>
+      <Filter>Drawable\VisitorProbe</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -447,14 +447,14 @@
     <ClInclude Include="src\Scene.h">
       <Filter>Drawable\SceneLoading</Filter>
     </ClInclude>
-    <ClInclude Include="src\TechProbe.h">
+    <ClInclude Include="src\Probe.h">
       <Filter>Drawable\VisitorProbe</Filter>
     </ClInclude>
     <ClInclude Include="src\MeshData.h">
       <Filter>Drawable\SceneLoading</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneProbe.h">
-      <Filter>Drawable\SceneLoading</Filter>
+      <Filter>Drawable\VisitorProbe</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -174,80 +174,22 @@ void Scene::Node::SetAppliedTransform(DirectX::XMMATRIX transform)
 	DirectX::XMStoreFloat4x4(&m_AppliedTransform, transform);
 }
 
-void Scene::Model::ModelWindow::Show(const char* WindowName, const Node& node) noexcept(!IS_DEBUG)
+void Scene::Node::Accept(NodeProbe& probe) noexcept(!IS_DEBUG)
 {
-	if (ImGui::Begin(WindowName))
+	if (probe.VisitNode(*this))
 	{
-		ImGui::Columns(2, nullptr, true);
-		node.ShowTree(m_pSelectedNode);
-
-		ImGui::NextColumn();
-		auto selected_node_id = m_pSelectedNode->GetId();
-		if (m_pSelectedNode)
-		{
-			auto i = m_WindowData.find(selected_node_id);
-			if (i == m_WindowData.end())
-			{
-				const auto& nodeTransform = m_pSelectedNode->GetAppliedTransform();
-				const auto euler_angle = math_tool::ExtraEulerAngle(nodeTransform);
-				const auto translation = math_tool::ExtraTranslation(nodeTransform);
-				TransformParams tp;
-				tp.pitch = euler_angle.x;
-				tp.yaw = euler_angle.y;
-				tp.roll = euler_angle.z;
-				tp.x = translation.x;
-				tp.y = translation.y;
-				tp.x = translation.z;
-				std::tie(i, std::ignore) = m_WindowData.insert({ selected_node_id, NodeData{ false, tp } });
-			}
-			{
-				bool& dirty = i->second.transformDirty;
-				auto dcheck = [&dirty](bool change) {dirty = dirty || change; };
-				auto& transform = i->second.transform_data;
-				ImGui::Text("Position");
-				dcheck(ImGui::SliderFloat("X", &transform.x, -80.0f, 80.0f, "%.1f"));
-				dcheck(ImGui::SliderFloat("Y", &transform.y, -80.0f, 80.0f, "%.1f"));
-				dcheck(ImGui::SliderFloat("Z", &transform.z, -80.0f, 80.0f, "%.1f"));
-				ImGui::Text("Angle");
-				dcheck(ImGui::SliderAngle("AngleX", &transform.roll, -180.0f, 180.0f, "%.1f"));
-				dcheck(ImGui::SliderAngle("AngleY", &transform.yaw, -180.0f, 180.0f, "%.1f"));
-				dcheck(ImGui::SliderAngle("AngleZ", &transform.pitch, -180.0f, 180.0f, "%.1f"));
-				ImGui::Text("Scale");
-				dcheck(ImGui::SliderFloat("Scale", &transform.scale, 0.0f, 1.0f, "%.3f"));			
-				
-			}
-			ImGui::End();
-		}
+		SetAppliedTransform(probe.GetTransformMatrix());
+	}
+	for (auto& i:m_pChilds )
+	{
+		i->Accept(probe);
 	}
 }
 
-void Scene::Model::ModelWindow::AppliedParameters() noexcept
-{
-	if (auto& trans_d = m_WindowData[m_pSelectedNode->GetId()].transformDirty)
-	{
-		m_pSelectedNode->SetAppliedTransform(GetTransform());
-		trans_d = false;
-	}
-}
-
-DirectX::XMMATRIX Scene::Model::ModelWindow::GetTransform() noexcept
-{
-	const auto& transform = m_WindowData[m_pSelectedNode->GetId()].transform_data;
-	return
-		DirectX::XMMatrixRotationRollPitchYaw(transform.roll, transform.yaw, transform.pitch) *
-		DirectX::XMMatrixScaling(transform.scale, transform.scale, transform.scale) *
-		DirectX::XMMatrixTranslation(transform.x, transform.y, transform.z);
-}
-
-Scene::Node* Scene::Model::ModelWindow::GetSelectedNode() const noexcept
-{
-	return m_pSelectedNode;
-}
 
 Scene::Model::Model(Graphics& gfx,ModelSetting& option)
 	:
-	m_szModelName(option.szModelName),
-	m_pWindow(std::make_unique<ModelWindow>())
+	m_szModelName(option.szModelName)
 {
 	Assimp::Importer importer;
 	const aiScene* pScene = importer.ReadFile(
@@ -269,7 +211,6 @@ Scene::Model::Model(Graphics& gfx,ModelSetting& option)
 	}
 	int next_id = 0;
 	m_pRoot = ParseNode(next_id, *pScene->mRootNode);
-	m_pWindow->m_pSelectedNode = const_cast<Node*>(m_pRoot.get());
 }
 
 std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, ModelSetting& option, const aiMaterial* const* pMaterial)
@@ -303,37 +244,41 @@ std::unique_ptr<Scene::Node> Scene::Model::ParseNode(int& next_id, const aiNode&
 
 void Scene::Model::SpwanControlWindow() noexcept
 {
-	m_pWindow->Show(m_szModelName.c_str(), *m_pRoot);
+	if (ImGui::Begin(m_szModelName.c_str()))
+	{
+		ImGui::Columns(2, nullptr, true);
+		m_pRoot->ShowTree(m_pSelectedNode);
+
+		ImGui::NextColumn();
+		if (m_pSelectedNode)
+		{
+			NodeProbe node_probe;
+			node_probe.SetSelectedNodeId(m_pSelectedNode->GetId());
+			m_pRoot->Accept(node_probe);
+		}
+		ImGui::End();
+	}
 }
 
 void Scene::Model::Submit(FrameCommander& fc) const noexcept(!IS_DEBUG)
 {
-	m_pWindow->AppliedParameters();
-	m_pRoot->Submit(fc, DirectX::XMMatrixIdentity());
-}
-
-void Scene::Model::SetPos(float x, float y, float z) noexcept
-{
-	auto& transform = m_pWindow->m_WindowData[m_pWindow->m_pSelectedNode->m_id].transform_data;
-	m_pWindow->m_WindowData[m_pWindow->m_pSelectedNode->m_id].transformDirty = true;
-	transform.x = x;
-	transform.y = y;
-	transform.z = z;
+	m_pRoot->Submit(
+		fc, 
+		DirectX::XMMatrixIdentity() *
+		DirectX::XMMatrixScaling(m_scale, m_scale, m_scale) *
+		DirectX::XMMatrixTranslation(m_pos.x, m_pos.y, m_pos.z)
+	);
 }
 
 void Scene::Model::Scale(float scale) noexcept
 {
-	auto& transform = m_pWindow->m_WindowData[m_pWindow->m_pSelectedNode->m_id].transform_data;
-	m_pWindow->m_WindowData[m_pWindow->m_pSelectedNode->m_id].transformDirty = true;
-	transform.scale = scale;
+	m_scale = scale;
 }
-
+void Scene::Model::SetPos(float x, float y, float z) noexcept
+{
+	m_pos = { x, y, z };
+}
 void Scene::Model::SetPos(DirectX::XMFLOAT3 pos) noexcept
 {
-	auto& transform = m_pWindow->m_WindowData[m_pWindow->m_pSelectedNode->m_id].transform_data;
-	m_pWindow->m_WindowData[m_pWindow->m_pSelectedNode->m_id].transformDirty = true;
-	transform.x = pos.x;
-	transform.y = pos.y;
-	transform.z = pos.z;
+	m_pos = pos;
 }
-

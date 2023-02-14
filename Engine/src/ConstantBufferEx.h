@@ -86,7 +86,7 @@ public:
         m_Buffer.CopyFrom(src_buffer);
         m_dirty = true;
     }
-    void Accept(TechProbe& probe) noexcept override
+    void Accept(Probe& probe) noexcept override
     {
         if (probe.VisitBuffer(m_Buffer))
         {

@@ -33,9 +33,10 @@ Scene::NodeProbe::NodeProbe() noexcept
 bool Scene::NodeProbe::VisitNode(Node& node) noexcept(!IS_DEBUG)
 {
 	bool dirty = false;
-	auto dcheck = [&dirty](bool change) {dirty = dirty || change; };
+	
 	if (m_selected_node_id == node.GetId())
 	{
+		auto dcheck = [&dirty](bool change) {dirty = dirty || change; };
 		const auto& nodeTransform = node.GetAppliedTransform();
 		const auto euler_angle = math_tool::ExtraEulerAngle(nodeTransform);
 		const auto translation = math_tool::ExtraTranslation(nodeTransform);
@@ -68,7 +69,7 @@ bool Scene::NodeProbe::VisitNode(Node& node) noexcept(!IS_DEBUG)
 		{
 			DirectX::XMStoreFloat4x4(
 				&m_transformation, 
-				DirectX::XMMatrixRotationRollPitchYaw(roll, yaw, pitch) *
+				DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
 				DirectX::XMMatrixScaling(scalin_x, scalin_y, scalin_z) *
 				DirectX::XMMatrixTranslation(x, y, z));
 		}

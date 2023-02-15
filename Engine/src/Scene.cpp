@@ -29,7 +29,6 @@
 
 Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_name) noexcept
 {
-	DirectX::XMStoreFloat4x4(&m_transform, DirectX::XMMatrixIdentity());
 	AddEssentialBind(
 		VertexBuffer::Resolve(
 			gfx,
@@ -45,7 +44,6 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 		)
 	);
 	AddEssentialBind(Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-	AddEssentialBind(std::make_shared<TransformCbuf>(gfx, *this));
 	{
 		Technique shade("shade");
 		{
@@ -68,17 +66,13 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 			{
 				normalDraw.AddBind(texs.m_normTex);
 			}
-			normalDraw.AddBind(
-				Rasterizer::Resolve(
-					gfx,
-					mesh_data.GetTextures().m_hasAlpha)
-			);
+			normalDraw.AddBind(Rasterizer::Resolve(gfx,mesh_data.GetTextures().m_hasAlpha));
+			normalDraw.AddBind(Blender::Resolve(gfx, mesh_data.GetTextures().m_hasAlpha));
 			auto pvs = VertexShader::Resolve(gfx, mesh_data.GetVSPath());
 			auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
 			normalDraw.AddBind(std::move(pvs));
 			normalDraw.AddBind(InputLayout::Resolve(gfx, mesh_data.GetVertecies()->GetLayout(), pvsbc));
 			normalDraw.AddBind(PixelShader::Resolve(gfx, mesh_data.GetPSPath()));
-
 			normalDraw.AddBind(Sampler::Resolve(gfx));
 			normalDraw.AddBind(
 				std::make_shared<CachingPixelConstantBuffer>(
@@ -86,6 +80,7 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 					mesh_data.GetConstData(),
 					2u)
 			);
+			normalDraw.AddBind(std::make_shared<TransformCbuf>(gfx, *this));
 			shade.AddStep(normalDraw);
 		}
 		AddTechnique(shade);

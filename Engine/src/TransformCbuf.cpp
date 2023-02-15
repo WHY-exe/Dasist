@@ -26,6 +26,5 @@ TransformCbuf::Transform TransformCbuf::GetTransform(Graphics& gfx) const noexce
 void TransformCbuf::UpdateBindImpl(Graphics& gfx, const Transform& tf) const noexcept
 {
 	s_vcbuf->Update(gfx, tf);
-	s_vcbuf->Bind(gfx);
 }
 std::unique_ptr<VertexConstantBuffer<TransformCbuf::Transform>> TransformCbuf::s_vcbuf;

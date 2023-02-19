@@ -10,6 +10,11 @@ TransformCbuf::TransformCbuf(Graphics& gfx, const Drawable& parent, UINT slot)
 	}
 }
 
+void TransformCbuf::SetScalin(float scale_in) noexcept
+{
+	m_scalein = scale_in;
+}
+
 void TransformCbuf::Bind(Graphics& gfx) noexcept
 {
 	UpdateBindImpl(gfx, GetTransform(gfx));
@@ -19,8 +24,8 @@ TransformCbuf::Transform TransformCbuf::GetTransform(Graphics& gfx) const noexce
 {
 	return
 	{
-		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * gfx.GetCamera()),
-		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * gfx.GetCamera() * gfx.GetProjection())
+		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * m_scalein * gfx.GetCamera()),
+		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * m_scalein * gfx.GetCamera() * gfx.GetProjection())
 	};
 }
 void TransformCbuf::UpdateBindImpl(Graphics& gfx, const Transform& tf) const noexcept

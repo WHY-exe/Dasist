@@ -65,6 +65,10 @@ cbuffer OBJCBuf : register(b2)
     bool hasGloss;
     bool enNormal;
 };
+cbuffer outlineCBuf : register(b3)
+{
+    float4 solid_color;
+}
 
 float3 GenNormal(
     float3 SampleNormal,

@@ -26,6 +26,7 @@ namespace Scene
 		Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& model_path) noexcept;
 		void Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG);
 		DirectX::XMMATRIX GetTransformXM() const noexcept override;
+		void SetTransform(DirectX::XMMATRIX transform) noexcept;
 	private:
 		mutable DirectX::XMFLOAT4X4 m_transform;
 	};
@@ -42,6 +43,7 @@ namespace Scene
 	private:
 		void AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG);
 		void Accept(NodeProbe& probe) noexcept(!IS_DEBUG);
+		void SetAccumulateTransform(DirectX::XMMATRIX accu_tf) noexcept(!IS_DEBUG);
 		void ShowTree(Node*& pSelectedNode) const noexcept(!IS_DEBUG);
 		void SetAppliedTransform(DirectX::XMMATRIX transform);
 	private:

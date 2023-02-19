@@ -85,6 +85,41 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 		}
 		AddTechnique(shade);
 	}
+	{
+		Technique outline("OutLine");
+		{
+			{
+				Step mask(1);
+				auto pvs = VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso");
+				auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
+				mask.AddBind(std::move(pvs));
+				mask.AddBind(InputLayout::Resolve(gfx, mesh_data.GetVertecies()->GetLayout(), pvsbc));
+				mask.AddBind(std::make_shared<TransformCbuf>(gfx, *this));
+				outline.AddStep(mask);
+			}
+			{
+				Step draw(2);
+				auto pvs = VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso");
+				auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
+				draw.AddBind(std::move(pvs));				
+				draw.AddBind(PixelShader::Resolve(gfx, L"res\\cso\\Solid_PS.cso"));
+				draw.AddBind(InputLayout::Resolve(gfx, mesh_data.GetVertecies()->GetLayout(), pvsbc));
+
+				DCBuf::RawLayout cBufferLayout;
+				cBufferLayout.Add<DCBuf::Float4>("outline_color");
+				DCBuf::Buffer buffer(std::move(cBufferLayout));
+				buffer["outline_color"] = DirectX::XMFLOAT4{ 1.0f,0.4f,0.4f,1.0f };
+
+				draw.AddBind(std::make_shared<CachingPixelConstantBuffer>(gfx, buffer, 3u));
+				draw.AddBind(InputLayout::Resolve(gfx, mesh_data.GetVertecies()->GetLayout(), pvsbc));
+				auto tf_cbuf = std::make_shared<TransformCbuf>(gfx, *this);
+				tf_cbuf->SetScalin(1.04f);
+				draw.AddBind(std::move(tf_cbuf));
+				outline.AddStep(draw);
+			}
+		}
+		AddTechnique(outline);
+	}
 }
 void Scene::Mesh::Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG)
 {
@@ -95,6 +130,11 @@ void Scene::Mesh::Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransf
 DirectX::XMMATRIX Scene::Mesh::GetTransformXM() const noexcept
 {
 	return DirectX::XMLoadFloat4x4(&m_transform);
+}
+
+void Scene::Mesh::SetTransform(DirectX::XMMATRIX transform) noexcept
+{
+	DirectX::XMStoreFloat4x4(&m_transform, transform);
 }
 
 int Scene::Node::GetId() const noexcept
@@ -169,11 +209,31 @@ void Scene::Node::SetAppliedTransform(DirectX::XMMATRIX transform)
 	DirectX::XMStoreFloat4x4(&m_AppliedTransform, transform);
 }
 
+void Scene::Node::SetAccumulateTransform(DirectX::XMMATRIX accu_tf) noexcept(!IS_DEBUG)
+{
+	const auto build =
+		DirectX::XMLoadFloat4x4(&m_AppliedTransform) *
+		DirectX::XMLoadFloat4x4(&m_BaseTransform) *
+		accu_tf;
+	for (const auto pm : m_pMeshes)
+	{
+		pm->SetTransform(build);
+	}
+	for (const auto& pc : m_pChilds)
+	{
+		pc->SetAccumulateTransform(build);
+	}
+}
+
 void Scene::Node::Accept(NodeProbe& probe) noexcept(!IS_DEBUG)
 {
 	if (probe.VisitNode(*this))
 	{
 		SetAppliedTransform(probe.GetTransformMatrix());
+		const auto build =
+			DirectX::XMLoadFloat4x4(&m_AppliedTransform) *
+			DirectX::XMLoadFloat4x4(&m_BaseTransform);
+		SetAccumulateTransform(build);
 	}
 	for (auto& i:m_pChilds )
 	{

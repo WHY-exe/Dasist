@@ -18,11 +18,6 @@ void FrameCommander::Excecute(Graphics& gfx) const noexcept(!IS_DEBUG)
 	// mask draw call 
 	Stencil::Resolve(gfx, Stencil::Mod::Mask)->Bind(gfx);
 	NullPixelShader::Resolve(gfx)->Bind(gfx);
-	struct SolidColorBuffer
-	{
-		DirectX::XMFLOAT4 color = { 1.0f , 0.0f, 0.0f, 1.0f };
-	} scb;
-	PixelConstantBuffer<SolidColorBuffer>::Resolve(gfx, scb, 1u);
 	m_Passes[2].Excecute(gfx);
 }
 

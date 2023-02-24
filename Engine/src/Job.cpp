@@ -10,7 +10,10 @@ Job::Job(const Step* pStep, const Drawable* pDrawable)
 
 void Job::Excute(Graphics& gfx) const noexcept(!IS_DEBUG)
 {
-	m_pDrawable->Bind(gfx);
-	m_pStep->Bind(gfx);
-	gfx.DrawIndexed(m_pDrawable->GetIndexSize());
+	if (m_pStep->IsActive())
+	{
+		m_pDrawable->Bind(gfx);
+		m_pStep->Bind(gfx);
+		gfx.DrawIndexed(m_pDrawable->GetIndexSize());
+	}
 }

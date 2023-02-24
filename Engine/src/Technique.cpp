@@ -32,6 +32,10 @@ void Technique::AddStep(Step& step) noexcept
 void Technique::SetActiveState(bool is_active) noexcept
 {
 	m_activate = is_active;
+	for (auto& i : m_Steps)
+	{
+		i.SetActiveState(m_activate);
+	}
 }
 
 bool Technique::IsActive() const noexcept

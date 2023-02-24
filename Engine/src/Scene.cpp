@@ -28,6 +28,8 @@
 #endif // !_Debug
 
 Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_name) noexcept
+	:
+	m_szName(mesh_name)
 {
 	AddEssentialBind(
 		VertexBuffer::Resolve(
@@ -89,7 +91,7 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 		Technique outline("OutLine");
 		{
 			{
-				Step mask(1);
+				Step mask(2);
 				auto pvs = VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso");
 				auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
 				mask.AddBind(std::move(pvs));
@@ -98,12 +100,11 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 				outline.AddStep(mask);
 			}
 			{
-				Step draw(2);
+				Step draw(1);
 				auto pvs = VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso");
 				auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
 				draw.AddBind(std::move(pvs));				
 				draw.AddBind(PixelShader::Resolve(gfx, L"res\\cso\\Solid_PS.cso"));
-				draw.AddBind(InputLayout::Resolve(gfx, mesh_data.GetVertecies()->GetLayout(), pvsbc));
 
 				DCBuf::RawLayout cBufferLayout;
 				cBufferLayout.Add<DCBuf::Float4>("outline_color");
@@ -125,6 +126,11 @@ void Scene::Mesh::Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransf
 {
 	DirectX::XMStoreFloat4x4(&m_transform, accumulateTransform);
 	Drawable::Submit(fc);
+}
+
+std::string Scene::Mesh::GetName() noexcept
+{
+	return m_szName;
 }
 
 DirectX::XMMATRIX Scene::Mesh::GetTransformXM() const noexcept
@@ -241,6 +247,15 @@ void Scene::Node::Accept(NodeProbe& probe) noexcept(!IS_DEBUG)
 	}
 }
 
+void Scene::Node::Accept(MaterialProbe& probe) noexcept(!IS_DEBUG)
+{
+	for (auto& i : m_pMeshes)
+	{
+		ImGui::TextColored({ 0.4f, 0.1f, 0.6f, 1.0f }, i->GetName().c_str());
+		i->Accept(probe);
+	}
+}
+
 
 Scene::Model::Model(Graphics& gfx,ModelSetting& option)
 	:
@@ -271,7 +286,7 @@ Scene::Model::Model(Graphics& gfx,ModelSetting& option)
 std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, ModelSetting& option, const aiMaterial* const* pMaterial)
 {
 	MeshData mesh_data = MeshData(gfx, option.szModelPath, mesh, pMaterial);
-	return std::make_unique<Mesh>(gfx, mesh_data, option.szModelName + std::string(mesh.mName.C_Str()));
+	return std::make_unique<Mesh>(gfx, mesh_data, option.szModelName + "#" + std::string(mesh.mName.C_Str()));
 }
 
 std::unique_ptr<Scene::Node> Scene::Model::ParseNode(int& next_id, const aiNode& node)
@@ -310,6 +325,8 @@ void Scene::Model::SpwanControlWindow() noexcept
 			NodeProbe node_probe;
 			node_probe.SetSelectedNodeId(m_pSelectedNode->GetId());
 			m_pRoot->Accept(node_probe);
+			MaterialProbe matProbe;
+			m_pSelectedNode->Accept(matProbe);
 		}
 		ImGui::End();
 	}

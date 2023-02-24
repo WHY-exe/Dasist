@@ -12,6 +12,16 @@ void Step::AddBind(std::shared_ptr<Bindable> bind) noexcept
 	m_Binds.push_back(std::move(bind));
 }
 
+void Step::SetActiveState(bool active) noexcept
+{
+	m_active_state = active;
+}
+
+bool Step::IsActive() const noexcept
+{
+	return m_active_state;
+}
+
 void Step::InitializeParentReference(const Drawable& d) noexcept
 {
 	for (auto& b : m_Binds)

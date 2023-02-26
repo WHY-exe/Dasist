@@ -9,16 +9,10 @@ void FrameCommander::Accept(const Job& job, size_t target) const noexcept
 
 void FrameCommander::Excecute(Graphics& gfx) const noexcept(!IS_DEBUG)
 {
-	// the normal phone shading draw call
-	Stencil::Resolve(gfx, Stencil::Mod::Off)->Bind(gfx);
-	m_Passes[0].Excecute(gfx);
-	// outline draw call
-	Stencil::Resolve(gfx, Stencil::Mod::Write)->Bind(gfx);
-	m_Passes[1].Excecute(gfx);
-	// mask draw call 
-	Stencil::Resolve(gfx, Stencil::Mod::Mask)->Bind(gfx);
-	NullPixelShader::Resolve(gfx)->Bind(gfx);
-	m_Passes[2].Excecute(gfx);
+	for (auto& i : m_Passes)
+	{
+		i.Excecute(gfx);
+	}
 }
 
 void FrameCommander::Reset() noexcept

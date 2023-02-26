@@ -22,10 +22,11 @@ void TransformCbuf::Bind(Graphics& gfx) noexcept
 }
 TransformCbuf::Transform TransformCbuf::GetTransform(Graphics& gfx) const noexcept
 {
+	const auto scale_mtx = DirectX::XMMatrixScaling(m_scalein, m_scalein, m_scalein);
 	return
 	{
-		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * m_scalein * gfx.GetCamera()),
-		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * m_scalein * gfx.GetCamera() * gfx.GetProjection())
+		DirectX::XMMatrixTranspose(scale_mtx * m_parent.GetTransformXM() * gfx.GetCamera()),
+		DirectX::XMMatrixTranspose(scale_mtx * m_parent.GetTransformXM() * gfx.GetCamera() * gfx.GetProjection())
 	};
 }
 void TransformCbuf::UpdateBindImpl(Graphics& gfx, const Transform& tf) const noexcept

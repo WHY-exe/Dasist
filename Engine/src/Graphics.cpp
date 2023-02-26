@@ -108,16 +108,7 @@ void Graphics::CreateAndSetViewPort(int nWinWidth, int nWinHeight)
 void Graphics::CreateAndSetStencilDepthView(int nWinWidth, int nWinHeight)
 {
     INIT_GFX_EXCEPTION;
-    // set the z-buffer
-    // 1. create depth stencil state 
-    D3D11_DEPTH_STENCIL_DESC dsDesc = {};
-    dsDesc.DepthEnable = TRUE;
-    dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-    dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
-    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> pDSState;
-    GFX_THROW_INFO(m_pDevice->CreateDepthStencilState(&dsDesc, pDSState.GetAddressOf()));
-
-    m_pContext->OMSetDepthStencilState(pDSState.Get(), 1u);
+ 
     // 2. create depth sencil texture
     Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthStencil;
     D3D11_TEXTURE2D_DESC depthDesc = {};
@@ -125,7 +116,7 @@ void Graphics::CreateAndSetStencilDepthView(int nWinWidth, int nWinHeight)
     depthDesc.Height = nWinHeight;
     depthDesc.MipLevels = 1u;
     depthDesc.ArraySize = 1u;
-    depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
     depthDesc.SampleDesc.Count = 1u;
     depthDesc.SampleDesc.Quality = 0u;
     depthDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -134,7 +125,7 @@ void Graphics::CreateAndSetStencilDepthView(int nWinWidth, int nWinHeight)
 
     // 3. create view of depth stensil texture
     D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-    dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
     dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     dsvDesc.Texture2D.MipSlice = 0u;
     GFX_THROW_INFO(m_pDevice->CreateDepthStencilView(
@@ -173,7 +164,7 @@ void Graphics::BeginFrame()
     ImGui::NewFrame();
     const float color[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
     m_pContext->ClearRenderTargetView(m_pTarget.Get(), color);
-    m_pContext->ClearDepthStencilView(m_pDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
+    m_pContext->ClearDepthStencilView(m_pDSV.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0u);
     m_pContext->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), m_pDSV.Get());
 }
 

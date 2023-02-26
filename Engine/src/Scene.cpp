@@ -7,6 +7,8 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "InputLayout.h"
+#include "Stencil.h"
+#include "NullPixelShader.h"
 #include "Texture.h"
 #include "Sampler.h"
 #include "Surface.h"
@@ -50,7 +52,7 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 		Technique shade("shade");
 		{
 			Step normalDraw(0);
-
+			normalDraw.AddBind(Stencil::Resolve(gfx, Stencil::Mod::Off));
 			auto texs = mesh_data.GetTextures();
 			if (texs.m_amTex.get())
 			{
@@ -91,19 +93,22 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 		Technique outline("OutLine");
 		{
 			{
-				Step mask(2);
+				Step mask(1);
+				mask.AddBind(Stencil::Resolve(gfx, Stencil::Mod::Write));
 				auto pvs = VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso");
 				auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
 				mask.AddBind(std::move(pvs));
+				mask.AddBind(NullPixelShader::Resolve(gfx));
 				mask.AddBind(InputLayout::Resolve(gfx, mesh_data.GetVertecies()->GetLayout(), pvsbc));
 				mask.AddBind(std::make_shared<TransformCbuf>(gfx, *this));
 				outline.AddStep(mask);
 			}
 			{
-				Step draw(1);
+				Step draw(2);				
+				draw.AddBind(Stencil::Resolve(gfx, Stencil::Mod::Mask));	
 				auto pvs = VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso");
 				auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
-				draw.AddBind(std::move(pvs));				
+				draw.AddBind(std::move(pvs));
 				draw.AddBind(PixelShader::Resolve(gfx, L"res\\cso\\Solid_PS.cso"));
 
 				DCBuf::RawLayout cBufferLayout;
@@ -119,6 +124,7 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 				outline.AddStep(draw);
 			}
 		}
+		outline.SetActiveState(false);
 		AddTechnique(outline);
 	}
 }
@@ -237,8 +243,8 @@ void Scene::Node::Accept(NodeProbe& probe) noexcept(!IS_DEBUG)
 	{
 		SetAppliedTransform(probe.GetTransformMatrix());
 		const auto build =
-			DirectX::XMLoadFloat4x4(&m_AppliedTransform) *
-			DirectX::XMLoadFloat4x4(&m_BaseTransform);
+			DirectX::XMLoadFloat4x4(&m_BaseTransform) *
+			DirectX::XMLoadFloat4x4(&m_AppliedTransform);
 		SetAccumulateTransform(build);
 	}
 	for (auto& i:m_pChilds )
@@ -251,7 +257,11 @@ void Scene::Node::Accept(MaterialProbe& probe) noexcept(!IS_DEBUG)
 {
 	for (auto& i : m_pMeshes)
 	{
-		ImGui::TextColored({ 0.4f, 0.1f, 0.6f, 1.0f }, i->GetName().c_str());
+		ImGui::TextColored({ 0.8f, 0.8f, 0.8f, 1.0f }, i->GetName().c_str());
+		i->Accept(probe);
+	}
+	for (auto& i : m_pChilds)
+	{
 		i->Accept(probe);
 	}
 }
@@ -325,8 +335,6 @@ void Scene::Model::SpwanControlWindow() noexcept
 			NodeProbe node_probe;
 			node_probe.SetSelectedNodeId(m_pSelectedNode->GetId());
 			m_pRoot->Accept(node_probe);
-			MaterialProbe matProbe;
-			m_pSelectedNode->Accept(matProbe);
 		}
 		ImGui::End();
 	}

@@ -5,9 +5,13 @@ namespace Scene {
 	class MaterialProbe: public Probe
 	{
 	public:
-		bool VisitBuffer(class DCBuf::Buffer& material_data) override;
+		bool VisitBuffer(class DCBuf::Buffer& material_data) override;		
+		bool SetActive(bool active) noexcept;
 	protected:
 		void OnSetTechnique() override;
+
+	private:
+		bool m_node_active;
 	};
 	class NodeProbe
 	{
@@ -19,6 +23,7 @@ namespace Scene {
 	private:
 		int m_selected_node_id = -1;
 		DirectX::XMFLOAT4X4 m_transformation;
+		MaterialProbe m_matProbe;
 	};
 }
 

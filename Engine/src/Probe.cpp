@@ -1,5 +1,5 @@
 #include "Probe.h"
-
+#include "Technique.h"
 void Probe::SetTechnique(Technique* tech_in)
 {	
 	m_pTech = tech_in;

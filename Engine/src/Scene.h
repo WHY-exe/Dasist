@@ -36,7 +36,7 @@ namespace Scene
 	class Node
 	{
 		friend class Model;
-		friend class TransformationProbe;
+		friend class NodeProbe;
 	public:
 		Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform);
 		void Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransform) const noexcept;
@@ -45,6 +45,7 @@ namespace Scene
 	private:
 		void AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG);
 		void Accept(NodeProbe& probe) noexcept(!IS_DEBUG);
+		// 
 		void Accept(MaterialProbe& probe) noexcept(!IS_DEBUG);
 		void SetAccumulateTransform(DirectX::XMMATRIX accu_tf) noexcept(!IS_DEBUG);
 		void ShowTree(Node*& pSelectedNode) const noexcept(!IS_DEBUG);

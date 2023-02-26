@@ -158,7 +158,7 @@ void MeshData::SetMaterial(Graphics& gfx, const aiMesh& mesh, const aiMaterial* 
 		{
 			material.Get(AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor3D&>(specColor));
 		}
-		if (material.GetTexture(aiTextureType_NORMALS, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
+		if (material.GetTexture(aiTextureType_NORMALS, 0, &texPath) && material.GetTexture(aiTextureType_DISPLACEMENT, 0, &texPath) == aiReturn_SUCCESS && texPath.length != 0)
 		{
 			m_texInfo.m_normTex = Texture::Resolve(gfx, ANSI_TO_UTF8_STR(szTexRootPath + "\\"s + texPath.C_Str()), 2);
 		}

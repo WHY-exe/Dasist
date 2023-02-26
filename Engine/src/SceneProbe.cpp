@@ -18,11 +18,21 @@ bool Scene::MaterialProbe::VisitBuffer(DCBuf::Buffer& material_data)
 
 void Scene::MaterialProbe::OnSetTechnique()
 {
-	using namespace std::string_literals;
-	ImGui::TextColored({ 0.4f, 0.1f, 0.6f, 1.0f }, m_pTech->GetTechName().c_str());
+	using namespace std::string_literals;	
+	//if (m_pTech->GetTechName() == "OutLine")
+	//{
+	//	m_pTech->SetActiveState(true);
+	//}
+	ImGui::TextColored({ 0.8f, 0.8f, 0.8f, 1.0f }, m_pTech->GetTechName().c_str());
 	bool active = m_pTech->IsActive();
 	ImGui::Checkbox(("Tech Active##"s + m_pTech->GetTechName()).c_str(), &active);
 	m_pTech->SetActiveState(active);
+}
+
+bool Scene::MaterialProbe::SetActive(bool active) noexcept
+{
+	m_node_active = active;
+	return m_node_active;
 }
 
 Scene::NodeProbe::NodeProbe() noexcept
@@ -34,7 +44,7 @@ bool Scene::NodeProbe::VisitNode(Node& node) noexcept(!IS_DEBUG)
 {
 	bool dirty = false;
 	
-	if (m_selected_node_id == node.GetId())
+	if (m_matProbe.SetActive(m_selected_node_id == node.GetId()))
 	{
 		auto dcheck = [&dirty](bool change) {dirty = dirty || change; };
 		const auto& nodeTransform = node.GetAppliedTransform();
@@ -61,18 +71,19 @@ bool Scene::NodeProbe::VisitNode(Node& node) noexcept(!IS_DEBUG)
 		dcheck(ImGui::SliderAngle("AngleY", &yaw, -180.0f, 180.0f, "%.1f"));
 		dcheck(ImGui::SliderAngle("AngleZ", &pitch, -180.0f, 180.0f, "%.1f"));	
 		ImGui::Text("Scale");
-		dcheck(ImGui::SliderFloat("Scalin_x", &scalin_x, 0.0f, 1.0f, "%.3f"));
-		dcheck(ImGui::SliderFloat("Scalin_y", &scalin_y, 0.0f, 1.0f, "%.3f"));
-		dcheck(ImGui::SliderFloat("Scalin_z", &scalin_z, 0.0f, 1.0f, "%.3f"));
+		dcheck(ImGui::SliderFloat("Scalin_x", &scalin_x, 0.0f, 2.0f, "%.3f"));
+		dcheck(ImGui::SliderFloat("Scalin_y", &scalin_y, 0.0f, 2.0f, "%.3f"));
+		dcheck(ImGui::SliderFloat("Scalin_z", &scalin_z, 0.0f, 2.0f, "%.3f"));
 
 		if (dirty)
 		{
 			DirectX::XMStoreFloat4x4(
-				&m_transformation, 
-				DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
+				&m_transformation,
 				DirectX::XMMatrixScaling(scalin_x, scalin_y, scalin_z) *
+				DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
 				DirectX::XMMatrixTranslation(x, y, z));
 		}
+		node.Accept(m_matProbe);
 	}
 	return dirty;
 }

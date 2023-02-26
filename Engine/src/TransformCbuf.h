@@ -8,6 +8,8 @@ public:
 	struct Transform {
 		DirectX::XMMATRIX modelCamView;
 		DirectX::XMMATRIX modelProjView;
+		DirectX::XMMATRIX mtx_scalin;
+		DirectX::XMFLOAT3 CenterPoint;
 	};
 public:
 	TransformCbuf(Graphics& gfx, const Drawable& parent, UINT slot = 0);

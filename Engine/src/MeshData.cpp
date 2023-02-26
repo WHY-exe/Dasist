@@ -39,8 +39,14 @@ const std::wstring& MeshData::GetVSPath() const noexcept
 	return m_szVSPath;
 }
 
+DirectX::XMFLOAT3 MeshData::GetCenterPoint() const noexcept
+{
+	return DirectX::XMFLOAT3(total_x / NumVertices, total_y / NumVertices, total_z / NumVertices);
+}
+
 void MeshData::SetVertecies(const aiMesh& mesh)
 {
+	NumVertices = mesh.mNumVertices;
 	Vertex::Layout vlayout = Vertex::Layout();
 	if (mesh.HasPositions())
 	{
@@ -62,7 +68,11 @@ void MeshData::SetVertecies(const aiMesh& mesh)
 			switch (vlayout.ResolveByIndex(i_ele).GetType())
 			{
 			case Vertex::Position3D:
-				m_pVertexData->EmplaceBack(*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mVertices[i]));
+				DirectX::XMFLOAT3 pos_3d = *reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mVertices[i]);
+				total_x += pos_3d.x;
+				total_y += pos_3d.y;
+				total_z += pos_3d.z;
+				m_pVertexData->EmplaceBack(std::move(pos_3d));
 				break;
 			case Vertex::Normal:
 				m_pVertexData->EmplaceBack(*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mNormals[i]));

@@ -31,7 +31,8 @@
 
 Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_name) noexcept
 	:
-	m_szName(mesh_name)
+	m_szName(mesh_name),
+	m_center_point(mesh_data.GetCenterPoint())
 {
 	AddEssentialBind(
 		VertexBuffer::Resolve(
@@ -142,6 +143,11 @@ std::string Scene::Mesh::GetName() noexcept
 DirectX::XMMATRIX Scene::Mesh::GetTransformXM() const noexcept
 {
 	return DirectX::XMLoadFloat4x4(&m_transform);
+}
+
+DirectX::XMFLOAT3 Scene::Mesh::GetCenterPoint() const noexcept
+{
+	return m_center_point;
 }
 
 void Scene::Mesh::SetTransform(DirectX::XMMATRIX transform) noexcept

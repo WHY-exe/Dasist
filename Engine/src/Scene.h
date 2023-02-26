@@ -27,10 +27,12 @@ namespace Scene
 		void Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG);
 		std::string GetName() noexcept;
 		DirectX::XMMATRIX GetTransformXM() const noexcept override;
+		DirectX::XMFLOAT3 GetCenterPoint() const noexcept override;
 		void SetTransform(DirectX::XMMATRIX transform) noexcept;
 	private:
 		mutable DirectX::XMFLOAT4X4 m_transform;
 		std::string m_szName;
+		DirectX::XMFLOAT3 m_center_point;
 	};
 
 	class Node

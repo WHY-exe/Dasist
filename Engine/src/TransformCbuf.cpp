@@ -25,8 +25,10 @@ TransformCbuf::Transform TransformCbuf::GetTransform(Graphics& gfx) const noexce
 	const auto scale_mtx = DirectX::XMMatrixScaling(m_scalein, m_scalein, m_scalein);
 	return
 	{
-		DirectX::XMMatrixTranspose(scale_mtx * m_parent.GetTransformXM() * gfx.GetCamera()),
-		DirectX::XMMatrixTranspose(scale_mtx * m_parent.GetTransformXM() * gfx.GetCamera() * gfx.GetProjection())
+		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * gfx.GetCamera()),
+		DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * gfx.GetCamera() * gfx.GetProjection()),
+		scale_mtx,
+		m_parent.GetCenterPoint()
 	};
 }
 void TransformCbuf::UpdateBindImpl(Graphics& gfx, const Transform& tf) const noexcept

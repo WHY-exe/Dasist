@@ -2,6 +2,8 @@ cbuffer CBuf : register(b0)
 {
     matrix modelCamView;
     matrix modelProjView;
+    matrix modelScalin;
+    float3 center_point;
 };
 
 struct VSOut

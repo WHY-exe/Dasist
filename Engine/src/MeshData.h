@@ -28,6 +28,7 @@ public:
 	DCBuf::Buffer& GetConstData() noexcept;
 	const std::wstring& GetPSPath() const noexcept;
 	const std::wstring& GetVSPath() const noexcept;
+	DirectX::XMFLOAT3 GetCenterPoint() const noexcept;
 private:
 	void SetVertecies(const aiMesh& mesh);
 	void SetIndicies(const aiMesh& mesh);
@@ -40,6 +41,8 @@ private:
 	std::unique_ptr<Vertex::DataBuffer> m_pVertexData;
 	std::vector<UINT> m_indicies;
 	DCBuf::Buffer m_DynamicConstData;
+	unsigned int NumVertices;
+	float total_x = 0, total_y = 0, total_z = 0;
 
 	TextureInfo m_texInfo;
 };

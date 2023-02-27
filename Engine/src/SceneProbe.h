@@ -7,6 +7,7 @@ namespace Scene {
 	public:
 		bool VisitBuffer(class DCBuf::Buffer& material_data) override;		
 		bool SetActive(bool active) noexcept;
+		bool IsActive() const noexcept;
 	protected:
 		void OnSetTechnique() override;
 

@@ -7,31 +7,43 @@
 bool Scene::MaterialProbe::VisitBuffer(DCBuf::Buffer& material_data)
 {
 	bool dirty = false;
-	auto dcheck = [&dirty](bool change) {dirty = dirty || change; };
-	ImGui::Text("Material");
-	if (auto v = material_data["enNormal"]; v.Exists())
+	if (m_node_active)
 	{
-		dcheck(ImGui::Checkbox("Normal Map", &v));
+		auto dcheck = [&dirty](bool change) {dirty = dirty || change; };
+		ImGui::Text("Material");
+		if (auto v = material_data["enNormal"]; v.Exists())
+		{
+			dcheck(ImGui::Checkbox("Normal Map", &v));
+		}
 	}
 	return dirty;
 }
 
 void Scene::MaterialProbe::OnSetTechnique()
 {
-	using namespace std::string_literals;	
-	//if (m_pTech->GetTechName() == "OutLine")
-	//{
-	//	m_pTech->SetActiveState(true);
-	//}
-	ImGui::TextColored({ 0.8f, 0.8f, 0.8f, 1.0f }, m_pTech->GetTechName().c_str());
-	bool active = m_pTech->IsActive();
-	ImGui::Checkbox(("Tech Active##"s + m_pTech->GetTechName()).c_str(), &active);
-	m_pTech->SetActiveState(active);
+	using namespace std::string_literals;
+	if (m_pTech->GetTechName() == "OutLine")
+	{
+		m_pTech->SetActiveState(m_node_active);
+	}
+	if (m_node_active)
+	{
+		ImGui::TextColored({ 0.8f, 0.8f, 0.8f, 1.0f }, m_pTech->GetTechName().c_str());
+		bool active = m_pTech->IsActive();
+		ImGui::Checkbox(("Tech Active##"s + m_pTech->GetTechName()).c_str(), &active);
+		m_pTech->SetActiveState(active);
+	}
+
 }
 
 bool Scene::MaterialProbe::SetActive(bool active) noexcept
 {
 	m_node_active = active;
+	return m_node_active;
+}
+
+bool Scene::MaterialProbe::IsActive() const noexcept
+{
 	return m_node_active;
 }
 
@@ -83,8 +95,8 @@ bool Scene::NodeProbe::VisitNode(Node& node) noexcept(!IS_DEBUG)
 				DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
 				DirectX::XMMatrixTranslation(x, y, z));
 		}
-		node.Accept(m_matProbe);
 	}
+	node.Accept(m_matProbe);
 	return dirty;
 }
 

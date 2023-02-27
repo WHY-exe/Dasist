@@ -263,7 +263,8 @@ void Scene::Node::Accept(MaterialProbe& probe) noexcept(!IS_DEBUG)
 {
 	for (auto& i : m_pMeshes)
 	{
-		ImGui::TextColored({ 0.8f, 0.8f, 0.8f, 1.0f }, i->GetName().c_str());
+		if(probe.IsActive())
+			ImGui::TextColored({ 0.8f, 0.8f, 0.8f, 1.0f }, i->GetName().c_str());
 		i->Accept(probe);
 	}
 	for (auto& i : m_pChilds)

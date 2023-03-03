@@ -71,7 +71,7 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 			{
 				normalDraw.AddBind(texs.m_normTex);
 			}
-			normalDraw.AddBind(Rasterizer::Resolve(gfx,mesh_data.GetTextures().m_hasAlpha));
+			normalDraw.AddBind(Rasterizer::Resolve(gfx, mesh_data.GetTextures().m_hasAlpha));
 			normalDraw.AddBind(Blender::Resolve(gfx, mesh_data.GetTextures().m_hasAlpha));
 			auto pvs = VertexShader::Resolve(gfx, mesh_data.GetVSPath());
 			auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
@@ -160,6 +160,16 @@ int Scene::Node::GetId() const noexcept
 	return m_id;
 }
 
+const std::string& Scene::Node::GetName() const noexcept
+{
+	return m_szNodeName;
+}
+
+bool Scene::Node::HasChild() const noexcept
+{
+	return m_pChilds.empty();
+}
+
 const DirectX::XMFLOAT4X4& Scene::Node::GetAppliedTransform() const noexcept
 {
 	return m_AppliedTransform;
@@ -183,6 +193,15 @@ void Scene::Node::Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransf
 
 }
 
+void Scene::Node::SetSelectStatus(bool status) noexcept
+{
+	m_selected = status;
+	for (auto& i : m_pChilds)
+	{
+		i->SetSelectStatus(status);
+	}
+}
+
 Scene::Node::Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform)
 	:
 	m_id(id),
@@ -193,33 +212,27 @@ Scene::Node::Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMesh
 	DirectX::XMStoreFloat4x4(&m_AppliedTransform, DirectX::XMMatrixIdentity());
 }
 
+bool Scene::Node::ParentSelected() const noexcept
+{
+	Node* cur_node = m_parent;
+	if (cur_node == nullptr)
+	{
+		return false;
+	}
+	if (cur_node->m_selected)
+	{
+		return true;
+	}
+	else
+	{
+		return cur_node->ParentSelected();
+	}
+}
+
 void Scene::Node::AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG)
 {
 	assert(child);
 	m_pChilds.emplace_back(std::move(child));
-}
-
-void Scene::Node::ShowTree(Node*& pSelectedNode) const noexcept(!IS_DEBUG)
-{
-	const int selected_id = (pSelectedNode == nullptr) ? -1 : pSelectedNode->GetId();
-	const auto imgui_flags = ImGuiTreeNodeFlags_OpenOnArrow 
-		| ((m_id == selected_id) ? ImGuiTreeNodeFlags_Selected : 0)
-		| ((m_pChilds.empty() ? ImGuiTreeNodeFlags_Leaf : 0));
-	// render the node
-	const auto expand = ImGui::TreeNodeEx((void*)(intptr_t)m_id, imgui_flags, m_szNodeName.c_str());
-	if (ImGui::IsItemClicked() || ImGui::IsItemActivated())
-	{
-		pSelectedNode = const_cast<Node*>(this);
-	}
-	// render the child node if root expanded
-	if (expand)
-	{
-		for (auto& child : m_pChilds)
-		{
-			child->ShowTree(pSelectedNode);
-		}
-		ImGui::TreePop();
-	}
 }
 
 void Scene::Node::SetAppliedTransform(DirectX::XMMATRIX transform)
@@ -243,33 +256,43 @@ void Scene::Node::SetAccumulateTransform(DirectX::XMMATRIX accu_tf) noexcept(!IS
 	}
 }
 
-void Scene::Node::Accept(NodeProbe& probe) noexcept(!IS_DEBUG)
+void Scene::Node::Accept(TNodeProbe& probe) noexcept(!IS_DEBUG)
 {
 	if (probe.VisitNode(*this))
 	{
 		SetAppliedTransform(probe.GetTransformMatrix());
 		const auto build =
-			DirectX::XMLoadFloat4x4(&m_BaseTransform) *
-			DirectX::XMLoadFloat4x4(&m_AppliedTransform);
+			DirectX::XMLoadFloat4x4(&m_AppliedTransform) *
+			DirectX::XMLoadFloat4x4(&m_BaseTransform);
 		SetAccumulateTransform(build);
 	}
 	for (auto& i:m_pChilds )
 	{
+		i->m_parent = this;
 		i->Accept(probe);
 	}
 }
 
 void Scene::Node::Accept(MaterialProbe& probe) noexcept(!IS_DEBUG)
 {
+	probe.SetSelectStatus(m_selected);
 	for (auto& i : m_pMeshes)
 	{
-		if(probe.IsActive())
+		if(probe.IsSelected())
 			ImGui::TextColored({ 0.8f, 0.8f, 0.8f, 1.0f }, i->GetName().c_str());
 		i->Accept(probe);
 	}
-	for (auto& i : m_pChilds)
+}
+
+void Scene::Node::AcceptToShowTree(NodeProbe& probe) noexcept(!IS_DEBUG)
+{
+	if (probe.PushNode(*this))
 	{
-		i->Accept(probe);
+		for (auto& i : m_pChilds)
+		{ 
+			i->AcceptToShowTree(probe);
+		}
+		probe.PopNode();
 	}
 }
 
@@ -302,8 +325,13 @@ Scene::Model::Model(Graphics& gfx,ModelSetting& option)
 
 std::unique_ptr<Scene::Mesh> Scene::Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, ModelSetting& option, const aiMaterial* const* pMaterial)
 {
-	MeshData mesh_data = MeshData(gfx, option.szModelPath, mesh, pMaterial);
+	MeshData mesh_data = MeshData(gfx, option.szModelPath, option.szModelName, mesh, pMaterial);
 	return std::make_unique<Mesh>(gfx, mesh_data, option.szModelName + "#" + std::string(mesh.mName.C_Str()));
+}
+
+const std::string& Scene::Model::GetName() const noexcept
+{
+	return m_szModelName;
 }
 
 std::unique_ptr<Scene::Node> Scene::Model::ParseNode(int& next_id, const aiNode& node)
@@ -329,22 +357,14 @@ std::unique_ptr<Scene::Node> Scene::Model::ParseNode(int& next_id, const aiNode&
 	return pNode;
 }
 
-void Scene::Model::SpwanControlWindow() noexcept
+void Scene::Model::AcceptToShowTree(NodeProbe& probe) noexcept(!IS_DEBUG)
 {
-	if (ImGui::Begin(m_szModelName.c_str()))
-	{
-		ImGui::Columns(2, nullptr, true);
-		m_pRoot->ShowTree(m_pSelectedNode);
+	m_pRoot->AcceptToShowTree(node_probe);
+}
 
-		ImGui::NextColumn();
-		if (m_pSelectedNode)
-		{
-			NodeProbe node_probe;
-			node_probe.SetSelectedNodeId(m_pSelectedNode->GetId());
-			m_pRoot->Accept(node_probe);
-		}
-		ImGui::End();
-	}
+void Scene::Model::Accept(TNodeProbe& probe) noexcept(!IS_DEBUG)
+{
+	m_pRoot->Accept(node_probe);
 }
 
 void Scene::Model::Submit(FrameCommander& fc) const noexcept(!IS_DEBUG)
@@ -355,6 +375,14 @@ void Scene::Model::Submit(FrameCommander& fc) const noexcept(!IS_DEBUG)
 		DirectX::XMMatrixScaling(m_scale, m_scale, m_scale) *
 		DirectX::XMMatrixTranslation(m_pos.x, m_pos.y, m_pos.z)
 	);
+}
+
+void Scene::Model::ApplyTransformation() noexcept(!IS_DEBUG)
+{
+	m_pRoot->SetAccumulateTransform(
+		DirectX::XMMatrixIdentity() *
+		DirectX::XMMatrixScaling(m_scale, m_scale, m_scale) *
+		DirectX::XMMatrixTranslation(m_pos.x, m_pos.y, m_pos.z));
 }
 
 void Scene::Model::Scale(float scale) noexcept

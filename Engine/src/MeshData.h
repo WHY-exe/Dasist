@@ -21,7 +21,8 @@ struct TextureInfo
 class MeshData
 {
 public:
-	MeshData(Graphics& gfx, const std::string& szModelPath, const aiMesh& mesh, const aiMaterial* const* pMaterial);
+	MeshData(Graphics& gfx, const std::string& szModelPath, const std::string& szModelName,const aiMesh& mesh, const aiMaterial* const* pMaterial);
+	void SetModelName(const std::string& szModelName) noexcept;
 	TextureInfo& GetTextures() noexcept;
 	std::unique_ptr<Vertex::DataBuffer>& GetVertecies() noexcept;
 	std::vector<UINT>& GetIndicies() noexcept;
@@ -37,7 +38,7 @@ private:
 	const std::string m_szModelPath;
 	std::wstring m_szPSPath;
 	std::wstring m_szVSPath;
-
+	std::string m_szModelName;
 	std::unique_ptr<Vertex::DataBuffer> m_pVertexData;
 	std::vector<UINT> m_indicies;
 	DCBuf::Buffer m_DynamicConstData;

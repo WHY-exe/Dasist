@@ -3,10 +3,11 @@
 #include "imgui.h"
 PointLight::PointLight(Graphics& gfx)
 	:
-	m_pos(0.0f, 20.0f, 0.0f)
+	m_pos(0.0f, 500.0f, 0.0f)
 {
 	Scene::ModelSetting op;
 	op.szModelPath = "res\\model\\sphere.obj";
+	op.szModelName = "PointLight";
 	m_lightBall = Scene::Model(gfx, op);
 	m_lightBall.Scale(0.3f);
 
@@ -47,6 +48,12 @@ void PointLight::Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept
 	m_PSCbuf->SetBuffer(m_cBuffer);
 	m_PSCbuf->Bind(gfx);
 	m_lightBall.SetPos(m_pos);
+	m_lightBall.ApplyTransformation();
+}
+
+void PointLight::Submit(FrameCommander& fc) noexcept
+{
+	m_lightBall.Submit(fc);
 }
 
 void PointLight::SpwanControlWindow() noexcept
@@ -71,7 +78,7 @@ void PointLight::SpwanControlWindow() noexcept
 
 GlobalLight::GlobalLight(Graphics& gfx)
 	:
-	m_pos(0.0f, 10.0f, 0.0f),
+	m_pos(0.0f, 1000.0f, 0.0f),
 	m_rot(0.0f, 0.0f, 0.0f)
 {
 	DCBuf::RawLayout cBufferLayout;

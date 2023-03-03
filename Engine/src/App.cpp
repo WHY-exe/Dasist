@@ -17,12 +17,16 @@ App::App()
 	Scene::ModelSetting op1;
 	op1.szModelPath = "res\\model\\Sponza\\sponza.obj";
 	op1.szModelName = "sponza";
-	model1 = Scene::Model(m_gfx, op1);
-	model1.Submit(fc);
+	scene.emplace_back(Scene::Model(m_gfx, op1));
 	//Scene::RenderOption op2;
 	//op2.szModelPath = "res\\model\\Lumie\\Lumie.pmx";
 	//op2.szModelName = "lumie";
 	//model2 = Scene::Model(m_gfx, op2);
+	for (auto& i : scene)
+	{
+		i.Submit(fc);
+	}
+	pointLight.Submit(fc);
 }
 
 WPARAM App::Run()
@@ -48,7 +52,10 @@ void App::DoFrame()
 	gLight.Update(m_gfx, cam.GetMatrix());
 	pointLight.Update(m_gfx, cam.GetMatrix());
 	fc.Excecute(m_gfx);
-	model1.SpwanControlWindow();
+	for (auto& i : scene)
+	{
+		probe.SpwanControlWindow(i);
+	}
 	gLight.SpwanControlWindow();
 	pointLight.SpwanControlWindow();
 	//

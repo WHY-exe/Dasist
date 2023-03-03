@@ -7,7 +7,7 @@
 bool Scene::MaterialProbe::VisitBuffer(DCBuf::Buffer& material_data)
 {
 	bool dirty = false;
-	if (m_node_active)
+	if (m_selected)
 	{
 		auto dcheck = [&dirty](bool change) {dirty = dirty || change; };
 		ImGui::Text("Material");
@@ -19,44 +19,54 @@ bool Scene::MaterialProbe::VisitBuffer(DCBuf::Buffer& material_data)
 	return dirty;
 }
 
+void Scene::MaterialProbe::SetSelectStatus(bool status) noexcept
+{
+	m_selected = status;
+}
+
 void Scene::MaterialProbe::OnSetTechnique()
 {
 	using namespace std::string_literals;
 	if (m_pTech->GetTechName() == "OutLine")
 	{
-		m_pTech->SetActiveState(m_node_active);
+		m_pTech->SetActiveState(m_selected);
 	}
-	if (m_node_active)
+	if (m_selected)
 	{
-		ImGui::TextColored({ 0.8f, 0.8f, 0.8f, 1.0f }, m_pTech->GetTechName().c_str());
-		bool active = m_pTech->IsActive();
-		ImGui::Checkbox(("Tech Active##"s + m_pTech->GetTechName()).c_str(), &active);
-		m_pTech->SetActiveState(active);
+		if (m_pTech->GetTechName() != "OutLine")
+		{ 
+			ImGui::TextColored({ 0.8f, 0.8f, 0.8f, 1.0f }, m_pTech->GetTechName().c_str());
+			bool active = m_pTech->IsActive();
+			ImGui::Checkbox(("Tech Active##"s + m_pTech->GetTechName()).c_str(), &active);
+			m_pTech->SetActiveState(active);
+		}
 	}
 
 }
 
-bool Scene::MaterialProbe::SetActive(bool active) noexcept
+
+bool Scene::MaterialProbe::IsSelected() const noexcept
 {
-	m_node_active = active;
-	return m_node_active;
+	return m_selected;
 }
 
-bool Scene::MaterialProbe::IsActive() const noexcept
-{
-	return m_node_active;
-}
 
-Scene::NodeProbe::NodeProbe() noexcept
+Scene::TNodeProbe::TNodeProbe() noexcept
 {
 	DirectX::XMStoreFloat4x4(&m_transformation, DirectX::XMMatrixIdentity());
 }
 
-bool Scene::NodeProbe::VisitNode(Node& node) noexcept(!IS_DEBUG)
+bool Scene::TNodeProbe::VisitNode(Node& node) noexcept(!IS_DEBUG)
 {
 	bool dirty = false;
-	
-	if (m_matProbe.SetActive(m_selected_node_id == node.GetId()))
+	const bool isParentSelected = node.ParentSelected();
+	const int selected_id = !m_pSelectedNode ? -1 : m_pSelectedNode->GetId();
+	bool isActive = (selected_id == node.GetId());
+	if (!isParentSelected)
+	{
+		node.SetSelectStatus(isActive);
+	}
+	if (isActive)
 	{
 		auto dcheck = [&dirty](bool change) {dirty = dirty || change; };
 		const auto& nodeTransform = node.GetAppliedTransform();
@@ -87,6 +97,19 @@ bool Scene::NodeProbe::VisitNode(Node& node) noexcept(!IS_DEBUG)
 		dcheck(ImGui::SliderFloat("Scalin_y", &scalin_y, 0.0f, 2.0f, "%.3f"));
 		dcheck(ImGui::SliderFloat("Scalin_z", &scalin_z, 0.0f, 2.0f, "%.3f"));
 
+		if (ImGui::Button("Reset", ImVec2(50, 40)))
+		{
+			dirty = true;
+			scalin_x = 1.0f;
+			scalin_y = 1.0f;
+			scalin_z = 1.0f;
+			pitch = 0.0f;
+			yaw = 0.0f;
+			roll = 0.0f;
+			x = 0.0f;
+			y = 0.0f;
+			z = 0.0f;
+		}
 		if (dirty)
 		{
 			DirectX::XMStoreFloat4x4(
@@ -100,13 +123,40 @@ bool Scene::NodeProbe::VisitNode(Node& node) noexcept(!IS_DEBUG)
 	return dirty;
 }
 
-void Scene::NodeProbe::SetSelectedNodeId(int node_id) noexcept
+bool Scene::TNodeProbe::PushNode(Node& node) noexcept(!IS_DEBUG)
 {
-	m_selected_node_id = node_id;
+	const int selected_id = (m_pSelectedNode == nullptr) ? -1 : m_pSelectedNode->GetId();
+	const auto imgui_flags = ImGuiTreeNodeFlags_OpenOnArrow
+		| ((node.GetId() == selected_id) ? ImGuiTreeNodeFlags_Selected : 0)
+		| ((node.HasChild() ? ImGuiTreeNodeFlags_Leaf : 0));
+	// render the node
+	const auto expand = ImGui::TreeNodeEx((void*)(intptr_t)node.GetId(), imgui_flags, node.GetName().c_str());
+	if (ImGui::IsItemClicked() || ImGui::IsItemActivated())
+	{
+		m_pSelectedNode = &node;
+	}
+	return expand;
 }
 
-DirectX::XMMATRIX Scene::NodeProbe::GetTransformMatrix() noexcept
+void Scene::TNodeProbe::PopNode() const noexcept(!IS_DEBUG)
+{
+	ImGui::TreePop();
+}
+
+DirectX::XMMATRIX Scene::TNodeProbe::GetTransformMatrix() noexcept
 {
 	auto matrix = DirectX::XMLoadFloat4x4(&m_transformation);
 	return matrix;
+}
+
+void Scene::ModelProbe::SpwanControlWindow(Model& model) noexcept(!IS_DEBUG)
+{
+	if (ImGui::Begin(model.GetName().c_str()))
+	{
+		ImGui::Columns(2, nullptr, true);
+		model.AcceptToShowTree(np);
+		ImGui::NextColumn();
+		model.Accept(np);
+	}		
+	ImGui::End();
 }

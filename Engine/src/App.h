@@ -7,6 +7,7 @@
 #include "ImguiManager.h"
 #include "FrameCommander.h"
 #include "Scene.h"
+#include "SceneProbe.h"
 class App
 {
 public:
@@ -24,7 +25,8 @@ private:
 private:
 	// user data
 	FrameCommander fc;
-	Scene::Model model1;
+	std::vector<Scene::Model> scene;
+	Scene::ModelProbe probe;
 	Camera cam;
 	PointLight pointLight;
 	GlobalLight gLight;

@@ -3,13 +3,18 @@
 #include "StrTransf.h"
 #include <filesystem>
 #include "DynamicConstantBuffer.h"
-MeshData::MeshData(Graphics& gfx, const std::string& szModelPath, const aiMesh& mesh, const aiMaterial* const* pMaterial)
+MeshData::MeshData(Graphics& gfx, const std::string& szModelPath, const std::string& szModelName, const aiMesh& mesh, const aiMaterial* const* pMaterial)
 	:
-	m_szModelPath(szModelPath)
+	m_szModelPath(szModelPath),
+	m_szModelName(szModelName)
 {
 	SetVertecies(mesh);
 	SetIndicies(mesh);
 	SetMaterial(gfx, mesh, pMaterial);
+}
+void MeshData::SetModelName(const std::string& szModelName) noexcept
+{
+	m_szModelName = szModelName;
 }
 TextureInfo& MeshData::GetTextures() noexcept
 {
@@ -177,9 +182,14 @@ void MeshData::SetMaterial(Graphics& gfx, const aiMesh& mesh, const aiMaterial* 
 		else {
 			material.Get(AI_MATKEY_SHININESS, shininess);
 		}
-		m_szPSPath += std::wstring(m_texInfo.m_difTex.get() ? L"Tex" : L"") + (m_texInfo.m_specTex.get() ? L"Spec" : L"")
-			+ (m_texInfo.m_normTex.get() ? L"Norm" : L"") + (m_texInfo.m_hasAlpha ? L"Alpha" : L"") + L".cso";
+		if (m_szModelName == "PointLight")
+			m_szPSPath = L"res\\cso\\lightBall.cso";
+		else
+			m_szPSPath += std::wstring(m_texInfo.m_difTex.get() ? L"Tex" : L"") + (m_texInfo.m_specTex.get() ? L"Spec" : L"")
+				+ (m_texInfo.m_normTex.get() ? L"Norm" : L"") + (m_texInfo.m_hasAlpha ? L"Alpha" : L"") + L".cso";
 		m_szVSPath += std::wstring(m_texInfo.m_normTex.get() ? L"Norm" : L"") + L".cso";
+
+		
 
 		m_DynamicConstData["Ambient"] = ambientColor;
 		m_DynamicConstData["SpecColor"] = specColor;

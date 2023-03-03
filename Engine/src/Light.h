@@ -1,5 +1,6 @@
 #pragma once
 #include <DirectXMath.h>
+#include "FrameCommander.h"
 #include "ConstantBufferEx.h"
 #include "DynamicConstantBuffer.h"
 #include <memory>
@@ -9,6 +10,7 @@ class PointLight
 public:
 	PointLight(Graphics& gfx);
 	void Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept;
+	void Submit(FrameCommander& fc) noexcept;
 	void SpwanControlWindow() noexcept;
 private:
 	DirectX::XMFLOAT3 m_pos;

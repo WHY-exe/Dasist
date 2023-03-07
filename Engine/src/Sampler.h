@@ -1,5 +1,6 @@
 #pragma once
 #include "Bindable.h"
+#include <memory>
 class Sampler : public Bindable
 {
 public:

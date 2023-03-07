@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\DepthStencil.cpp" />
+    <ClCompile Include="src\RenderTarget.cpp" />
+    <ClCompile Include="src\GraphicsResource.cpp" />
     <ClCompile Include="src\SceneProbe.cpp" />
     <ClCompile Include="src\MeshData.cpp" />
     <ClCompile Include="src\NullPixelShader.cpp" />
@@ -40,7 +43,6 @@
     <ClCompile Include="src\PixelShader.cpp" />
     <ClCompile Include="src\InputLayout.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
-    <ClCompile Include="src\Bindable.cpp" />
     <ClCompile Include="src\DxgiInfoManager.cpp" />
     <ClCompile Include="src\Graphics.cpp" />
     <ClCompile Include="src\Mouse.cpp" />
@@ -72,6 +74,9 @@
     <ClCompile Include="src\Step.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\DepthStencil.h" />
+    <ClInclude Include="src\RenderTarget.h" />
+    <ClInclude Include="src\GraphicsResource.h" />
     <ClInclude Include="src\SceneProbe.h" />
     <ClInclude Include="src\MeshData.h" />
     <ClInclude Include="src\NullPixelShader.h" />

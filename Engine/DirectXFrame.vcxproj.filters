@@ -165,9 +165,6 @@
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui_draw.cpp">
       <Filter>ThirdPartyLib\ImGui_for_dx11_win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\Bindable.cpp">
-      <Filter>Bindable\BindableBase</Filter>
-    </ClCompile>
     <ClCompile Include="src\Blender.cpp">
       <Filter>Bindable\Blender</Filter>
     </ClCompile>
@@ -267,7 +264,6 @@
     <ClCompile Include="src\Scene.cpp">
       <Filter>Drawable\SceneLoading</Filter>
     </ClCompile>
-    <ClCompile Include="src\WinMain.cpp" />
     <ClCompile Include="src\Probe.cpp">
       <Filter>Drawable\VisitorProbe</Filter>
     </ClCompile>
@@ -277,6 +273,16 @@
     <ClCompile Include="src\SceneProbe.cpp">
       <Filter>Drawable\VisitorProbe</Filter>
     </ClCompile>
+    <ClCompile Include="src\GraphicsResource.cpp">
+      <Filter>dx11GfxBase</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DepthStencil.cpp">
+      <Filter>dx11GfxBase</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderTarget.cpp">
+      <Filter>dx11GfxBase</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Job.h">
@@ -455,6 +461,15 @@
     </ClInclude>
     <ClInclude Include="src\SceneProbe.h">
       <Filter>Drawable\VisitorProbe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GraphicsResource.h">
+      <Filter>dx11GfxBase</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderTarget.h">
+      <Filter>dx11GfxBase</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DepthStencil.h">
+      <Filter>dx11GfxBase</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

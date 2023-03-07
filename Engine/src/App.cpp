@@ -12,7 +12,8 @@ App::App()
 	m_wnd(L"WindowTitle", 1000, 700),
 	m_gfx(m_wnd.GetGfx()),
 	pointLight(m_gfx),
-	gLight(m_gfx)
+	gLight(m_gfx),
+	fc(m_gfx)
 {
 	Scene::ModelSetting op1;
 	op1.szModelPath = "res\\model\\Sponza\\sponza.obj";

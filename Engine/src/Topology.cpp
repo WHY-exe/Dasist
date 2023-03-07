@@ -1,5 +1,5 @@
 #include "Topology.h"
-
+#include "BindableCodex.h"
 Topology::Topology(Graphics& gfx, D3D11_PRIMITIVE_TOPOLOGY type)
 	:
 	m_type(type)

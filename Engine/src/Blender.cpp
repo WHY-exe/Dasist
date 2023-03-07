@@ -1,4 +1,5 @@
 #include "Blender.h"
+#include "BindableCodex.h"
 #include "GfxThrowMacro.h"
 #include <typeinfo>
 Blender::Blender(Graphics& gfx, bool enBlend, std::optional<float> factor)

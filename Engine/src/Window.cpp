@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "WinException.h"
 #include "resource.h"
+#include "DepthStencil.h"
 #include "imgui_impl_win32.h"
 #include "imgui_internal.h"
 #include <sstream>
@@ -336,10 +337,11 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		m_nHeight = HIWORD(lParam);
 		if (this->m_pGfx.get() && wParam != SIZE_MINIMIZED)
 		{
-			m_pGfx->CleanUpRenderTarget();
-			m_pGfx->ResizeFrameBuffer(m_nWidth, m_nHeight);
+			m_pGfx->ResetWindowSize(m_nWidth, m_nHeight);
+			m_pGfx->m_bIsSizeChanged = true;
+			m_pGfx->CleanUpRenderTarget();			
+			m_pGfx->ResizeFrameBuffer(m_nWidth, m_nHeight);			
 			m_pGfx->GetBackBufferAndCreateRenderTarget();
-			m_pGfx->CreateAndSetStencilDepthView(m_nWidth, m_nHeight);
 			m_pGfx->CreateAndSetViewPort(m_nWidth, m_nHeight);
 			m_pGfx->SetProjection(
 				DirectX::XMMatrixPerspectiveLH(

@@ -7,7 +7,7 @@
 
 class Graphics
 {
-	friend class Bindable;
+	friend class GraphicsResource;
 public:
 	class GfxExcepion :public WinException
 	{
@@ -37,19 +37,26 @@ public:
 	~Graphics();
 	void DrawIndexed(UINT index_count);
 	void SetProjection(DirectX::FXMMATRIX proj) noexcept;
+	void ResetWindowSize(int WinWidth, int WinHeight) noexcept;
+	int GetWindowWidth() const noexcept;
+	int GetWindowHeight() const noexcept;
 	void SetCamera(DirectX::FXMMATRIX cam) noexcept;
-	
 	DirectX::XMMATRIX GetCamera() const noexcept;
 	DirectX::XMMATRIX GetProjection() const noexcept;
+	void BindSwapBuffer() const noexcept;
+	void BindSwapBuffer(const class DepthStencil& ds) const noexcept;
 	void BeginFrame();
 	void EndFrame();
 public:
 	void GetBackBufferAndCreateRenderTarget();
 	void CreateAndSetViewPort(int nWinWidth = 0, int nWinHeight = 0);
-	void CreateAndSetStencilDepthView(int nWinWidth = 0, int nWinHeight = 0);
 	void ResizeFrameBuffer(UINT bufferWidth, UINT bufferHeight);
 	void CleanUpRenderTarget();
+public:
+	bool m_bIsSizeChanged = false;
 private:
+	int m_winWidth;
+	int m_winHeight;
 	DirectX::XMMATRIX m_projection;
 	DirectX::XMMATRIX m_camTransform;
 #ifndef NDEBUG
@@ -59,7 +66,6 @@ private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>			m_pSwapChain;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		m_pContext;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_pTarget;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>  m_pDSV;
 };
 
 

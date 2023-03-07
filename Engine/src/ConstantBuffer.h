@@ -1,7 +1,7 @@
 #pragma once
 #include "GfxThrowMacro.h"
 #include "Bindable.h"
-
+#include "BindableCodex.h"
 template <typename C>
 class ConstantBuffer : public Bindable
 {

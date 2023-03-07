@@ -1,17 +1,15 @@
-#include "Bindable.h"
+#include "GraphicsResource.h"
 #include <stdexcept>
-
-ID3D11Device* Bindable::GetDevice(Graphics& gfx) noexcept
+ID3D11Device* GraphicsResource::GetDevice(Graphics& gfx) noexcept
 {
     return gfx.m_pDevice.Get();
 }
-
-ID3D11DeviceContext* Bindable::GetContext(Graphics& gfx) noexcept
+ID3D11DeviceContext* GraphicsResource::GetContext(Graphics& gfx) noexcept
 {
     return gfx.m_pContext.Get();
 }
 
-DxgiInfoManager& Bindable::GetInfoMan(Graphics& gfx) 
+DxgiInfoManager& GraphicsResource::GetInfoMan(Graphics& gfx)
 {
 #ifndef NDEBUG
     return gfx.infoManager;

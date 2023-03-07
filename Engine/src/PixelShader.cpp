@@ -1,7 +1,7 @@
 #include "PixelShader.h"
 #include <d3dcompiler.h>
 #include "GfxThrowMacro.h"
-
+#include "BindableCodex.h"
 PixelShader::PixelShader(Graphics& gfx, std::wstring szPath)
     :
     m_Path(szPath)

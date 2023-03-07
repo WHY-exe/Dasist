@@ -1,6 +1,7 @@
 #include "Sampler.h"
 #include "GfxThrowMacro.h"
 #include "StrTransf.h"
+#include "BindableCodex.h"
 #include <typeinfo>
 Sampler::Sampler(Graphics& gfx)
 {

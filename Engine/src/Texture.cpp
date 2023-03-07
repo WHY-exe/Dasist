@@ -1,4 +1,5 @@
 #include "Texture.h"
+#include "BindableCodex.h"
 #include "GfxThrowMacro.h"
 Texture::Texture(Graphics& gfx, const std::wstring& szPath, unsigned int slot)
 	:

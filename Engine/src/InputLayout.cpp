@@ -1,5 +1,6 @@
 #include "InputLayout.h"
 #include "GfxThrowMacro.h"
+#include "BindableCodex.h"
 #include <typeinfo>
 InputLayout::InputLayout(Graphics& gfx, const Vertex::Layout& layout, ID3DBlob* pVertexShaderByteCode)
     :

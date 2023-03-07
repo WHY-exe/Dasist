@@ -1,10 +1,11 @@
 #pragma once
 #include "Graphics.h"
+#include "GraphicsResource.h"
 #include "StrTransf.h"
-#include "BindableCodex.h"
 #include "Probe.h"
+#include <memory>
 #include <string>
-class Bindable
+class Bindable : public GraphicsResource
 {
 public:
 	virtual void Bind(Graphics& gfx) noexcept = 0;
@@ -16,9 +17,5 @@ public:
 	{
 		return L"";
 	}
-protected:
-	static ID3D11Device* GetDevice(Graphics& gfx) noexcept;
-	static ID3D11DeviceContext* GetContext(Graphics& gfx) noexcept;
-	static DxgiInfoManager& GetInfoMan(Graphics& gfx);
 };
 

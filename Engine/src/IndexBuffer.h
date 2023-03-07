@@ -1,6 +1,7 @@
 #pragma once
 #include "GfxThrowMacro.h"
 #include "Bindable.h"
+#include <memory>
 class IndexBuffer : public Bindable
 {
 public:

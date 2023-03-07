@@ -1,5 +1,5 @@
 #include "IndexBuffer.h"
-
+#include "BindableCodex.h"
 IndexBuffer::IndexBuffer(Graphics& gfx, const std::vector<UINT>& indicies)
     :
     IndexBuffer(gfx, L"?", indicies)

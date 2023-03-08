@@ -23,7 +23,8 @@ RenderTarget::RenderTarget(Graphics& gfx, UINT width, UINT height)
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     srvDesc.Format = texDesc.Format;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    srvDesc.Texture2D = D3D11_TEX2D_SRV{ 0 };
+    srvDesc.Texture2D.MipLevels = 1u;
+    srvDesc.Texture2D.MostDetailedMip = 0u;
     GFX_THROW_INFO(GetDevice(gfx)->CreateShaderResourceView(pTexture.Get(), &srvDesc, &m_pPSTextureView));
     // create render target view on the texture
     D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
@@ -46,7 +47,18 @@ void RenderTarget::BindAsTarget(Graphics& gfx) const noexcept
     GetContext(gfx)->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), nullptr);
 }
 
-void RenderTarget::BindAsTarget(Graphics& gfx, const DepthStencil& ds)
+void RenderTarget::BindAsTarget(Graphics& gfx, const DepthStencil& ds) const noexcept
 {
     GetContext(gfx)->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), ds.GetView().Get());
+}
+
+void RenderTarget::Clear(Graphics& gfx) const noexcept
+{
+    const float color[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+    GetContext(gfx)->ClearRenderTargetView(m_pTarget.Get(), color);
+}
+
+void RenderTarget::Resize(Graphics& gfx, UINT width, UINT height) noexcept
+{
+    *this = RenderTarget(gfx, gfx.GetWindowWidth(), gfx.GetWindowHeight());
 }

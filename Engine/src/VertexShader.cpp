@@ -33,7 +33,7 @@ ID3DBlob* VertexShader::GetByteCode() const noexcept
     return m_pByteCodeBlob.Get();
 }
 
-std::shared_ptr<Bindable> VertexShader::Resolve(Graphics& gfx, const std::wstring& path) noexcept(!IS_DEBUG)
+std::shared_ptr<VertexShader> VertexShader::Resolve(Graphics& gfx, const std::wstring& path) noexcept(!IS_DEBUG)
 {
     return CodeX::Resolve<VertexShader>(gfx, path);
 }

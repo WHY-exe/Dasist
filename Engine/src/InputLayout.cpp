@@ -21,7 +21,7 @@ void InputLayout::Bind(Graphics& gfx) noexcept
     GetContext(gfx)->IASetInputLayout(m_pInputLayout.Get());
 }
 
-std::shared_ptr<Bindable> InputLayout::Resolve(Graphics& gfx, const Vertex::Layout& layout, ID3DBlob* pVertexShaderByteCode) noexcept
+std::shared_ptr<InputLayout> InputLayout::Resolve(Graphics& gfx, const Vertex::Layout& layout, ID3DBlob* pVertexShaderByteCode) noexcept
 {
     return CodeX::Resolve<InputLayout>(gfx, layout, pVertexShaderByteCode);
 }

@@ -24,7 +24,7 @@ void PixelShader::Bind(Graphics& gfx) noexcept
     GetContext(gfx)->PSSetShader(m_pPixelShader.Get(), nullptr, 0u);
 }
 
-std::shared_ptr<Bindable> PixelShader::Resolve(Graphics& gfx, const std::wstring& path) noexcept(!IS_DEBUG)
+std::shared_ptr<PixelShader> PixelShader::Resolve(Graphics& gfx, const std::wstring& path) noexcept(!IS_DEBUG)
 {
     return CodeX::Resolve<PixelShader>(gfx, path);
 }

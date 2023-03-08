@@ -6,7 +6,7 @@ class PixelShader : public Bindable
 public:
 	PixelShader(Graphics& gfx, std::wstring szPath);
 	void Bind(Graphics& gfx) noexcept override;
-	static std::shared_ptr<Bindable> Resolve(Graphics& gfx, const std::wstring& path) noexcept(!IS_DEBUG);
+	static std::shared_ptr<PixelShader> Resolve(Graphics& gfx, const std::wstring& path) noexcept(!IS_DEBUG);
 	static std::wstring GenUID(const std::wstring& path) noexcept;
 	std::wstring GetUID() const noexcept override;
 private:

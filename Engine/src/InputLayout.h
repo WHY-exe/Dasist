@@ -11,7 +11,7 @@ public:
 		ID3DBlob* pVertexShaderByteCode
 	);
 	void Bind(Graphics& gfx) noexcept override; 
-    static std::shared_ptr<Bindable> Resolve(
+    static std::shared_ptr<InputLayout> Resolve(
         Graphics& gfx,
         const Vertex::Layout& layout, 
         ID3DBlob* pVertexShaderByteCode) noexcept;

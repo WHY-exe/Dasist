@@ -23,6 +23,7 @@ App::App()
 	//op2.szModelPath = "res\\model\\Lumie\\Lumie.pmx";
 	//op2.szModelName = "lumie";
 	//model2 = Scene::Model(m_gfx, op2);
+
 	for (auto& i : scene)
 	{
 		i.Submit(fc);
@@ -47,12 +48,12 @@ WPARAM App::Run()
 void App::DoFrame()
 {
 	m_gfx.BeginFrame();
-	//
+
 	cam.SpwanControlWindow();
 	m_gfx.SetCamera(cam.GetMatrix());
 	gLight.Update(m_gfx, cam.GetMatrix());
 	pointLight.Update(m_gfx, cam.GetMatrix());
-	fc.Excecute(m_gfx);
+	fc.Execute(m_gfx);
 	for (auto& i : scene)
 	{
 		probe.SpwanControlWindow(i);

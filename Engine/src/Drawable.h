@@ -19,7 +19,6 @@ public:
 	void AddTechnique(Technique& tech) noexcept;
 	void AddEssentialBind(std::shared_ptr<Bindable> bind) noexcept;
 	virtual DirectX::XMMATRIX GetTransformXM() const noexcept = 0;
-	virtual DirectX::XMFLOAT3 GetCenterPoint() const noexcept { return DirectX::XMFLOAT3(); };
 	virtual ~Drawable() = default;
 	void Bind(Graphics& gfx) const noexcept;
 	void Accept(Probe& probe) noexcept;

@@ -9,20 +9,9 @@ Rasterizer::Rasterizer(Graphics& gfx, bool twoside)
 	m_TwoSide(twoside)
 {
 	IMPORT_INFOMAN(gfx);
-	D3D11_RASTERIZER_DESC raDesc = {};
-	raDesc.FillMode = D3D11_FILL_SOLID;
-	raDesc.CullMode = D3D11_CULL_BACK;
-	if (m_TwoSide)
-	{
-		raDesc.CullMode = D3D11_CULL_NONE;
-	}
-	raDesc.FrontCounterClockwise = FALSE;
-	raDesc.DepthBias = D3D11_DEFAULT_DEPTH_BIAS;
-	raDesc.DepthBiasClamp = D3D11_DEFAULT_DEPTH_BIAS_CLAMP;
-	raDesc.DepthClipEnable = TRUE;
-	raDesc.ScissorEnable = FALSE;
-	raDesc.MultisampleEnable = FALSE;
-	raDesc.AntialiasedLineEnable = FALSE;
+
+	D3D11_RASTERIZER_DESC raDesc = CD3D11_RASTERIZER_DESC{ CD3D11_DEFAULT{} };
+	raDesc.CullMode = twoside ? D3D11_CULL_NONE : D3D11_CULL_BACK;
 
 	GFX_THROW_INFO(GetDevice(gfx)->CreateRasterizerState(&raDesc, &m_pRasterizerState));
 }

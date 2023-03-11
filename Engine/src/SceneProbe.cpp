@@ -29,7 +29,7 @@ void Scene::MaterialProbe::OnSetTechnique()
 	using namespace std::string_literals;
 	if (m_pTech->GetTechName() == "OutLine")
 	{
-		m_pTech->SetActiveState(m_selected);
+		m_pTech->SetStepActive(1, m_selected);
 	}
 	if (m_selected)
 	{

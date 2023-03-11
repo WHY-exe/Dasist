@@ -6,6 +6,8 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "IndexBuffer.h"
+#include "Blender.h"
+#include "Sampler.h"
 #include "InputLayout.h"
 #include <memory>
 #include <array>
@@ -14,7 +16,7 @@ class FrameCommander
 public:
 	FrameCommander(Graphics& gfx);
 	void Accept(const Job& job, size_t target) const noexcept;
-	void Excecute(Graphics& gfx) const noexcept(!IS_DEBUG);
+	void Execute(Graphics& gfx) const noexcept(!IS_DEBUG);
 	void Reset() noexcept;
 private:
 	mutable RenderTarget m_rt;
@@ -26,4 +28,6 @@ private:
 	std::shared_ptr<VertexShader> m_pvsFS;
 	std::shared_ptr<PixelShader> m_ppsFS;
 	std::shared_ptr<InputLayout> m_pilFS;
+	std::shared_ptr<Sampler> m_pSampler;
+	std::shared_ptr<Blender> m_pBlender;
 };

@@ -31,8 +31,7 @@
 
 Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_name) noexcept
 	:
-	m_szName(mesh_name),
-	m_center_point(mesh_data.GetCenterPoint())
+	m_szName(mesh_name)
 {
 	AddEssentialBind(
 		VertexBuffer::Resolve(
@@ -105,27 +104,26 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 				outline.AddStep(mask);
 			}
 			{
-				Step draw(2);				
-				draw.AddBind(Stencil::Resolve(gfx, Stencil::Mod::Mask));	
+				Step draw_to_RenderTarget(2);				
+				draw_to_RenderTarget.AddBind(Stencil::Resolve(gfx, Stencil::Mod::Off));
 				auto pvs = VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso");
 				auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
-				draw.AddBind(std::move(pvs));
-				draw.AddBind(PixelShader::Resolve(gfx, L"res\\cso\\Solid_PS.cso"));
+				draw_to_RenderTarget.AddBind(std::move(pvs));
+				draw_to_RenderTarget.AddBind(PixelShader::Resolve(gfx, L"res\\cso\\Solid_PS.cso"));
 
 				DCBuf::RawLayout cBufferLayout;
 				cBufferLayout.Add<DCBuf::Float4>("outline_color");
 				DCBuf::Buffer buffer(std::move(cBufferLayout));
 				buffer["outline_color"] = DirectX::XMFLOAT4{ 1.0f,0.4f,0.4f,1.0f };
 
-				draw.AddBind(std::make_shared<CachingPixelConstantBuffer>(gfx, buffer, 3u));
-				draw.AddBind(InputLayout::Resolve(gfx, mesh_data.GetVertecies()->GetLayout(), pvsbc));
-				auto tf_cbuf = std::make_shared<TransformCbuf>(gfx, *this);
-				tf_cbuf->SetScalin(1.04f);
-				draw.AddBind(std::move(tf_cbuf));
-				outline.AddStep(draw);
+				draw_to_RenderTarget.AddBind(std::make_shared<CachingPixelConstantBuffer>(gfx, buffer, 3u));
+				draw_to_RenderTarget.AddBind(InputLayout::Resolve(gfx, mesh_data.GetVertecies()->GetLayout(), pvsbc));
+				draw_to_RenderTarget.AddBind(std::make_shared<TransformCbuf>(gfx, *this));
+				outline.AddStep(draw_to_RenderTarget);
 			}
 		}
-		outline.SetActiveState(false);
+		outline.SetStepActive(0, true);
+		outline.SetStepActive(1, false);
 		AddTechnique(outline);
 	}
 }
@@ -145,10 +143,6 @@ DirectX::XMMATRIX Scene::Mesh::GetTransformXM() const noexcept
 	return DirectX::XMLoadFloat4x4(&m_transform);
 }
 
-DirectX::XMFLOAT3 Scene::Mesh::GetCenterPoint() const noexcept
-{
-	return m_center_point;
-}
 
 void Scene::Mesh::SetTransform(DirectX::XMMATRIX transform) noexcept
 {

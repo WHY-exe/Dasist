@@ -10,7 +10,7 @@ void Pass::Accept(const Job& job) noexcept
 	m_Jobs.push_back(job);
 }
 
-void Pass::Excecute(Graphics& gfx) const noexcept
+void Pass::Execute(Graphics& gfx) const noexcept
 {
 	if (!m_Jobs.empty())
 	{	

@@ -9,7 +9,8 @@ public:
 	{
 		Off,
 		Write,
-		Mask
+		Mask,
+		MaskAndWrite
 	};
 public:
 	Stencil(Graphics& gfx, Mod mod);

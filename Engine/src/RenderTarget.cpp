@@ -54,7 +54,7 @@ void RenderTarget::BindAsTarget(Graphics& gfx, const DepthStencil& ds) const noe
 
 void RenderTarget::Clear(Graphics& gfx) const noexcept
 {
-    const float color[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+    const float color[4] = { 0.1f, 0.1f, 0.1f, 0.3f };
     GetContext(gfx)->ClearRenderTargetView(m_pTarget.Get(), color);
 }
 

@@ -28,7 +28,7 @@ void Technique::AddStep(Step& step) noexcept
 
 void Technique::SetStepActive(UINT step_index, bool active) noexcept
 {
-	assert("index out of range" && step_index >= m_Steps.size());
+	assert("index out of range" && step_index <= m_Steps.size());
 	m_Steps[step_index].SetActiveState(active);
 }
 

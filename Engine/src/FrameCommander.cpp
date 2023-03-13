@@ -60,8 +60,9 @@ void FrameCommander::Execute(Graphics& gfx) const noexcept(!IS_DEBUG)
 	m_ppsFS->Bind(gfx);
 	m_pilFS->Bind(gfx);
 	m_pSampler->Bind(gfx);
-	m_pBlender->Bind(gfx);
-	Stencil::Resolve(gfx, Stencil::Mod::Mask)->Bind(gfx);
+	m_pBlender->Bind(gfx);	
+	Stencil::Resolve(gfx, Stencil::Mod::Mask)->Bind(gfx);	
+	// 在这里绘制的是第三通道的纯色绘制的模糊效果
 	gfx.DrawIndexed(m_pibFS->GetSize());
 }
 

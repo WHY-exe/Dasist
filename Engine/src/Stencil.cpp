@@ -7,24 +7,38 @@ Stencil::Stencil(Graphics& gfx, Mod mod)
 	m_mode(mod)
 {
 	D3D11_DEPTH_STENCIL_DESC depthDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT{});
-	if (mod == Mod::Write)
+
+	switch (mod)
 	{
+	case Stencil::Mod::Off:
+		break;
+	case Stencil::Mod::Write:
 		depthDesc.DepthEnable = FALSE;
 		depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 		depthDesc.StencilEnable = TRUE;
 		depthDesc.StencilWriteMask = 0xFF;
 		depthDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 		depthDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
-	}			 
-	if (mod == Mod::Mask)
-	{
+		break;
+	case Stencil::Mod::Mask:
 		depthDesc.DepthEnable = FALSE;
 		depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 		depthDesc.StencilEnable = TRUE;
 		depthDesc.StencilReadMask = 0xFF;
 		depthDesc.FrontFace.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
 		depthDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		break;
+	case Stencil::Mod::MaskAndWrite:
+		depthDesc.DepthEnable = FALSE;
+		depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		depthDesc.StencilEnable = TRUE;
+		depthDesc.StencilReadMask = 0xFF;
+		depthDesc.StencilWriteMask = 0xFF;
+		depthDesc.FrontFace.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
+		depthDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+		break;
 	}
+
 	GetDevice(gfx)->CreateDepthStencilState(&depthDesc, &m_pStencilState);
 }
 void Stencil::Bind(Graphics& gfx) noexcept

@@ -122,8 +122,7 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 				outline.AddStep(draw_to_RenderTarget);
 			}
 		}
-		outline.SetStepActive(0, true);
-		outline.SetStepActive(1, false);
+		outline.SetActiveState(false);
 		AddTechnique(outline);
 	}
 }

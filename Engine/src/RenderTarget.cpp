@@ -54,8 +54,14 @@ void RenderTarget::BindAsTarget(Graphics& gfx, const DepthStencil& ds) const noe
 
 void RenderTarget::Clear(Graphics& gfx) const noexcept
 {
-    const float color[4] = { 0.1f, 0.1f, 0.1f, 0.3f };
+    // when there are several render targets, be careful about the alpha cahnnel
+    const float color[4] = { 0.1f, 0.1f, 0.1f, 0.4f };
     GetContext(gfx)->ClearRenderTargetView(m_pTarget.Get(), color);
+}
+
+void RenderTarget::Clear(Graphics& gfx, std::array<float, 4> color) const noexcept
+{
+    GetContext(gfx)->ClearRenderTargetView(m_pTarget.Get(), color.data());
 }
 
 void RenderTarget::Resize(Graphics& gfx, UINT width, UINT height) noexcept

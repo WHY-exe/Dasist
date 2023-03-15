@@ -2,7 +2,7 @@
 #include "Bindable.h"
 #include "GfxThrowMacro.h"
 #include "DynamicConstantBuffer.h"
-class PixelConstantBufferEx : public Bindable
+class ConstantBufferEx : public Bindable
 {
 public:
 	void Update(Graphics& gfx, const DCBuf::Buffer& buffer)
@@ -21,12 +21,8 @@ public:
         memcpy(msr.pData, buffer.GetData(), buffer.GetSizeInBytes());
         GetContext(gfx)->Unmap(m_pBuffer.Get(), 0u);
 	}
-    void Bind(Graphics& gfx) noexcept override
-    {
-        GetContext(gfx)->PSSetConstantBuffers(m_slot, 1u, m_pBuffer.GetAddressOf());
-    }
 protected:
-    PixelConstantBufferEx(Graphics& gfx, const DCBuf::Buffer* pBuffer, const DCBuf::LayoutElement& layoutRoot, UINT slot)
+    ConstantBufferEx(Graphics& gfx, const DCBuf::Buffer* pBuffer, const DCBuf::LayoutElement& layoutRoot, UINT slot)
         :
         m_slot(slot)
     {
@@ -49,24 +45,44 @@ protected:
             GFX_THROW_INFO_ONLY(GetDevice(gfx)->CreateBuffer(&cbbd, nullptr, &m_pBuffer));
         }
     }
-private:
+protected:
     UINT m_slot;
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_pBuffer;
 };
 
-class CachingPixelConstantBuffer : public PixelConstantBufferEx
+class PixelConstantBufferEx : public ConstantBufferEx
 {
 public:
-    CachingPixelConstantBuffer(Graphics& gfx, const DCBuf::CookedLayout& layoutRoot, UINT slot)
+    using ConstantBufferEx::ConstantBufferEx;
+    void Bind(Graphics& gfx) noexcept override
+    {
+       GetContext(gfx)->PSSetConstantBuffers(m_slot, 1u, m_pBuffer.GetAddressOf());
+    }
+};
+class VertexConstantBufferEx : public ConstantBufferEx
+{
+public:
+    using ConstantBufferEx::ConstantBufferEx;
+    void Bind(Graphics& gfx) noexcept override
+    {
+        GetContext(gfx)->VSSetConstantBuffers(m_slot, 1u, m_pBuffer.GetAddressOf());
+    }
+};
+
+template <class T>
+class CachingConstantBuffer : public T
+{
+public:
+    CachingConstantBuffer(Graphics& gfx, const DCBuf::CookedLayout& layoutRoot, UINT slot)
         :
-        PixelConstantBufferEx(gfx, nullptr, *layoutRoot.ShareRoot(), slot),
+        T(gfx, nullptr, *layoutRoot.ShareRoot(), slot),
         m_Buffer(layoutRoot)
     {
         m_dirty = true;
     }
-    CachingPixelConstantBuffer(Graphics& gfx, const DCBuf::Buffer& buffer, UINT slot)
+    CachingConstantBuffer(Graphics& gfx, const DCBuf::Buffer& buffer, UINT slot)
         :
-        PixelConstantBufferEx(gfx, &buffer, buffer.GetRootLayoutElement(), slot),
+        T(gfx, &buffer, buffer.GetRootLayoutElement(), slot),
         m_Buffer(buffer)
     {}
     const DCBuf::LayoutElement& GetRootElement() const noexcept
@@ -97,33 +113,15 @@ public:
     {
         if (m_dirty)
         {
-            Update(gfx, m_Buffer);
+            T::Update(gfx, m_Buffer);
             m_dirty = false;
         }
-        PixelConstantBufferEx::Bind(gfx);
+        T::Bind(gfx);
     }
 private:
     DCBuf::Buffer m_Buffer;
     bool m_dirty = false;
 };
 
-class NoCachePixelConstantBuffer : public PixelConstantBufferEx
-{
-public:
-    NoCachePixelConstantBuffer(Graphics& gfx, const DCBuf::CookedLayout& layoutRoot, UINT slot)
-        :
-        PixelConstantBufferEx(gfx, nullptr, *layoutRoot.ShareRoot(), slot),
-        m_pLayoutRoot(layoutRoot.ShareRoot())
-    {}
-    NoCachePixelConstantBuffer(Graphics& gfx, const DCBuf::Buffer& buffer, UINT slot)
-        :
-        PixelConstantBufferEx(gfx, &buffer, buffer.GetRootLayoutElement(), slot),
-        m_pLayoutRoot(buffer.ShareLayoutRoot())
-    {}
-    const DCBuf::LayoutElement& GetRootElement() const noexcept
-    {
-        return *m_pLayoutRoot;
-    }
-private:
-    std::shared_ptr<DCBuf::LayoutElement> m_pLayoutRoot;
-};
+using CachingPixelConstantBuffer = CachingConstantBuffer<PixelConstantBufferEx>;
+using CachingVertexConstantBuffer = CachingConstantBuffer<VertexConstantBufferEx>;

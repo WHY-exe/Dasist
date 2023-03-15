@@ -54,6 +54,10 @@ void App::DoFrame()
 	gLight.Update(m_gfx, cam.GetMatrix());
 	pointLight.Update(m_gfx, cam.GetMatrix());
 	fc.Execute(m_gfx);
+	fc.ShowFliterControl(m_gfx);
+
+
+
 	for (auto& i : scene)
 	{
 		probe.SpwanControlWindow(i);

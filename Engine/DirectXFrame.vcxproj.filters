@@ -124,6 +124,9 @@
     <Filter Include="Drawable\VisitorProbe">
       <UniqueIdentifier>{865f8677-5816-4751-8b58-fb9a91163651}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Effect">
+      <UniqueIdentifier>{d4c5bd6f-bc42-4cf1-b8a4-d54ef0af0aa2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Job.cpp">
@@ -283,6 +286,9 @@
       <Filter>dx11GfxBase</Filter>
     </ClCompile>
     <ClCompile Include="src\WinMain.cpp" />
+    <ClCompile Include="src\BlurPack.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Job.h">
@@ -471,6 +477,9 @@
     <ClInclude Include="src\DepthStencil.h">
       <Filter>dx11GfxBase</Filter>
     </ClInclude>
+    <ClInclude Include="src\BlurPack.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\PS.hlsl">
@@ -519,6 +528,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="shader\Full_PS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\BlurPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

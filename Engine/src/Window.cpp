@@ -342,7 +342,6 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			m_pGfx->CleanUpRenderTarget();			
 			m_pGfx->ResizeFrameBuffer(m_nWidth, m_nHeight);			
 			m_pGfx->GetBackBufferAndCreateRenderTarget();
-			m_pGfx->CreateAndSetViewPort(m_nWidth, m_nHeight);
 			m_pGfx->SetProjection(
 				DirectX::XMMatrixPerspectiveLH(
 					1.0f, (float)m_nHeight / (float)m_nWidth,

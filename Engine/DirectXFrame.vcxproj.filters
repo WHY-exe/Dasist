@@ -527,7 +527,7 @@
     <FxCompile Include="shader\Full_VS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="shader\Full_PS.hlsl">
+    <FxCompile Include="shader\BlurOutlinePS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="shader\BlurPS.hlsl">

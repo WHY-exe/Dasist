@@ -21,8 +21,10 @@ public:
 	void ShowFliterControl(Graphics& gfx) noexcept(!IS_DEBUG);
 	void Reset() noexcept;
 private:
-	mutable RenderTarget m_rt1;
-	mutable RenderTarget m_rt2;
+	int m_downFactor = 2;
+
+	mutable std::optional<RenderTarget> m_rt1;
+	mutable std::optional<RenderTarget> m_rt2;
 	mutable DepthStencil m_ds;
 	mutable std::array<Pass, 3> m_Passes;
 
@@ -31,5 +33,6 @@ private:
 	std::shared_ptr<IndexBuffer> m_pibFS;
 	std::shared_ptr<VertexShader> m_pvsFS;
 	std::shared_ptr<InputLayout> m_pilFS;
-	std::shared_ptr<Sampler> m_pSampler;
+	std::shared_ptr<Sampler> m_pSamplerPoint;
+	std::shared_ptr<Sampler> m_pSamplerBiLinear;
 };

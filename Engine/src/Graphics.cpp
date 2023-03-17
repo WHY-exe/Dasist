@@ -54,7 +54,6 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
         &m_pContext
     ));
     GetBackBufferAndCreateRenderTarget();
-    CreateAndSetViewPort(nWinWidth, nWinHeight);
     ImGui_ImplDX11_Init(m_pDevice.Get(), m_pContext.Get());
 }
 
@@ -107,20 +106,6 @@ void Graphics::GetBackBufferAndCreateRenderTarget()
     ));
 }
 
-void Graphics::CreateAndSetViewPort(int nWinWidth, int nWinHeight)
-{
-    // configure viewport
-    D3D11_VIEWPORT vp = {};
-    vp.Width = (float)nWinWidth;
-    vp.Height = (float)nWinHeight;
-    vp.MinDepth = 0;
-    vp.MaxDepth = 1;
-    vp.TopLeftX = 0;
-    vp.TopLeftY = 0;
-    // bind the view port to the pipeline
-    m_pContext->RSSetViewports(1u, &vp);
-}
-
 void Graphics::ResizeFrameBuffer(UINT bufferWidth, UINT bufferHeight)
 {
     INIT_GFX_EXCEPTION;
@@ -145,11 +130,31 @@ DirectX::XMMATRIX Graphics::GetProjection() const noexcept
 void Graphics::BindSwapBuffer() const noexcept
 {
     m_pContext->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), nullptr);
+    // configure viewport
+    D3D11_VIEWPORT vp = {};
+    vp.Width = (float)m_winWidth;
+    vp.Height = (float)m_winHeight;
+    vp.MinDepth = 0;
+    vp.MaxDepth = 1;
+    vp.TopLeftX = 0;
+    vp.TopLeftY = 0;
+    // bind the view port to the pipeline
+    m_pContext->RSSetViewports(1u, &vp);
 }
 
 void Graphics::BindSwapBuffer(const DepthStencil& ds) const noexcept
 {
     m_pContext->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), ds.GetView().Get());
+    // configure viewport
+    D3D11_VIEWPORT vp = {};
+    vp.Width = (float)m_winWidth;
+    vp.Height = (float)m_winHeight;
+    vp.MinDepth = 0;
+    vp.MaxDepth = 1;
+    vp.TopLeftX = 0;
+    vp.TopLeftY = 0;
+    // bind the view port to the pipeline
+    m_pContext->RSSetViewports(1u, &vp);
 }
 
 

@@ -12,6 +12,7 @@ public:
 	void Clear(Graphics& gfx, std::array<float, 4> color) const noexcept;
 	void Resize(Graphics& gfx, UINT width, UINT height) noexcept;
 private:
+	UINT m_uWidth, m_uHeight;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>  m_pPSTextureView;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_pTarget;
 };

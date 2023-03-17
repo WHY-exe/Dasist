@@ -2,6 +2,9 @@
 #include "GfxThrowMacro.h"
 #include "DepthStencil.h"
 RenderTarget::RenderTarget(Graphics& gfx, UINT width, UINT height)
+    :
+    m_uWidth(width),
+    m_uHeight(height)
 {
 	IMPORT_INFOMAN(gfx);
     // create texture resource
@@ -45,11 +48,31 @@ void RenderTarget::BindAsTexture(Graphics& gfx, UINT slot) const noexcept
 void RenderTarget::BindAsTarget(Graphics& gfx) const noexcept
 {
     GetContext(gfx)->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), nullptr);
+    // configure viewport
+    D3D11_VIEWPORT vp = {};
+    vp.Width = (float)m_uWidth;
+    vp.Height = (float)m_uHeight;
+    vp.MinDepth = 0;
+    vp.MaxDepth = 1;
+    vp.TopLeftX = 0;
+    vp.TopLeftY = 0;
+    // bind the view port to the pipeline
+    GetContext(gfx)->RSSetViewports(1u, &vp);
 }
 
 void RenderTarget::BindAsTarget(Graphics& gfx, const DepthStencil& ds) const noexcept
 {
     GetContext(gfx)->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), ds.GetView().Get());
+    // configure viewport
+    D3D11_VIEWPORT vp = {};
+    vp.Width = (float)m_uWidth;
+    vp.Height = (float)m_uHeight;
+    vp.MinDepth = 0;
+    vp.MaxDepth = 1;
+    vp.TopLeftX = 0;
+    vp.TopLeftY = 0;
+    // bind the view port to the pipeline
+    GetContext(gfx)->RSSetViewports(1u, &vp);
 }
 
 void RenderTarget::Clear(Graphics& gfx) const noexcept

@@ -7,25 +7,20 @@
 class BlurPack
 {
 public:
-	BlurPack(Graphics& gfx, int radius = 7, float sigma = 1.0f) noexcept;
+	BlurPack(Graphics& gfx, const std::wstring& shader, int radius = 7, float sigma = 1.0f) noexcept;
 	void Bind(Graphics& gfx) noexcept;
 	void SetVertical(Graphics& gfx) noexcept;
 	void SetHorizontal(Graphics& gfx) noexcept;
-	void SetKernel(Graphics& gfx, int radius, float sigma) noexcept;
-	void ShowWindow(Graphics& gfx) noexcept(!IS_DEBUG)
-	{
-		ImGui::Begin("Blur");
-		bool radChange = ImGui::SliderInt("Radius", &m_radius, 0, 15);
-		bool sigChange = ImGui::SliderFloat("Sigma", &m_sigma, 0.1f, 10.0f);
-		if (radChange || sigChange)
-		{
-			SetKernel(gfx, m_radius, m_sigma);
-		}
-		ImGui::End();
-	}
+	void SetGaussKernel(Graphics& gfx, int radius, float sigma) noexcept;
+	void SetBoxKernel(Graphics& gfx, int radius) noexcept;
+	void RenderWidgets(Graphics& gfx) noexcept(!IS_DEBUG);
 private:
 	int m_radius;
 	float m_sigma;
+	enum class KernelType
+	{
+		Gauss, Box
+	} m_KernelType = KernelType::Gauss;
 	struct Kernel
 	{
 		int nTabs;

@@ -49,7 +49,6 @@ public:
 	void EndFrame();
 public:
 	void GetBackBufferAndCreateRenderTarget();
-	void CreateAndSetViewPort(int nWinWidth = 0, int nWinHeight = 0);
 	void ResizeFrameBuffer(UINT bufferWidth, UINT bufferHeight);
 	void CleanUpRenderTarget();
 public:

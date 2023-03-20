@@ -16,7 +16,7 @@ Rasterizer::Rasterizer(Graphics& gfx, bool twoside)
 	GFX_THROW_INFO(GetDevice(gfx)->CreateRasterizerState(&raDesc, &m_pRasterizerState));
 }
 
-void Rasterizer::Bind(Graphics& gfx) noexcept
+void Rasterizer::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
 	GetContext(gfx)->RSSetState(m_pRasterizerState.Get());
 }

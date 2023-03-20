@@ -19,14 +19,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\BindingPass.cpp" />
+    <ClCompile Include="src\BlurOutlineRenderGraph.cpp" />
     <ClCompile Include="src\BlurPack.cpp" />
+    <ClCompile Include="src\BufferClearPass.cpp" />
     <ClCompile Include="src\DepthStencil.cpp" />
+    <ClCompile Include="src\FullscreenPass.cpp" />
+    <ClCompile Include="src\HorizontalBlurPass.cpp" />
+    <ClCompile Include="src\RenderGraph.cpp" />
+    <ClCompile Include="src\RenderGraphCompileException.cpp" />
+    <ClCompile Include="src\RenderQueuePass.cpp" />
     <ClCompile Include="src\RenderTarget.cpp" />
     <ClCompile Include="src\GraphicsResource.cpp" />
+    <ClCompile Include="src\ScaleOutlineRenderGraph.cpp" />
     <ClCompile Include="src\SceneProbe.cpp" />
     <ClCompile Include="src\MeshData.cpp" />
     <ClCompile Include="src\NullPixelShader.cpp" />
-    <ClCompile Include="src\FrameCommander.cpp" />
     <ClCompile Include="src\Job.cpp" />
     <ClCompile Include="src\MathTool.cpp" />
     <ClCompile Include="src\LayoutCodeX.cpp" />
@@ -49,6 +57,8 @@
     <ClCompile Include="src\Mouse.cpp" />
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\Keyboard.cpp" />
+    <ClCompile Include="src\Sink.cpp" />
+    <ClCompile Include="src\Source.cpp" />
     <ClCompile Include="src\Stencil.cpp" />
     <ClCompile Include="src\Technique.cpp" />
     <ClCompile Include="src\Probe.cpp" />
@@ -59,6 +69,7 @@
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui_impl_win32.cpp" />
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui_tables.cpp" />
     <ClCompile Include="src\vendor\imgui_for_dx11\imgui_widgets.cpp" />
+    <ClCompile Include="src\VerticalBlurPass.cpp" />
     <ClCompile Include="src\WinMain.cpp" />
     <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\Timer.cpp" />
@@ -70,19 +81,33 @@
     <ClCompile Include="src\Surface.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\Vertex.cpp" />
-    <ClCompile Include="src\StrTransf.cpp" />
+    <ClCompile Include="src\StrManager.cpp" />
     <ClCompile Include="src\VS_PS_TFCB.cpp" />
     <ClCompile Include="src\Step.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\BindableCommon.h" />
+    <ClInclude Include="src\BindingPass.h" />
+    <ClInclude Include="src\BlurOutlineDrawingPass.h" />
+    <ClInclude Include="src\BlurOutlineRenderGraph.h" />
     <ClInclude Include="src\BlurPack.h" />
+    <ClInclude Include="src\BufferClearPass.h" />
+    <ClInclude Include="src\BufferResource.h" />
     <ClInclude Include="src\DepthStencil.h" />
+    <ClInclude Include="src\FullscreenPass.h" />
+    <ClInclude Include="src\HorizontalBlurPass.h" />
+    <ClInclude Include="src\LambertianPass.h" />
+    <ClInclude Include="src\OutlineDrawingPass.h" />
+    <ClInclude Include="src\OutlineMaskGenerationPass.h" />
+    <ClInclude Include="src\RenderGraph.h" />
+    <ClInclude Include="src\RenderGraphCompileException.h" />
+    <ClInclude Include="src\RenderQueuePass.h" />
     <ClInclude Include="src\RenderTarget.h" />
     <ClInclude Include="src\GraphicsResource.h" />
+    <ClInclude Include="src\ScaleOutlineRenderGraph.h" />
     <ClInclude Include="src\SceneProbe.h" />
     <ClInclude Include="src\MeshData.h" />
     <ClInclude Include="src\NullPixelShader.h" />
-    <ClInclude Include="src\FrameCommander.h" />
     <ClInclude Include="src\Job.h" />
     <ClInclude Include="src\ConstantBufferEx.h" />
     <ClInclude Include="src\LayoutCodeX.h" />
@@ -113,6 +138,8 @@
     <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Console.h" />
+    <ClInclude Include="src\Sink.h" />
+    <ClInclude Include="src\Source.h" />
     <ClInclude Include="src\Technique.h" />
     <ClInclude Include="src\Probe.h" />
     <ClInclude Include="src\vendor\imgui_for_dx11\imconfig.h" />
@@ -124,6 +151,7 @@
     <ClInclude Include="src\vendor\imgui_for_dx11\imstb_textedit.h" />
     <ClInclude Include="src\vendor\imgui_for_dx11\imstb_truetype.h" />
     <ClInclude Include="src\vendor\stb\stb_image.h" />
+    <ClInclude Include="src\VerticalBlurPass.h" />
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\WinException.h">
@@ -132,7 +160,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="src\StrTransf.h" />
+    <ClInclude Include="src\StrManager.h" />
     <ClInclude Include="src\VertexBuffer.h" />
     <ClInclude Include="src\VertexShader.h" />
     <ClInclude Include="src\Topology.h" />

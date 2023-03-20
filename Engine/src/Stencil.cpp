@@ -1,6 +1,6 @@
 #include "Stencil.h"
 #include "BindableCodex.h"
-#include "StrTransf.h"
+#include "StrManager.h"
 #include <typeinfo>
 Stencil::Stencil(Graphics& gfx, Mod mod)
 	:
@@ -41,7 +41,7 @@ Stencil::Stencil(Graphics& gfx, Mod mod)
 
 	GetDevice(gfx)->CreateDepthStencilState(&depthDesc, &m_pStencilState);
 }
-void Stencil::Bind(Graphics& gfx) noexcept
+void Stencil::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
 	GetContext(gfx)->OMSetDepthStencilState(m_pStencilState.Get(), 0xFF);
 }

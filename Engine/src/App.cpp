@@ -5,7 +5,7 @@
 #include "imgui.h"
 #include "Vertex.h"
 #include "VertexShader.h"
-#include "StrTransf.h"
+#include "StrManager.h"
 App::App()
 	:
 	m_imguiMan(),
@@ -13,7 +13,7 @@ App::App()
 	m_gfx(m_wnd.GetGfx()),
 	pointLight(m_gfx),
 	gLight(m_gfx),
-	fc(m_gfx)
+	m_rg(m_gfx)
 {
 	Scene::ModelSetting op1;
 	op1.szModelPath = "res\\model\\Sponza\\sponza.obj";
@@ -26,9 +26,10 @@ App::App()
 
 	for (auto& i : scene)
 	{
-		i.Submit(fc);
+		i.LinkTechniques(m_rg);
 	}
-	pointLight.Submit(fc);
+	pointLight.LinkTechniques(m_rg);
+	pointLight.Submit();
 }
 
 WPARAM App::Run()
@@ -48,16 +49,16 @@ WPARAM App::Run()
 void App::DoFrame()
 {
 	m_gfx.BeginFrame();
-
+	pointLight.Submit();
+	for (auto& i : scene)
+	{
+		i.Submit();
+	}
 	cam.SpwanControlWindow();
 	m_gfx.SetCamera(cam.GetMatrix());
 	gLight.Update(m_gfx, cam.GetMatrix());
 	pointLight.Update(m_gfx, cam.GetMatrix());
-	fc.Execute(m_gfx);
-	fc.ShowFliterControl(m_gfx);
-
-
-
+	m_rg.Execute(m_gfx);
 	for (auto& i : scene)
 	{
 		probe.SpwanControlWindow(i);
@@ -66,6 +67,7 @@ void App::DoFrame()
 	pointLight.SpwanControlWindow();
 	//
 	m_gfx.EndFrame();
+	m_rg.Reset();
 }
 
 void App::DoWinLogic()

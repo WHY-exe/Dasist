@@ -12,6 +12,7 @@
 	X(Float3) \
 	X(Float2) \
 	X(Float)  \
+	X(Integer) \
 	X(Matrix) \
 	X(Bool)
 
@@ -57,6 +58,13 @@ namespace DCBuf
 		using SysType = float;
 		static constexpr size_t hlsl_size = sizeof(SysType);
 		static constexpr const char* code = "F1";
+		static constexpr bool valid = true;
+	};
+	template<> struct Map<Integer>
+	{
+		using SysType = int;
+		static constexpr size_t hlsl_size = sizeof(SysType);
+		static constexpr const char* code = "INT";
 		static constexpr bool valid = true;
 	};
 	template<> struct Map<Matrix>

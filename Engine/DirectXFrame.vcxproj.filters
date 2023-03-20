@@ -13,18 +13,6 @@
     <Filter Include="res">
       <UniqueIdentifier>{77bcfea0-0818-43fc-9aa6-faa8762d4839}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Drawable\Pass">
-      <UniqueIdentifier>{348525b2-1a18-445c-8236-43d5be54ab1a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Drawable\Tecnique">
-      <UniqueIdentifier>{bb49beaf-ec74-4361-aca9-32212e1644fb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Drawable\Pass\Job">
-      <UniqueIdentifier>{5cb81bf2-661c-4a40-958c-c04d99e714e5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Drawable\Tecnique\Step">
-      <UniqueIdentifier>{699989b6-aa6d-46f9-8d14-47620b7c31f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Window">
       <UniqueIdentifier>{705553e0-2259-49a6-8e4e-ff763e84628b}</UniqueIdentifier>
     </Filter>
@@ -112,9 +100,6 @@
     <Filter Include="dx11GfxBase">
       <UniqueIdentifier>{60b8e5f9-6e7e-48d9-b7ee-ae98773e74d4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Drawable\FrameCommander">
-      <UniqueIdentifier>{7f2f5382-8f7a-47f4-baa4-28d23b37b732}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Drawable\DrawableInterface">
       <UniqueIdentifier>{3548c690-44db-4522-ba2a-1ed74c0d834f}</UniqueIdentifier>
     </Filter>
@@ -127,10 +112,34 @@
     <Filter Include="Effect">
       <UniqueIdentifier>{d4c5bd6f-bc42-4cf1-b8a4-d54ef0af0aa2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RenderGraphc">
+      <UniqueIdentifier>{0b459e75-80ad-46c3-81fb-188e2f5c1f5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderGraphc\Pass">
+      <UniqueIdentifier>{348525b2-1a18-445c-8236-43d5be54ab1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderGraphc\Pass\PassBase">
+      <UniqueIdentifier>{9d3b03ed-2d31-447e-9d8c-130e6723bfba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderGraphc\Job">
+      <UniqueIdentifier>{5cb81bf2-661c-4a40-958c-c04d99e714e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderGraphc\Pass\PassBase\Sink&amp;Source">
+      <UniqueIdentifier>{eebc03da-7137-4ee5-b074-ef5826270f9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tecnique">
+      <UniqueIdentifier>{bb49beaf-ec74-4361-aca9-32212e1644fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tecnique\Step">
+      <UniqueIdentifier>{699989b6-aa6d-46f9-8d14-47620b7c31f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BufferResource">
+      <UniqueIdentifier>{d6bc1f92-cc28-4bfa-a26f-94a88f58012b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Job.cpp">
-      <Filter>Drawable\Pass\Job</Filter>
+      <Filter>RenderGraphc\Job</Filter>
     </ClCompile>
     <ClCompile Include="src\Window.cpp">
       <Filter>Window</Filter>
@@ -213,7 +222,7 @@
     <ClCompile Include="src\Timer.cpp">
       <Filter>Tool</Filter>
     </ClCompile>
-    <ClCompile Include="src\StrTransf.cpp">
+    <ClCompile Include="src\StrManager.cpp">
       <Filter>Tool</Filter>
     </ClCompile>
     <ClCompile Include="src\MathTool.cpp">
@@ -244,16 +253,10 @@
       <Filter>dx11GfxBase</Filter>
     </ClCompile>
     <ClCompile Include="src\Step.cpp">
-      <Filter>Drawable\Tecnique\Step</Filter>
+      <Filter>Tecnique\Step</Filter>
     </ClCompile>
     <ClCompile Include="src\Technique.cpp">
-      <Filter>Drawable\Tecnique</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FrameCommander.cpp">
-      <Filter>Drawable\FrameCommander</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Pass.cpp">
-      <Filter>Drawable\Pass</Filter>
+      <Filter>Tecnique</Filter>
     </ClCompile>
     <ClCompile Include="src\Stencil.cpp">
       <Filter>Bindable\Stencil</Filter>
@@ -279,20 +282,59 @@
     <ClCompile Include="src\GraphicsResource.cpp">
       <Filter>dx11GfxBase</Filter>
     </ClCompile>
-    <ClCompile Include="src\DepthStencil.cpp">
-      <Filter>dx11GfxBase</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RenderTarget.cpp">
-      <Filter>dx11GfxBase</Filter>
-    </ClCompile>
     <ClCompile Include="src\WinMain.cpp" />
     <ClCompile Include="src\BlurPack.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
+    <ClCompile Include="src\Pass.cpp">
+      <Filter>RenderGraphc\Pass\PassBase</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BindingPass.cpp">
+      <Filter>RenderGraphc\Pass\PassBase</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FullscreenPass.cpp">
+      <Filter>RenderGraphc\Pass\PassBase</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderQueuePass.cpp">
+      <Filter>RenderGraphc\Pass\PassBase</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Sink.cpp">
+      <Filter>RenderGraphc\Pass\PassBase\Sink&amp;Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Source.cpp">
+      <Filter>RenderGraphc\Pass\PassBase\Sink&amp;Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BufferClearPass.cpp">
+      <Filter>RenderGraphc\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HorizontalBlurPass.cpp">
+      <Filter>RenderGraphc\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VerticalBlurPass.cpp">
+      <Filter>RenderGraphc\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BlurOutlineRenderGraph.cpp">
+      <Filter>RenderGraphc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderGraph.cpp">
+      <Filter>RenderGraphc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderGraphCompileException.cpp">
+      <Filter>RenderGraphc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ScaleOutlineRenderGraph.cpp">
+      <Filter>RenderGraphc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DepthStencil.cpp">
+      <Filter>BufferResource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderTarget.cpp">
+      <Filter>BufferResource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Job.h">
-      <Filter>Drawable\Pass\Job</Filter>
+      <Filter>RenderGraphc\Job</Filter>
     </ClInclude>
     <ClInclude Include="src\Window.h">
       <Filter>Window</Filter>
@@ -396,7 +438,7 @@
     <ClInclude Include="src\Timer.h">
       <Filter>Tool</Filter>
     </ClInclude>
-    <ClInclude Include="src\StrTransf.h">
+    <ClInclude Include="src\StrManager.h">
       <Filter>Tool</Filter>
     </ClInclude>
     <ClInclude Include="src\MathTool.h">
@@ -439,16 +481,10 @@
       <Filter>dx11GfxBase</Filter>
     </ClInclude>
     <ClInclude Include="src\Step.h">
-      <Filter>Drawable\Tecnique\Step</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FrameCommander.h">
-      <Filter>Drawable\FrameCommander</Filter>
+      <Filter>Tecnique\Step</Filter>
     </ClInclude>
     <ClInclude Include="src\Technique.h">
-      <Filter>Drawable\Tecnique</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Pass.h">
-      <Filter>Drawable\Pass</Filter>
+      <Filter>Tecnique</Filter>
     </ClInclude>
     <ClInclude Include="src\NullPixelShader.h">
       <Filter>Bindable\PixelShader</Filter>
@@ -471,14 +507,71 @@
     <ClInclude Include="src\GraphicsResource.h">
       <Filter>dx11GfxBase</Filter>
     </ClInclude>
-    <ClInclude Include="src\RenderTarget.h">
-      <Filter>dx11GfxBase</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DepthStencil.h">
-      <Filter>dx11GfxBase</Filter>
-    </ClInclude>
     <ClInclude Include="src\BlurPack.h">
       <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pass.h">
+      <Filter>RenderGraphc\Pass\PassBase</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BindingPass.h">
+      <Filter>RenderGraphc\Pass\PassBase</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FullscreenPass.h">
+      <Filter>RenderGraphc\Pass\PassBase</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderQueuePass.h">
+      <Filter>RenderGraphc\Pass\PassBase</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Sink.h">
+      <Filter>RenderGraphc\Pass\PassBase\Sink&amp;Source</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Source.h">
+      <Filter>RenderGraphc\Pass\PassBase\Sink&amp;Source</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BlurOutlineDrawingPass.h">
+      <Filter>RenderGraphc\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BufferClearPass.h">
+      <Filter>RenderGraphc\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HorizontalBlurPass.h">
+      <Filter>RenderGraphc\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OutlineDrawingPass.h">
+      <Filter>RenderGraphc\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VerticalBlurPass.h">
+      <Filter>RenderGraphc\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OutlineMaskGenerationPass.h">
+      <Filter>RenderGraphc\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LambertianPass.h">
+      <Filter>RenderGraphc\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BlurOutlineRenderGraph.h">
+      <Filter>RenderGraphc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderGraph.h">
+      <Filter>RenderGraphc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderGraphCompileException.h">
+      <Filter>RenderGraphc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ScaleOutlineRenderGraph.h">
+      <Filter>RenderGraphc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BindableCommon.h">
+      <Filter>Bindable\BindableBase</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BufferResource.h">
+      <Filter>BufferResource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DepthStencil.h">
+      <Filter>BufferResource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderTarget.h">
+      <Filter>BufferResource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

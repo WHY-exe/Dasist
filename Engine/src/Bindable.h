@@ -1,14 +1,14 @@
 #pragma once
 #include "Graphics.h"
 #include "GraphicsResource.h"
-#include "StrTransf.h"
+#include "StrManager.h"
 #include "Probe.h"
 #include <memory>
 #include <string>
 class Bindable : public GraphicsResource
 {
 public:
-	virtual void Bind(Graphics& gfx) noexcept = 0;
+	virtual void Bind(Graphics& gfx) noexcept(!IS_DEBUG) = 0;
 	virtual ~Bindable() = default;
 	virtual void InitializeParentReference(const class Drawable&) noexcept
 	{}

@@ -338,8 +338,7 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (this->m_pGfx.get() && wParam != SIZE_MINIMIZED)
 		{
 			m_pGfx->ResetWindowSize(m_nWidth, m_nHeight);
-			m_pGfx->m_bIsSizeChanged = true;
-			m_pGfx->CleanUpRenderTarget();			
+			m_pGfx->m_bIsSizeChanged = true;		
 			m_pGfx->ResizeFrameBuffer(m_nWidth, m_nHeight);			
 			m_pGfx->GetBackBufferAndCreateRenderTarget();
 			m_pGfx->SetProjection(

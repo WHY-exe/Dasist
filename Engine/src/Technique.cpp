@@ -5,19 +5,11 @@ Technique::Technique(const std::string& name) noexcept
 	m_Name(name)
 {
 }
-void Technique::Submit(FrameCommander& fc, const Drawable& d) const noexcept
+void Technique::Submit(const Drawable& d) const noexcept
 {
 	for (auto& s : m_Steps)
 	{
-		s.Submit(fc, d);
-	}
-}
-
-void Technique::InitializeParentReference(const Drawable& d) noexcept
-{
-	for (auto& s : m_Steps)
-	{
-		s.InitializeParentReference(d);
+		s.Submit(d);
 	}
 }
 
@@ -52,6 +44,14 @@ void Technique::Accept(Probe& probe) noexcept
 	for (auto& i:m_Steps)
 	{
 		i.Accept(probe);
+	}
+}
+
+void Technique::Link(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
+{
+	for (auto& i : m_Steps)
+	{
+		i.Link(rg);
 	}
 }
 

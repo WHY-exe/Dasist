@@ -1,6 +1,6 @@
 #include "MeshData.h"
 #include "Texture.h"
-#include "StrTransf.h"
+#include "StrManager.h"
 #include <filesystem>
 #include "DynamicConstantBuffer.h"
 MeshData::MeshData(Graphics& gfx, const std::string& szModelPath, const std::string& szModelName, const aiMesh& mesh, const aiMaterial* const* pMaterial)

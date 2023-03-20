@@ -1,6 +1,6 @@
 #include "App.h"
 #include <sstream>
-#include "StrTransf.h"
+#include "StrManager.h"
 
 // standar win32 windows program
 int WINAPI WinMain(

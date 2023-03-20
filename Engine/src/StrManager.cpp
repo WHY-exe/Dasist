@@ -1,4 +1,4 @@
-#include "StrTransf.h"
+#include "StrManager.h"
 std::wstring String2Utf8String(const std::string& str_in)
 {
 	const char* c_str_in = str_in.c_str();

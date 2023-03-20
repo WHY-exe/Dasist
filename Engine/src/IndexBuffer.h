@@ -10,7 +10,7 @@ public:
 	static std::shared_ptr<IndexBuffer> Resolve(
 		Graphics& gfx, const std::wstring& tag,
 		const std::vector<UINT>& indicies) noexcept;
-	void Bind(Graphics& gfx) noexcept override;
+	void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override;
 	template <typename...Ignore>
 	static std::wstring GenUID(std::wstring tag, Ignore&&...ingnore) noexcept
 	{

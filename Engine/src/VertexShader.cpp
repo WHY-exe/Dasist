@@ -4,7 +4,7 @@
 #include <typeinfo>
 #include "BindableCodex.h"
 #include <memory>
-#include "StrTransf.h"
+#include "StrManager.h"
 VertexShader::VertexShader(Graphics& gfx, const std::wstring szPath)
     :
     m_szPath(szPath)
@@ -22,7 +22,7 @@ VertexShader::VertexShader(Graphics& gfx, const std::wstring szPath)
     );
 }
 
-void VertexShader::Bind(Graphics& gfx) noexcept
+void VertexShader::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
     // bind vertex shader to the pipeline
     GetContext(gfx)->VSSetShader(m_pVertexShader.Get(), nullptr, 0u);

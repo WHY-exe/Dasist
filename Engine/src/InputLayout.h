@@ -10,7 +10,7 @@ public:
 		const Vertex::Layout& layout,
 		ID3DBlob* pVertexShaderByteCode
 	);
-	void Bind(Graphics& gfx) noexcept override; 
+	void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override; 
     static std::shared_ptr<InputLayout> Resolve(
         Graphics& gfx,
         const Vertex::Layout& layout, 

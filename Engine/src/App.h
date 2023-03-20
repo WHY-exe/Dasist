@@ -1,11 +1,11 @@
 #pragma once
 #include "Window.h"
 #include "Timer.h"
+#include "BlurOutlineRenderGraph.h"
 #include "Drawable.h"
 #include "Camera.h"
 #include "Light.h"
 #include "ImguiManager.h"
-#include "FrameCommander.h"
 #include "Scene.h"
 #include "SceneProbe.h"
 class App
@@ -24,7 +24,7 @@ private:
 	Timer timer;
 private:
 	// user data
-	FrameCommander fc;
+	Rgph::BlurOutlineRenderGraph m_rg;
 	std::vector<Scene::Model> scene;
 	Scene::ModelProbe probe;
 	Camera cam;

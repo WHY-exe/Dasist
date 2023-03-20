@@ -189,8 +189,11 @@ namespace DCBuf
 	}
 	size_t LayoutElement::FinalizeForArray(size_t offsetIn) noexcept(!IS_DEBUG)
 	{
-		auto& data = static_cast<ExtraData::Array&>(*m_pExtraData);
+		auto& data = static_cast<ExtraData::Array&>(*m_pExtraData);		
 		m_offset = AdvanceToBoundary(offsetIn);
+		data.m_layoutElement->Finalize(*m_offset);
+		data.m_size = LayoutElement::AdvanceToBoundary(data.m_layoutElement->GetSizeInBytes());
+
 		return GetOffsetEnd();
 	}
 	std::string LayoutElement::GetSignatureForArray() const noexcept

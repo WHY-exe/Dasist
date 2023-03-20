@@ -6,9 +6,9 @@
 #include <DirectXMath.h>
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "RenderGraph.h"
 #include "Probe.h"
 #include "Topology.h"
-#include "FrameCommander.h"
 #include "Technique.h"
 class Drawable
 {
@@ -22,7 +22,8 @@ public:
 	virtual ~Drawable() = default;
 	void Bind(Graphics& gfx) const noexcept;
 	void Accept(Probe& probe) noexcept;
-	void Submit(FrameCommander& frameCommander) const noexcept;
+	void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
+	void Submit() const noexcept;
 	UINT GetIndexSize() const noexcept;
 private:
 	const IndexBuffer* m_pIndexBuffer = nullptr;

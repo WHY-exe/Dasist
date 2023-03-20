@@ -1,10 +1,20 @@
 #include "Step.h"
-#include "FrameCommander.h"
 #include "Job.h"
-Step::Step(size_t pass_index)
+Step::Step(std::string szTargetName)
 	:
-	m_pass_index(pass_index)
+	m_szTargetName(std::move(szTargetName))
 {
+}
+
+Step::Step(const Step& src)
+	:
+	m_szTargetName(src.m_szTargetName)
+{
+	m_Binds.reserve(src.m_Binds.size());
+	for (auto i : src.m_Binds)
+	{
+		m_Binds.push_back(i);
+	}
 }
 
 void Step::AddBind(std::shared_ptr<Bindable> bind) noexcept
@@ -22,17 +32,9 @@ bool Step::IsActive() const noexcept
 	return m_active_state;
 }
 
-void Step::InitializeParentReference(const Drawable& d) noexcept
+void Step::Submit(const Drawable& d) const
 {
-	for (auto& b : m_Binds)
-	{
-		b->InitializeParentReference(d);
-	}
-}
-
-void Step::Submit(const FrameCommander& fc, const Drawable& d) const
-{
-	fc.Accept(Job(this, &d), m_pass_index);
+	m_pTargetPass->Accept(Job(this, &d));
 }
 
 void Step::Bind(Graphics& gfx) const
@@ -41,6 +43,12 @@ void Step::Bind(Graphics& gfx) const
 	{
 		b->Bind(gfx);
 	}
+}
+
+void Step::Link(Rgph::RenderGraph& rg)
+{
+	assert(!m_pTargetPass);
+	m_pTargetPass = &rg.GetRenderQueue(m_szTargetName);
 }
 
 void Step::Accept(Probe& probe) noexcept

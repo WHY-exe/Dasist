@@ -2,6 +2,7 @@
 #include "InitWin.h"
 #include "WinException.h"
 #include "DxgiInfoManager.h"
+#include <memory>
 #include <d3d11.h>
 #include <DirectXMath.h>
 
@@ -43,14 +44,14 @@ public:
 	void SetCamera(DirectX::FXMMATRIX cam) noexcept;
 	DirectX::XMMATRIX GetCamera() const noexcept;
 	DirectX::XMMATRIX GetProjection() const noexcept;
-	void BindSwapBuffer() const noexcept;
-	void BindSwapBuffer(const class DepthStencil& ds) const noexcept;
+	std::shared_ptr<class RenderTarget> GetTarget() const;
+	void BindSwapBuffer() noexcept(!IS_DEBUG);
+	void BindSwapBuffer(class DepthStencil& ds) noexcept(!IS_DEBUG);
 	void BeginFrame();
 	void EndFrame();
 public:
 	void GetBackBufferAndCreateRenderTarget();
 	void ResizeFrameBuffer(UINT bufferWidth, UINT bufferHeight);
-	void CleanUpRenderTarget();
 public:
 	bool m_bIsSizeChanged = false;
 private:
@@ -64,7 +65,5 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Device>			m_pDevice;
 	Microsoft::WRL::ComPtr<IDXGISwapChain>			m_pSwapChain;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		m_pContext;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_pTarget;
+	std::shared_ptr<class RenderTarget> m_pTarget;
 };
-
-

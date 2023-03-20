@@ -16,7 +16,7 @@ InputLayout::InputLayout(Graphics& gfx, const Vertex::Layout& layout, ID3DBlob* 
     ));
 }
 
-void InputLayout::Bind(Graphics& gfx) noexcept
+void InputLayout::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
     GetContext(gfx)->IASetInputLayout(m_pInputLayout.Get());
 }

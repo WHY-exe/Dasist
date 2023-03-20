@@ -8,7 +8,7 @@ class BlurPack
 {
 public:
 	BlurPack(Graphics& gfx, const std::wstring& shader, int radius = 7, float sigma = 1.0f) noexcept;
-	void Bind(Graphics& gfx) noexcept;
+	void Bind(Graphics& gfx) noexcept(!IS_DEBUG);
 	void SetVertical(Graphics& gfx) noexcept;
 	void SetHorizontal(Graphics& gfx) noexcept;
 	void SetGaussKernel(Graphics& gfx, int radius, float sigma) noexcept;

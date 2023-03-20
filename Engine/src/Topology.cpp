@@ -6,7 +6,7 @@ Topology::Topology(Graphics& gfx, D3D11_PRIMITIVE_TOPOLOGY type)
 {
 }
 
-void Topology::Bind(Graphics& gfx) noexcept
+void Topology::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
 	GetContext(gfx)->IASetPrimitiveTopology(m_type);
 }

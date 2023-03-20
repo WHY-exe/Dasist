@@ -11,7 +11,7 @@ public:
 	};
 public:
 	TransformCbuf(Graphics& gfx, const Drawable& parent, UINT slot = 0);
-	void Bind(Graphics& gfx) noexcept override;
+	void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override;
 protected:
 	Transform GetTransform(Graphics& gfx) const noexcept;
 	void UpdateBindImpl(Graphics& gfx, const Transform& tf) const noexcept;

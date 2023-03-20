@@ -33,11 +33,19 @@ void Drawable::Accept(Probe& probe) noexcept
 	}
 }
 
-void Drawable::Submit(FrameCommander& frameCommander) const noexcept
+void Drawable::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
+{
+	for (auto& i :m_Techs)
+	{
+		i.Link(rg);
+	}
+}
+
+void Drawable::Submit() const noexcept
 {
 	for (auto& tech : m_Techs)
 	{
-		tech.Submit(frameCommander, *this);
+		tech.Submit(*this);
 	}
 }
 

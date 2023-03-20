@@ -3,8 +3,8 @@ SamplerState splr;
 
 cbuffer Kernel
 {
-    int nTabs;
-    float cofficients[31];
+    uint nTabs;
+    float cofficients[15];
 };
 
 cbuffer Control

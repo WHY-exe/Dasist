@@ -47,7 +47,7 @@ Texture::Texture(Graphics& gfx, const std::wstring& szPath, unsigned int slot)
 	GetContext(gfx)->GenerateMips(m_pTexView.Get());
 }
 
-void Texture::Bind(Graphics& gfx) noexcept
+void Texture::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
 	GetContext(gfx)->PSSetShaderResources(m_slot, 1u, m_pTexView.GetAddressOf());
 }

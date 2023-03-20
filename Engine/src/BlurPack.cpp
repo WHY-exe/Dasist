@@ -11,7 +11,7 @@ BlurPack::BlurPack(Graphics& gfx, const std::wstring& shader, int radius, float 
 	SetGaussKernel(gfx, radius, sigma);
 }
 
-void BlurPack::Bind(Graphics& gfx) noexcept
+void BlurPack::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
 	m_ps.Bind(gfx);
 	m_Kernel.Bind(gfx);

@@ -15,7 +15,7 @@
 #include "ConstantBuffer.h"
 #include <stdexcept>
 #include "imgui.h"
-#include "StrTransf.h"
+#include "StrManager.h"
 #include "VS_PS_TFCB.h"
 #include "Blender.h"
 #include "Rasterizer.h"
@@ -51,7 +51,7 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 	{
 		Technique shade("shade");
 		{
-			Step normalDraw(0);
+			Step normalDraw("lambertian");
 			normalDraw.AddBind(Stencil::Resolve(gfx, Stencil::Mod::Off));
 			auto texs = mesh_data.GetTextures();
 			if (texs.m_amTex.get())
@@ -93,7 +93,7 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 		Technique outline("OutLine");
 		{
 			{
-				Step mask(1);
+				Step mask("outlineMask");
 				mask.AddBind(Stencil::Resolve(gfx, Stencil::Mod::Write));
 				auto pvs = VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso");
 				auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
@@ -104,7 +104,7 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 				outline.AddStep(mask);
 			}
 			{
-				Step draw_to_RenderTarget(2);				
+				Step draw_to_RenderTarget("outlineDraw");
 				draw_to_RenderTarget.AddBind(Stencil::Resolve(gfx, Stencil::Mod::Off));
 				auto pvs = VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso");
 				auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
@@ -126,10 +126,10 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 		AddTechnique(outline);
 	}
 }
-void Scene::Mesh::Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG)
+void Scene::Mesh::Submit(DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG)
 {
 	DirectX::XMStoreFloat4x4(&m_transform, accumulateTransform);
-	Drawable::Submit(fc);
+	Drawable::Submit();
 }
 
 std::string Scene::Mesh::GetName() noexcept
@@ -169,7 +169,7 @@ const DirectX::XMFLOAT4X4& Scene::Node::GetAppliedTransform() const noexcept
 }
 
 
-void Scene::Node::Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransform) const noexcept
+void Scene::Node::Submit(DirectX::FXMMATRIX accumulateTransform) const noexcept
 {
 	const auto build =
 		DirectX::XMLoadFloat4x4(&m_AppliedTransform) *
@@ -177,11 +177,11 @@ void Scene::Node::Submit(FrameCommander& fc, DirectX::FXMMATRIX accumulateTransf
 		accumulateTransform;
 	for (const auto pm : m_pMeshes)
 	{
-		pm->Submit(fc, build);
+		pm->Submit(build);
 	}
 	for (const auto& pc : m_pChilds)
 	{
-		pc->Submit(fc, build);
+		pc->Submit(build);
 	}
 
 }
@@ -360,14 +360,21 @@ void Scene::Model::Accept(TNodeProbe& probe) noexcept(!IS_DEBUG)
 	m_pRoot->Accept(node_probe);
 }
 
-void Scene::Model::Submit(FrameCommander& fc) const noexcept(!IS_DEBUG)
+void Scene::Model::Submit() const noexcept(!IS_DEBUG)
 {
 	m_pRoot->Submit(
-		fc, 
 		DirectX::XMMatrixIdentity() *
 		DirectX::XMMatrixScaling(m_scale, m_scale, m_scale) *
 		DirectX::XMMatrixTranslation(m_pos.x, m_pos.y, m_pos.z)
 	);
+}
+
+void Scene::Model::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
+{
+	for (auto& i : m_pMeshes)
+	{
+		i->LinkTechniques(rg);
+	}
 }
 
 void Scene::Model::ApplyTransformation() noexcept(!IS_DEBUG)

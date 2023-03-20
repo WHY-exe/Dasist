@@ -9,7 +9,7 @@ TransformCbuf::TransformCbuf(Graphics& gfx, const Drawable& parent, UINT slot)
 		s_vcbuf = std::make_unique<VertexConstantBuffer<Transform>>(gfx, slot);
 	}
 }
-void TransformCbuf::Bind(Graphics& gfx) noexcept
+void TransformCbuf::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
 	UpdateBindImpl(gfx, GetTransform(gfx));
 	s_vcbuf->Bind(gfx);

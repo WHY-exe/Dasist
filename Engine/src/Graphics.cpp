@@ -1,4 +1,5 @@
 #include "Graphics.h"
+#include "RenderTarget.h"
 #include <sstream>
 #include "DepthStencil.h"
 #include <d3dcompiler.h>
@@ -96,25 +97,17 @@ void Graphics::SetCamera(DirectX::FXMMATRIX cam) noexcept
 void Graphics::GetBackBufferAndCreateRenderTarget()
 {
     INIT_GFX_EXCEPTION;
-    Microsoft::WRL::ComPtr<ID3D11Resource> pBackResource;
-    GFX_THROW_INFO(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), &pBackResource));
-
-    GFX_THROW_INFO(m_pDevice->CreateRenderTargetView(
-        pBackResource.Get(),
-        nullptr,
-        &m_pTarget
-    ));
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> pBackResource;
+    GFX_THROW_INFO(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), &pBackResource));
+    m_pTarget = std::shared_ptr<RenderTarget>{ new RenderTargetAsOutputTarget(*this, pBackResource.Get()) };
 }
 
 void Graphics::ResizeFrameBuffer(UINT bufferWidth, UINT bufferHeight)
 {
-    INIT_GFX_EXCEPTION;
+    INIT_GFX_EXCEPTION;  
+    m_pTarget->CleanUp();   
+    m_pContext->ClearState();
     GFX_THROW_INFO(m_pSwapChain->ResizeBuffers(0, bufferWidth, bufferHeight, DXGI_FORMAT_UNKNOWN, 0u));
-}
-
-void Graphics::CleanUpRenderTarget()
-{
-    m_pTarget.Reset();
 }
 
 DirectX::XMMATRIX Graphics::GetCamera() const noexcept
@@ -127,34 +120,19 @@ DirectX::XMMATRIX Graphics::GetProjection() const noexcept
     return m_projection;
 }
 
-void Graphics::BindSwapBuffer() const noexcept
+std::shared_ptr<RenderTarget> Graphics::GetTarget() const
 {
-    m_pContext->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), nullptr);
-    // configure viewport
-    D3D11_VIEWPORT vp = {};
-    vp.Width = (float)m_winWidth;
-    vp.Height = (float)m_winHeight;
-    vp.MinDepth = 0;
-    vp.MaxDepth = 1;
-    vp.TopLeftX = 0;
-    vp.TopLeftY = 0;
-    // bind the view port to the pipeline
-    m_pContext->RSSetViewports(1u, &vp);
+    return m_pTarget;
 }
 
-void Graphics::BindSwapBuffer(const DepthStencil& ds) const noexcept
+void Graphics::BindSwapBuffer() noexcept(!IS_DEBUG)
 {
-    m_pContext->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), ds.GetView().Get());
-    // configure viewport
-    D3D11_VIEWPORT vp = {};
-    vp.Width = (float)m_winWidth;
-    vp.Height = (float)m_winHeight;
-    vp.MinDepth = 0;
-    vp.MaxDepth = 1;
-    vp.TopLeftX = 0;
-    vp.TopLeftY = 0;
-    // bind the view port to the pipeline
-    m_pContext->RSSetViewports(1u, &vp);
+    m_pTarget->BindAsBuffer(*this);
+}
+
+void Graphics::BindSwapBuffer(DepthStencil& ds) noexcept(!IS_DEBUG)
+{
+    m_pTarget->BindAsBuffer(*this, &ds);
 }
 
 
@@ -163,8 +141,8 @@ void Graphics::BeginFrame()
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
-    const float color[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
-    m_pContext->ClearRenderTargetView(m_pTarget.Get(), color);
+    std::array<float, 4> color = { 0.1f, 0.1f, 0.1f, 1.0f };
+    m_pTarget->Clear(*this, color);
 }
 
 void Graphics::EndFrame()

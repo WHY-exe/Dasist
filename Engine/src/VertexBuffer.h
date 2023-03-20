@@ -4,7 +4,7 @@
 #include "Vertex.h"
 #include <memory>
 #include <typeinfo>
-#include "StrTransf.h"
+#include "StrManager.h"
 class VertexBuffer :public Bindable
 {
 public:
@@ -37,7 +37,7 @@ public:
         return GenUID_(tag);
     }
     std::wstring GetUID() const noexcept override;
-    void Bind(Graphics& gfx) noexcept override;
+    void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override;
 private:
     static std::wstring GenUID_(std::wstring tag) noexcept;
 private:

@@ -19,7 +19,7 @@ PixelShader::PixelShader(Graphics& gfx, std::wstring szPath)
     );
 }
 
-void PixelShader::Bind(Graphics& gfx) noexcept
+void PixelShader::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
     GetContext(gfx)->PSSetShader(m_pPixelShader.Get(), nullptr, 0u);
 }

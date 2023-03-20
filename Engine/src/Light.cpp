@@ -1,5 +1,4 @@
 #include "Light.h"
-
 #include "imgui.h"
 PointLight::PointLight(Graphics& gfx)
 	:
@@ -51,9 +50,14 @@ void PointLight::Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept
 	m_lightBall.ApplyTransformation();
 }
 
-void PointLight::Submit(FrameCommander& fc) noexcept
+void PointLight::Submit() noexcept
 {
-	m_lightBall.Submit(fc);
+	m_lightBall.Submit();
+}
+
+void PointLight::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
+{
+	m_lightBall.LinkTechniques(rg);
 }
 
 void PointLight::SpwanControlWindow() noexcept

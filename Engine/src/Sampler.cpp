@@ -1,6 +1,6 @@
 #include "Sampler.h"
 #include "GfxThrowMacro.h"
-#include "StrTransf.h"
+#include "StrManager.h"
 #include "BindableCodex.h"
 #include <typeinfo>
 Sampler::Sampler(Graphics& gfx, Type type, bool reflect)
@@ -37,7 +37,7 @@ Sampler::Sampler(Graphics& gfx, Type type, bool reflect)
 
 }
 
-void Sampler::Bind(Graphics& gfx) noexcept
+void Sampler::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
 	GetContext(gfx)->PSSetSamplers(0u, 1u, m_pSampler.GetAddressOf());
 }

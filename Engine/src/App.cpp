@@ -26,7 +26,8 @@ App::App()
 
 	for (auto& i : scene)
 	{
-		i.LinkTechniques(m_rg);
+		i.LinkTechniques(m_rg);		
+		i.Submit();
 	}
 	pointLight.LinkTechniques(m_rg);
 	pointLight.Submit();
@@ -50,10 +51,6 @@ void App::DoFrame()
 {
 	m_gfx.BeginFrame();
 	pointLight.Submit();
-	for (auto& i : scene)
-	{
-		i.Submit();
-	}
 	cam.SpwanControlWindow();
 	m_gfx.SetCamera(cam.GetMatrix());
 	gLight.Update(m_gfx, cam.GetMatrix());
@@ -67,7 +64,6 @@ void App::DoFrame()
 	pointLight.SpwanControlWindow();
 	//
 	m_gfx.EndFrame();
-	m_rg.Reset();
 }
 
 void App::DoWinLogic()

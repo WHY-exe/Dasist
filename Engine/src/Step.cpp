@@ -34,7 +34,10 @@ bool Step::IsActive() const noexcept
 
 void Step::Submit(const Drawable& d) const
 {
-	m_pTargetPass->Accept(Job(this, &d));
+	if (m_active_state)
+	{
+		m_pTargetPass->Accept(Job(this, &d));
+	}
 }
 
 void Step::Bind(Graphics& gfx) const

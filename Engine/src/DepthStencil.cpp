@@ -85,7 +85,7 @@ void DepthStencilAsShaderInput::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
     GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetShaderResources(m_slot, 1u, m_pShaderResourceView.GetAddressOf()));
 }
 
-void DepthStencilAsShaderInput::Resize(Graphics& gfx, int width, int height) noexcept(!IS_DEBUG)
+void DepthStencilAsShaderInput::Resize(Graphics& gfx, UINT width, UINT height) noexcept(!IS_DEBUG)
 {
     *this = DepthStencilAsShaderInput(gfx, width, height, m_slot);
 }
@@ -107,7 +107,7 @@ void DepthStencilAsTraget::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
     assert("Cannot bind OuputOnlyDepthStencil as shader input" && false);
 }
 
-void DepthStencilAsTraget::Resize(Graphics& gfx, int width, int height) noexcept(!IS_DEBUG)
+void DepthStencilAsTraget::Resize(Graphics& gfx, UINT width, UINT height) noexcept(!IS_DEBUG)
 {
     *this = DepthStencilAsTraget(gfx, width, height);
 }

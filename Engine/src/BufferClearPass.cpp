@@ -16,18 +16,11 @@ namespace Rgph
 	}
 
 	void BufferClearPass::Execute( Graphics& gfx ) const noexcept(!IS_DEBUG)
-	{
-		if (gfx.m_bIsSizeChanged)
+	{			
+		if (gfx.sizeSignalDS && dynamic_cast<DepthStencil*>(buffer.get()))
 		{
-			if (auto rt = dynamic_cast<RenderTarget*>(buffer.get()))
-			{
-				rt->Resize(gfx, gfx.GetWindowWidth(), gfx.GetWindowHeight());
-			}
-			if (auto ds = dynamic_cast<DepthStencil*>(buffer.get()))
-			{
-				ds->Resize(gfx, gfx.GetWindowWidth(), gfx.GetWindowHeight());
-			}
-			gfx.m_bIsSizeChanged = false;
+			buffer->Resize(gfx, gfx.GetWindowWidth(), gfx.GetWindowHeight());
+			gfx.sizeSignalDS = false;
 		}
 		buffer->Clear( gfx );
 	}

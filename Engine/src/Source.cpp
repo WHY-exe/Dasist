@@ -7,18 +7,18 @@ namespace Rgph
 {
 	Source::Source( std::string nameIn )
 		:
-		name( std::move( nameIn ) )
+		m_name( std::move( nameIn ) )
 	{
-		if( name.empty() )
+		if( m_name.empty() )
 		{
 			throw RGC_EXCEPTION( "Empty output name" );
 		}
-		const bool nameCharsValid = std::all_of( name.begin(),name.end(),[]( char c ) {
+		const bool nameCharsValid = std::all_of( m_name.begin(),m_name.end(),[]( char c ) {
 			return std::isalnum( c ) || c == '_';
 		} );
-		if( !nameCharsValid || std::isdigit( name.front() ) )
+		if( !nameCharsValid || std::isdigit( m_name.front() ) )
 		{
-			throw RGC_EXCEPTION( "Invalid output name: " + name );
+			throw RGC_EXCEPTION( "Invalid output name: " + m_name );
 		}
 	}
 
@@ -34,6 +34,6 @@ namespace Rgph
 
 	const std::string& Source::GetName() const noexcept
 	{
-		return name;
+		return m_name;
 	}
 }

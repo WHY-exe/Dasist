@@ -85,6 +85,23 @@ void RenderTarget::BindAsBuffer(Graphics& gfx, DepthStencil* ds) noexcept(!IS_DE
     GetContext(gfx)->RSSetViewports(1u, &vp);
 }
 
+void RenderTarget::Remake(Graphics& gfx, ID3D11Texture2D* pTexture)
+{
+    IMPORT_INFOMAN(gfx);
+    D3D11_TEXTURE2D_DESC texDesc = {};
+    pTexture->GetDesc(&texDesc);
+    m_uWidth = texDesc.Width;
+    m_uHeight = texDesc.Height;
+    m_pTexture = pTexture;
+    D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+    rtvDesc.Format = texDesc.Format;
+    rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+    rtvDesc.Texture2D = D3D11_TEX2D_RTV{ 0 };
+    GFX_THROW_INFO(
+        GetDevice(gfx)->CreateRenderTargetView(pTexture, &rtvDesc, &m_pTarget)
+    );
+}
+
 void RenderTarget::CleanUp() noexcept(!IS_DEBUG)
 {
     m_pTarget.Reset();

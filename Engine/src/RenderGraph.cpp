@@ -13,13 +13,13 @@ namespace Rgph
 {
 	RenderGraph::RenderGraph( Graphics& gfx )
 		:
-		backBufferTarget( gfx.GetTarget() ),
-		masterDepth( std::make_shared<DepthStencilAsTraget>( gfx ) )
+		m_backBufferTarget( gfx.GetTarget() ),
+		m_masterDepth( std::make_shared<DepthStencilAsTraget>( gfx ) )
 	{
 		// setup global sinks and sources
-		AddGlobalSource( DirectBufferSource<RenderTarget>::Make( "backbuffer",backBufferTarget ) );
-		AddGlobalSource( DirectBufferSource<DepthStencil>::Make( "masterDepth",masterDepth ) );
-		AddGlobalSink( DirectBufferSink<RenderTarget>::Make( "backbuffer",backBufferTarget ) );
+		AddGlobalSource( DirectBufferSource<RenderTarget>::Make( "backbuffer",m_backBufferTarget ) );
+		AddGlobalSource( DirectBufferSource<DepthStencil>::Make( "masterDepth",m_masterDepth ) );
+		AddGlobalSink( DirectBufferSink<RenderTarget>::Make( "backbuffer",m_backBufferTarget ) );
 	}
 
 	RenderGraph::~RenderGraph()
@@ -30,8 +30,8 @@ namespace Rgph
 		const auto finder = [&sinkName]( const std::unique_ptr<Sink>& p ) {
 			return p->GetRegisteredName() == sinkName;
 		};
-		const auto i = std::find_if( globalSinks.begin(),globalSinks.end(),finder );
-		if( i == globalSinks.end() )
+		const auto i = std::find_if( m_globalSinks.begin(),m_globalSinks.end(),finder );
+		if( i == m_globalSinks.end() )
 		{
 			throw RGC_EXCEPTION( "Global sink does not exist: " + sinkName );
 		}
@@ -45,18 +45,18 @@ namespace Rgph
 
 	void RenderGraph::AddGlobalSource( std::unique_ptr<Source> out )
 	{
-		globalSources.push_back( std::move( out ) );
+		m_globalSources.push_back( std::move( out ) );
 	}
 
 	void RenderGraph::AddGlobalSink( std::unique_ptr<Sink> in )
 	{
-		globalSinks.push_back( std::move( in ) );
+		m_globalSinks.push_back( std::move( in ) );
 	}
 
 	void RenderGraph::Execute( Graphics& gfx ) noexcept(!IS_DEBUG)
 	{
 		assert( finalized );
-		for( auto& p : passes )
+		for( auto& p : m_passes )
 		{
 			p->Execute( gfx );
 		}
@@ -65,7 +65,7 @@ namespace Rgph
 	void RenderGraph::Reset() noexcept
 	{
 		assert( finalized );
-		for( auto& p : passes )
+		for( auto& p : m_passes )
 		{
 			p->Reset();
 		}
@@ -75,7 +75,7 @@ namespace Rgph
 	{
 		assert( !finalized );
 		// validate name uniqueness
-		for( const auto& p : passes )
+		for( const auto& p : m_passes )
 		{
 			if( pass->GetName() == p->GetName() )
 			{
@@ -87,7 +87,7 @@ namespace Rgph
 		LinkSinks( *pass );
 
 		// add to container of passes
-		passes.push_back( std::move( pass ) );
+		m_passes.push_back( std::move( pass ) );
 	}
 
 	void RenderGraph::LinkSinks( Pass& pass )
@@ -100,7 +100,7 @@ namespace Rgph
 			if( inputSourcePassName == "$" )
 			{
 				bool bound = false;
-				for( auto& source : globalSources )
+				for( auto& source : m_globalSources )
 				{
 					if( source->GetName() == si->GetOutputName() )
 					{
@@ -118,7 +118,7 @@ namespace Rgph
 			}
 			else // find source from within existing passes
 			{
-				for( auto& existingPass : passes )
+				for( auto& existingPass : m_passes )
 				{
 					if( existingPass->GetName() == inputSourcePassName )
 					{
@@ -133,10 +133,10 @@ namespace Rgph
 
 	void RenderGraph::LinkGlobalSinks()
 	{
-		for( auto& sink : globalSinks )
+		for( auto& sink : m_globalSinks )
 		{
 			const auto& inputSourcePassName = sink->GetPassName();
-			for( auto& existingPass : passes )
+			for( auto& existingPass : m_passes )
 			{
 				if( existingPass->GetName() == inputSourcePassName )
 				{
@@ -151,7 +151,7 @@ namespace Rgph
 	void RenderGraph::Finalize()
 	{
 		assert( !finalized );
-		for( const auto& p : passes )
+		for( const auto& p : m_passes )
 		{
 			p->Finalize();
 		}
@@ -163,7 +163,7 @@ namespace Rgph
 	{
 		try
 		{
-			for( const auto& p : passes )
+			for( const auto& p : m_passes )
 			{
 				if( p->GetName() == passName )
 				{

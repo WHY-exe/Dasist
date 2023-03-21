@@ -12,34 +12,34 @@ namespace Rgph
 {
 	Sink::Sink( std::string registeredNameIn )
 		:
-		registeredName( std::move( registeredNameIn ) )
+		m_registeredName( std::move( registeredNameIn ) )
 	{
-		if( registeredName.empty() )
+		if( m_registeredName.empty() )
 		{
 			throw RGC_EXCEPTION( "Empty output name" );
 		}
-		const bool nameCharsValid = std::all_of( registeredName.begin(),registeredName.end(),[]( char c ) {
+		const bool nameCharsValid = std::all_of( m_registeredName.begin(),m_registeredName.end(),[]( char c ) {
 			return std::isalnum( c ) || c == '_';
 		} );
-		if( !nameCharsValid || std::isdigit( registeredName.front() ) )
+		if( !nameCharsValid || std::isdigit( m_registeredName.front() ) )
 		{
-			throw RGC_EXCEPTION( "Invalid output name: " + registeredName );
+			throw RGC_EXCEPTION( "Invalid output name: " + m_registeredName );
 		}
 	}
 
 	const std::string& Sink::GetRegisteredName() const noexcept
 	{
-		return registeredName;
+		return m_registeredName;
 	}
 
 	const std::string& Sink::GetPassName() const noexcept
 	{
-		return passName;
+		return m_passName;
 	}
 
 	const std::string& Sink::GetOutputName() const noexcept
 	{
-		return outputName;
+		return m_outputName;
 	}
 
 	void Sink::SetTarget( std::string passName,std::string outputName )
@@ -54,9 +54,9 @@ namespace Rgph
 			} );
 			if( passName != "$" && (!nameCharsValid || std::isdigit( passName.front() )) )
 			{
-				throw RGC_EXCEPTION( "Invalid output name: " + registeredName );
+				throw RGC_EXCEPTION( "Invalid output name: " + m_registeredName );
 			}
-			this->passName = passName;
+			this->m_passName = passName;
 		}
 		{
 			if( outputName.empty() )
@@ -68,9 +68,9 @@ namespace Rgph
 			} );
 			if( !nameCharsValid || std::isdigit( outputName.front() ) )
 			{
-				throw RGC_EXCEPTION( "Invalid output name: " + registeredName );
+				throw RGC_EXCEPTION( "Invalid output name: " + m_registeredName );
 			}
-			this->outputName = outputName;
+			this->m_outputName = outputName;
 		}
 	}
 }

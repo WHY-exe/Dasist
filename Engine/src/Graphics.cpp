@@ -54,7 +54,9 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
         nullptr,
         &m_pContext
     ));
-    GetBackBufferAndCreateRenderTarget();
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> pBackResource;
+    GFX_THROW_INFO(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), &pBackResource));
+    m_pTarget = std::shared_ptr<RenderTarget>{ new RenderTargetAsOutputTarget(*this, pBackResource.Get()) };
     ImGui_ImplDX11_Init(m_pDevice.Get(), m_pContext.Get());
 }
 
@@ -94,19 +96,19 @@ void Graphics::SetCamera(DirectX::FXMMATRIX cam) noexcept
     m_camTransform = cam;
 }
 
-void Graphics::GetBackBufferAndCreateRenderTarget()
+void Graphics::RemakeRenderTarget()
 {
     INIT_GFX_EXCEPTION;
     Microsoft::WRL::ComPtr<ID3D11Texture2D> pBackResource;
     GFX_THROW_INFO(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), &pBackResource));
-    m_pTarget = std::shared_ptr<RenderTarget>{ new RenderTargetAsOutputTarget(*this, pBackResource.Get()) };
+    m_pTarget->Remake(*this, pBackResource.Get());
 }
 
 void Graphics::ResizeFrameBuffer(UINT bufferWidth, UINT bufferHeight)
 {
     INIT_GFX_EXCEPTION;  
     m_pTarget->CleanUp();   
-    m_pContext->ClearState();
+    //m_pContext->ClearState();
     GFX_THROW_INFO(m_pSwapChain->ResizeBuffers(0, bufferWidth, bufferHeight, DXGI_FORMAT_UNKNOWN, 0u));
 }
 
@@ -120,7 +122,7 @@ DirectX::XMMATRIX Graphics::GetProjection() const noexcept
     return m_projection;
 }
 
-std::shared_ptr<RenderTarget> Graphics::GetTarget() const
+std::shared_ptr<RenderTarget> Graphics::GetTarget()
 {
     return m_pTarget;
 }

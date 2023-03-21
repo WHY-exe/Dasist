@@ -31,9 +31,9 @@ namespace Rgph
 	protected:
 		Sink( std::string registeredName );
 	private:
-		std::string registeredName;
-		std::string passName;
-		std::string outputName;
+		std::string m_registeredName;
+		std::string m_passName;
+		std::string m_outputName;
 	};
 
 	template<class T>
@@ -47,7 +47,7 @@ namespace Rgph
 		}
 		void PostLinkValidate() const override
 		{
-			if( !linked )
+			if( !m_bLinked)
 			{
 				throw RGC_EXCEPTION( "Unlinked input: " + GetRegisteredName() );
 			}
@@ -62,17 +62,17 @@ namespace Rgph
 					<< " { " << typeid(T).name() << " } not compatible with { " << typeid(*source.YieldBuffer().get()).name() << " }";
 				throw RGC_EXCEPTION( oss.str() );
 			}
-			target = std::move( p );
-			linked = true;
+			m_target = std::move( p );
+			m_bLinked = true;
 		}
 		DirectBufferSink( std::string registeredName,std::shared_ptr<T>& bind )
 			:
 			Sink( std::move( registeredName ) ),
-			target( bind )
+			m_target( bind )
 		{}
 	private:
-		std::shared_ptr<T>& target;
-		bool linked = false;
+		std::shared_ptr<T>& m_target;
+		bool m_bLinked = false;
 	};
 
 	template<class T>
@@ -82,7 +82,7 @@ namespace Rgph
 	public:
 		void PostLinkValidate() const override
 		{
-			if( !linked )
+			if( !m_bLinked)
 			{
 				throw RGC_EXCEPTION( "Unlinked input: " + GetRegisteredName() );
 			}
@@ -97,19 +97,19 @@ namespace Rgph
 					<< " { " << typeid(T).name() << " } does not match { " << typeid(*source.YieldBindable().get()).name() << " }";
 				throw RGC_EXCEPTION( oss.str() );
 			}
-			container[index] = std::move( p );
-			linked = true;
+			m_Container[m_Index] = std::move( p );
+			m_bLinked = true;
 		}
 		ContainerBindableSink( std::string registeredName,std::vector<std::shared_ptr<Bindable>>& container,size_t index )
 			:
 			Sink( std::move( registeredName ) ),
-			container( container ),
-			index( index )
+			m_Container( container ),
+			m_Index( index )
 		{}
 	private:
-		std::vector<std::shared_ptr<Bindable>>& container;
-		size_t index;
-		bool linked = false;
+		std::vector<std::shared_ptr<Bindable>>& m_Container;
+		size_t m_Index;
+		bool m_bLinked = false;
 	};
 
 	template<class T>
@@ -123,7 +123,7 @@ namespace Rgph
 		}
 		void PostLinkValidate() const override
 		{
-			if( !linked )
+			if( !m_bLinked)
 			{
 				throw RGC_EXCEPTION( "Unlinked input: " + GetRegisteredName() );
 			}
@@ -138,16 +138,16 @@ namespace Rgph
 					<< " { " << typeid(T).name() << " } does not match { " << typeid(*source.YieldBindable().get()).name() << " }";
 				throw RGC_EXCEPTION( oss.str() );
 			}
-			target = std::move( p );
-			linked = true;
+			m_target = std::move( p );
+			m_bLinked = true;
 		}
 		DirectBindableSink( std::string registeredName,std::shared_ptr<T>& target )
 			:
 			Sink( std::move( registeredName ) ),
-			target( target )
+			m_target( target )
 		{}
 	private:
-		std::shared_ptr<T>& target;
-		bool linked = false;
+		std::shared_ptr<T>& m_target;
+		bool m_bLinked = false;
 	};
 }

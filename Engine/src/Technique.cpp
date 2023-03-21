@@ -7,9 +7,12 @@ Technique::Technique(const std::string& name) noexcept
 }
 void Technique::Submit(const Drawable& d) const noexcept
 {
-	for (auto& s : m_Steps)
+	if (m_activate)
 	{
-		s.Submit(d);
+		for (auto& s : m_Steps)
+		{
+			s.Submit(d);
+		}
 	}
 }
 

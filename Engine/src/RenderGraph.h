@@ -32,11 +32,11 @@ namespace Rgph
 		void LinkSinks( Pass& pass );
 		void LinkGlobalSinks();
 	private:
-		std::vector<std::unique_ptr<Pass>> passes;
-		std::vector<std::unique_ptr<Source>> globalSources;
-		std::vector<std::unique_ptr<Sink>> globalSinks;
-		std::shared_ptr<RenderTarget> backBufferTarget;
-		std::shared_ptr<DepthStencil> masterDepth;
+		std::vector<std::unique_ptr<Pass>> m_passes;
+		std::vector<std::unique_ptr<Source>> m_globalSources;
+		std::vector<std::unique_ptr<Sink>> m_globalSinks;
+		std::shared_ptr<RenderTarget> m_backBufferTarget;
+		std::shared_ptr<DepthStencil> m_masterDepth;
 		bool finalized = false;
 	};
 }

@@ -20,7 +20,7 @@ namespace Rgph
 	protected:
 		Source( std::string name );
 	private:
-		std::string name;
+		std::string m_name;
 	};
 
 	template<class T>
@@ -34,22 +34,22 @@ namespace Rgph
 		DirectBufferSource( std::string name,std::shared_ptr<T>& buffer )
 			:
 			Source( std::move( name ) ),
-			buffer( buffer )
+			m_buffer( buffer )
 		{}
 		void PostLinkValidate() const
 		{}
 		std::shared_ptr<BufferResource> YieldBuffer() override
 		{
-			if( linked )
+			if( m_bLink )
 			{
 				throw RGC_EXCEPTION( "Mutable output bound twice: " + GetName() );
 			}
-			linked = true;
-			return buffer;
+			m_bLink = true;
+			return m_buffer;
 		}
 	private:
-		std::shared_ptr<T>& buffer;
-		bool linked = false;
+		std::shared_ptr<T>& m_buffer;
+		bool m_bLink = false;
 	};
 
 	template<class T>
@@ -63,15 +63,15 @@ namespace Rgph
 		DirectBindableSource( std::string name,std::shared_ptr<T>& bind )
 			:
 			Source( std::move( name ) ),
-			bind( bind )
+			m_bind( bind )
 		{}
 		void PostLinkValidate() const
 		{}
 		std::shared_ptr<Bindable> YieldBindable() override
 		{
-			return bind;
+			return m_bind;
 		}
 	private:
-		std::shared_ptr<T>& bind;
+		std::shared_ptr<T>& m_bind;
 	};
 }

@@ -10,10 +10,10 @@ public:
 	void BindAsBuffer(Graphics& gfx) noexcept(!IS_DEBUG) override;
 	void BindAsBuffer(Graphics& gfx, BufferResource* depthStencil) noexcept(!IS_DEBUG) override;
 	void BindAsBuffer(Graphics& gfx, class DepthStencil* ds) noexcept(!IS_DEBUG);
+	void Remake(Graphics& gfx, ID3D11Texture2D* pTexture);
 	void CleanUp() noexcept(!IS_DEBUG);
 	void Clear(Graphics& gfx) noexcept(!IS_DEBUG) override;
 	void Clear(Graphics& gfx, std::array<float, 4> color) noexcept(!IS_DEBUG);
-	virtual void Resize(Graphics& gfx, UINT width, UINT height) = 0;
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_pTexture;
 private:

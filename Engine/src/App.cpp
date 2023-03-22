@@ -55,7 +55,7 @@ void App::DoFrame()
 	m_gfx.SetCamera(cam.GetMatrix());
 	gLight.Update(m_gfx, cam.GetMatrix());
 	pointLight.Update(m_gfx, cam.GetMatrix());
-	m_rg.Execute(m_gfx);
+    m_rg.Execute(m_gfx);
 	for (auto& i : scene)
 	{
 		probe.SpwanControlWindow(i);

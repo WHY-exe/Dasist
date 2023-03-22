@@ -24,7 +24,7 @@ namespace Rgph
 			renderTarget = std::make_unique<RenderTargetAsShaderTexture>( gfx,fullWidth / 2,fullHeight / 2,0 );
 			AddBind( VertexShader::Resolve( gfx,L"res\\cso\\Solid_VS.cso" ) );
 			AddBind( PixelShader::Resolve( gfx,L"res\\cso\\Solid_PS.cso" ) );
-			AddBind( Stencil::Resolve( gfx,Stencil::Mod::Mask ) );
+			AddBind( Stencil::Resolve( gfx,Stencil::Mod::Off ) );
 			AddBind( Blender::Resolve( gfx,false ) );
 			RegisterSource( DirectBindableSource<RenderTarget>::Make( "scratchOut",renderTarget ) );
 		}

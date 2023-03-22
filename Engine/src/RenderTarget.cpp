@@ -111,8 +111,7 @@ void RenderTarget::CleanUp() noexcept(!IS_DEBUG)
 void RenderTarget::Clear(Graphics& gfx)  noexcept(!IS_DEBUG)
 {
     // when there are several render targets, be careful about the alpha channel
-    const float color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    GetContext(gfx)->ClearRenderTargetView(m_pTarget.Get(), color);
+    Clear(gfx, { 0.0f, 0.0f, 0.0f, 0.4f });
 }
 
 void RenderTarget::Clear(Graphics& gfx, std::array<float, 4> color)  noexcept(!IS_DEBUG)

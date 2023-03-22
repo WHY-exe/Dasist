@@ -110,6 +110,7 @@ void Graphics::ResizeFrameBuffer(UINT bufferWidth, UINT bufferHeight)
     m_pTarget->CleanUp();   
     //m_pContext->ClearState();
     GFX_THROW_INFO(m_pSwapChain->ResizeBuffers(0, bufferWidth, bufferHeight, DXGI_FORMAT_UNKNOWN, 0u));
+    RemakeRenderTarget();
 }
 
 DirectX::XMMATRIX Graphics::GetCamera() const noexcept
@@ -127,24 +128,11 @@ std::shared_ptr<RenderTarget> Graphics::GetTarget()
     return m_pTarget;
 }
 
-void Graphics::BindSwapBuffer() noexcept(!IS_DEBUG)
-{
-    m_pTarget->BindAsBuffer(*this);
-}
-
-void Graphics::BindSwapBuffer(DepthStencil& ds) noexcept(!IS_DEBUG)
-{
-    m_pTarget->BindAsBuffer(*this, &ds);
-}
-
-
 void Graphics::BeginFrame()
 {
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
-    std::array<float, 4> color = { 0.1f, 0.1f, 0.1f, 1.0f };
-    m_pTarget->Clear(*this, color);
 }
 
 void Graphics::EndFrame()

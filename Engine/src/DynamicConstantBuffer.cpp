@@ -39,7 +39,7 @@ namespace DCBuf
 		assert("Indexing into non-Array element" && m_type == Array);
 		const auto& data = static_cast<ExtraData::Array&>(*m_pExtraData);
 		assert(index < data.m_size);
-		return { offset + data.m_layoutElement->GetSizeInBytes() * index,&*data.m_layoutElement };
+		return { offset + data.m_size * index,&*data.m_layoutElement };
 	}
 	bool LayoutElement::Exists() const noexcept
 	{

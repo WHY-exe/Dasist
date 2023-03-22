@@ -109,9 +109,6 @@
     <Filter Include="Drawable\VisitorProbe">
       <UniqueIdentifier>{865f8677-5816-4751-8b58-fb9a91163651}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Effect">
-      <UniqueIdentifier>{d4c5bd6f-bc42-4cf1-b8a4-d54ef0af0aa2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="RenderGraphc">
       <UniqueIdentifier>{0b459e75-80ad-46c3-81fb-188e2f5c1f5f}</UniqueIdentifier>
     </Filter>
@@ -283,9 +280,6 @@
       <Filter>dx11GfxBase</Filter>
     </ClCompile>
     <ClCompile Include="src\WinMain.cpp" />
-    <ClCompile Include="src\BlurPack.cpp">
-      <Filter>Effect</Filter>
-    </ClCompile>
     <ClCompile Include="src\Pass.cpp">
       <Filter>RenderGraphc\Pass\PassBase</Filter>
     </ClCompile>
@@ -506,9 +500,6 @@
     </ClInclude>
     <ClInclude Include="src\GraphicsResource.h">
       <Filter>dx11GfxBase</Filter>
-    </ClInclude>
-    <ClInclude Include="src\BlurPack.h">
-      <Filter>Effect</Filter>
     </ClInclude>
     <ClInclude Include="src\Pass.h">
       <Filter>RenderGraphc\Pass\PassBase</Filter>

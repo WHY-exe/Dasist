@@ -21,7 +21,6 @@
   <ItemGroup>
     <ClCompile Include="src\BindingPass.cpp" />
     <ClCompile Include="src\BlurOutlineRenderGraph.cpp" />
-    <ClCompile Include="src\BlurPack.cpp" />
     <ClCompile Include="src\BufferClearPass.cpp" />
     <ClCompile Include="src\DepthStencil.cpp" />
     <ClCompile Include="src\FullscreenPass.cpp" />
@@ -90,7 +89,6 @@
     <ClInclude Include="src\BindingPass.h" />
     <ClInclude Include="src\BlurOutlineDrawingPass.h" />
     <ClInclude Include="src\BlurOutlineRenderGraph.h" />
-    <ClInclude Include="src\BlurPack.h" />
     <ClInclude Include="src\BufferClearPass.h" />
     <ClInclude Include="src\BufferResource.h" />
     <ClInclude Include="src\DepthStencil.h" />

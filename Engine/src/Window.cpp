@@ -338,10 +338,8 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (this->m_pGfx.get() && wParam != SIZE_MINIMIZED)
 		{
 			m_pGfx->ResetWindowSize(m_nWidth, m_nHeight);
-			m_pGfx->sizeSignalRT = true;
 			m_pGfx->sizeSignalDS = true;
-			m_pGfx->ResizeFrameBuffer(m_nWidth, m_nHeight);			
-			m_pGfx->RemakeRenderTarget();
+			m_pGfx->ResizeFrameBuffer(m_nWidth, m_nHeight);
 			m_pGfx->SetProjection(
 				DirectX::XMMatrixPerspectiveLH(
 					1.0f, (float)m_nHeight / (float)m_nWidth,

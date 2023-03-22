@@ -19,7 +19,7 @@ namespace Rgph
 		// private data
 		static constexpr int maxRadius = 7;
 		static constexpr int radius = 4;
-		static constexpr float sigma = 2.0f;
+		static constexpr float sigma = 5.0f;
 		std::shared_ptr<CachingPixelConstantBuffer> blurKernel;
 		std::shared_ptr<CachingPixelConstantBuffer> blurDirection;
 	};

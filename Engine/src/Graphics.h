@@ -45,15 +45,13 @@ public:
 	DirectX::XMMATRIX GetCamera() const noexcept;
 	DirectX::XMMATRIX GetProjection() const noexcept;
 	std::shared_ptr<class RenderTarget> GetTarget();
-	void BindSwapBuffer() noexcept(!IS_DEBUG);
-	void BindSwapBuffer(class DepthStencil& ds) noexcept(!IS_DEBUG);
 	void BeginFrame();
 	void EndFrame();
 public:
-	void RemakeRenderTarget();
 	void ResizeFrameBuffer(UINT bufferWidth, UINT bufferHeight);
+private:
+	void RemakeRenderTarget();
 public:
-	bool sizeSignalRT = false;
 	bool sizeSignalDS = false;
 private:
 	int m_winWidth;

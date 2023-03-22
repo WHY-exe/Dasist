@@ -52,7 +52,6 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 		Technique shade("shade");
 		{
 			Step normalDraw("lambertian");
-			normalDraw.AddBind(Stencil::Resolve(gfx, Stencil::Mod::Off));
 			auto texs = mesh_data.GetTextures();
 			if (texs.m_amTex.get())
 			{
@@ -94,22 +93,17 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 		{
 			{
 				Step mask("outlineMask");
-				mask.AddBind(Stencil::Resolve(gfx, Stencil::Mod::Write));
-				auto pvs = VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso");
-				auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
-				mask.AddBind(std::move(pvs));
-				mask.AddBind(NullPixelShader::Resolve(gfx));
-				mask.AddBind(InputLayout::Resolve(gfx, mesh_data.GetVertecies()->GetLayout(), pvsbc));
+				mask.AddBind(
+					InputLayout::Resolve(
+						gfx, mesh_data.GetVertecies()->GetLayout(), 
+						VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso")->GetByteCode()
+					)
+				);
 				mask.AddBind(std::make_shared<TransformCbuf>(gfx, *this));
 				outline.AddStep(mask);
 			}
 			{
 				Step draw_to_RenderTarget("outlineDraw");
-				draw_to_RenderTarget.AddBind(Stencil::Resolve(gfx, Stencil::Mod::Off));
-				auto pvs = VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso");
-				auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
-				draw_to_RenderTarget.AddBind(std::move(pvs));
-				draw_to_RenderTarget.AddBind(PixelShader::Resolve(gfx, L"res\\cso\\Solid_PS.cso"));
 
 				DCBuf::RawLayout cBufferLayout;
 				cBufferLayout.Add<DCBuf::Float4>("outline_color");
@@ -117,7 +111,12 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 				buffer["outline_color"] = DirectX::XMFLOAT4{ 1.0f,0.4f,0.4f,1.0f };
 
 				draw_to_RenderTarget.AddBind(std::make_shared<CachingPixelConstantBuffer>(gfx, buffer, 3u));
-				draw_to_RenderTarget.AddBind(InputLayout::Resolve(gfx, mesh_data.GetVertecies()->GetLayout(), pvsbc));
+				draw_to_RenderTarget.AddBind(
+					InputLayout::Resolve(
+						gfx, mesh_data.GetVertecies()->GetLayout(),
+						VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso")->GetByteCode()
+					)
+				);
 				draw_to_RenderTarget.AddBind(std::make_shared<TransformCbuf>(gfx, *this));
 				outline.AddStep(draw_to_RenderTarget);
 			}

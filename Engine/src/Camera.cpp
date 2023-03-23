@@ -104,6 +104,12 @@ void Camera::SpwanControlWindow()
 			m_bView = false;
 			m_rot = { 0.0f, 0.0f ,0.0f };
 		}
+		if (ImGui::Button("Reset"))
+		{
+			m_bView = true;
+			m_pos = homePos;
+			m_rot = { 0.0f, 0.0f ,0.0f };
+		}
 		if (!m_hideMouse)
 		{
 			if (ImGui::Button("Hide Mouse"))

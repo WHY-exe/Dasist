@@ -8,21 +8,17 @@ public:
 	InputLayout(
 		Graphics& gfx,
 		const Vertex::Layout& layout,
-		ID3DBlob* pVertexShaderByteCode
+        const class VertexShader& vs
 	);
 	void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override; 
     static std::shared_ptr<InputLayout> Resolve(
         Graphics& gfx,
         const Vertex::Layout& layout, 
-        ID3DBlob* pVertexShaderByteCode) noexcept;
-    template <typename...Ignore>
-    static std::wstring GenUID(const Vertex::Layout& layout, Ignore&&...ingnore) noexcept
-    {
-        return GenUID_(layout);
-    }
+        const class VertexShader& vs) noexcept;
+    static std::wstring GenUID(const Vertex::Layout& layout, const class VertexShader& vs) noexcept;
     std::wstring GetUID() const noexcept override;
 private:
-    static std::wstring GenUID_(const Vertex::Layout& layout) noexcept;
+    const class VertexShader& m_vs;
     const Vertex::Layout& m_layout;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_pInputLayout;
 };

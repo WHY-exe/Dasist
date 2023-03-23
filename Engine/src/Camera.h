@@ -20,5 +20,6 @@ private:
 	DirectX::XMFLOAT3 m_pos;
 	DirectX::XMFLOAT3 m_rot;
 	static constexpr float m_rot_speed = 0.004f;
+	static constexpr DirectX::XMFLOAT3 homePos = { 0.0f, 100.0f, -25.0f };
 };
 

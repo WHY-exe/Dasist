@@ -9,6 +9,7 @@
 #include "BlurOutlineDrawingPass.h"
 #include "RenderTarget.h"
 #include "DynamicConstantBuffer.h"
+#include <imgui.h>
 #include "MathTool.h"
 namespace Rgph
 {
@@ -103,5 +104,70 @@ namespace Rgph
 			k["coefficients"][i] = (float)k["coefficients"][i] / sum;
 		}
 		blurKernel->SetBuffer( k );
+	}
+	void BlurOutlineRenderGraph::SetKernelBox(int radius) noexcept(!IS_DEBUG)
+	{
+		assert(radius <= maxRadius);
+		auto k = blurKernel->GetBuffer();
+		const int nTaps = radius * 2 + 1;
+		k["nTaps"] = nTaps;
+		const float c = 1.0f / nTaps;
+		for (int i = 0; i < nTaps; i++)
+		{
+			k["coefficients"][i] = c;
+		}
+		blurKernel->SetBuffer(k);
+	}
+
+	void BlurOutlineRenderGraph::RenderWidgets(Graphics& gfx)
+	{
+		if (ImGui::Begin("Kernel"))
+		{
+			bool filterChanged = false;
+			{
+				const char* items[] = { "Gauss","Box" };
+				static const char* curItem = items[0];
+				if (ImGui::BeginCombo("Filter Type", curItem))
+				{
+					for (int n = 0; n < std::size(items); n++)
+					{
+						const bool isSelected = (curItem == items[n]);
+						if (ImGui::Selectable(items[n], isSelected))
+						{
+							filterChanged = true;
+							curItem = items[n];
+							if (curItem == items[0])
+							{
+								m_KernelType = KernelType::Gauss;
+							}
+							else if (curItem == items[1])
+							{
+								m_KernelType = KernelType::Box;
+							}
+						}
+						if (isSelected)
+						{
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+					ImGui::EndCombo();
+				}
+			}
+
+			bool radChange = ImGui::SliderInt("Radius", &radius, 0, maxRadius);
+			bool sigChange = ImGui::SliderFloat("Sigma", &sigma, 0.1f, 10.0f);
+			if (radChange || sigChange || filterChanged)
+			{
+				if (m_KernelType == KernelType::Gauss)
+				{
+					SetKernelGauss(radius, sigma);
+				}
+				else if (m_KernelType == KernelType::Box)
+				{
+					SetKernelBox(radius);
+				}
+			}
+		}
+		ImGui::End();
 	}
 }

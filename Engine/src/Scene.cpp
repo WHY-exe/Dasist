@@ -72,9 +72,8 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 			normalDraw.AddBind(Rasterizer::Resolve(gfx, mesh_data.GetTextures().m_hasAlpha));
 			normalDraw.AddBind(Blender::Resolve(gfx, mesh_data.GetTextures().m_hasAlpha));
 			auto pvs = VertexShader::Resolve(gfx, mesh_data.GetVSPath());
-			auto pvsbc = static_cast<VertexShader&>(*pvs).GetByteCode();
+			normalDraw.AddBind(InputLayout::Resolve(gfx, mesh_data.GetVertecies()->GetLayout(), *pvs));
 			normalDraw.AddBind(std::move(pvs));
-			normalDraw.AddBind(InputLayout::Resolve(gfx, mesh_data.GetVertecies()->GetLayout(), pvsbc));
 			normalDraw.AddBind(PixelShader::Resolve(gfx, mesh_data.GetPSPath()));
 			normalDraw.AddBind(Sampler::Resolve(gfx));
 			normalDraw.AddBind(
@@ -96,7 +95,7 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 				mask.AddBind(
 					InputLayout::Resolve(
 						gfx, mesh_data.GetVertecies()->GetLayout(), 
-						VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso")->GetByteCode()
+						*VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso")
 					)
 				);
 				mask.AddBind(std::make_shared<TransformCbuf>(gfx, *this));
@@ -114,7 +113,7 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 				draw_to_RenderTarget.AddBind(
 					InputLayout::Resolve(
 						gfx, mesh_data.GetVertecies()->GetLayout(),
-						VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso")->GetByteCode()
+						*VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso")
 					)
 				);
 				draw_to_RenderTarget.AddBind(std::make_shared<TransformCbuf>(gfx, *this));

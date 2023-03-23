@@ -62,6 +62,7 @@ void App::DoFrame()
 	}
 	gLight.SpwanControlWindow();
 	pointLight.SpwanControlWindow();
+	m_rg.RenderWidgets(m_gfx);
 	//
 	m_gfx.EndFrame();
 }

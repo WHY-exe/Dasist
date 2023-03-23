@@ -23,7 +23,7 @@ namespace Rgph
 		AddBind( IndexBuffer::Resolve( gfx,L"$Full",std::move( indices ) ) );
 		// setup other common fullscreen bindables
 		auto vs = VertexShader::Resolve( gfx,L"res\\cso\\Full_VS.cso" );
-		AddBind( InputLayout::Resolve( gfx,lay,vs->GetByteCode() ) );
+		AddBind( InputLayout::Resolve( gfx,lay,*vs ) );
 		AddBind( std::move( vs ) );
 		AddBind( Topology::Resolve( gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) );
 		AddBind( Rasterizer::Resolve( gfx,false ) );

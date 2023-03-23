@@ -14,8 +14,8 @@ public:
 	};
 public:
 	Stencil(Graphics& gfx, Mod mod);
-	void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override;
-	static std::shared_ptr<Stencil> Resolve(Graphics& gfx, Mod mode) noexcept(!IS_DEBUG);
+	void Bind(Graphics& gfx) noexcept(!_DEBUG) override;
+	static std::shared_ptr<Stencil> Resolve(Graphics& gfx, Mod mode) noexcept(!_DEBUG);
 	static std::wstring GenUID(Mod mode) noexcept;
 	std::wstring GetUID() const noexcept override;
 private:

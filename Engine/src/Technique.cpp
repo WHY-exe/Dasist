@@ -47,7 +47,7 @@ void Technique::Accept(Probe& probe) noexcept
 	}
 }
 
-void Technique::Link(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
+void Technique::Link(Rgph::RenderGraph& rg) noexcept(!_DEBUG)
 {
 	for (auto& i : m_Steps)
 	{

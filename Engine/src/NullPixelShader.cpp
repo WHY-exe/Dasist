@@ -6,12 +6,12 @@ NullPixelShader::NullPixelShader(Graphics& gfx)
 {
 }
 
-void NullPixelShader::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
+void NullPixelShader::Bind(Graphics& gfx) noexcept(!_DEBUG)
 {
 	GetContext(gfx)->PSSetShader(nullptr, nullptr, 0u);
 }
 
-std::shared_ptr<NullPixelShader> NullPixelShader::Resolve(Graphics& gfx) noexcept(!IS_DEBUG)
+std::shared_ptr<NullPixelShader> NullPixelShader::Resolve(Graphics& gfx) noexcept(!_DEBUG)
 {
 	return CodeX::Resolve<NullPixelShader>(gfx);
 }

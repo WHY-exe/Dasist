@@ -124,7 +124,7 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 		AddTechnique(outline);
 	}
 }
-void Scene::Mesh::Submit(DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG)
+void Scene::Mesh::Submit(DirectX::FXMMATRIX accumulateTransform) const noexcept(!_DEBUG)
 {
 	DirectX::XMStoreFloat4x4(&m_transform, accumulateTransform);
 	Drawable::Submit();
@@ -220,7 +220,7 @@ bool Scene::Node::ParentSelected() const noexcept
 	}
 }
 
-void Scene::Node::AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG)
+void Scene::Node::AddChild(std::unique_ptr<Node> child) noexcept(!_DEBUG)
 {
 	assert(child);
 	m_pChilds.emplace_back(std::move(child));
@@ -231,7 +231,7 @@ void Scene::Node::SetAppliedTransform(DirectX::XMMATRIX transform)
 	DirectX::XMStoreFloat4x4(&m_AppliedTransform, transform);
 }
 
-void Scene::Node::SetAccumulateTransform(DirectX::XMMATRIX accu_tf) noexcept(!IS_DEBUG)
+void Scene::Node::SetAccumulateTransform(DirectX::XMMATRIX accu_tf) noexcept(!_DEBUG)
 {
 	const auto build =
 		DirectX::XMLoadFloat4x4(&m_AppliedTransform) *
@@ -247,7 +247,7 @@ void Scene::Node::SetAccumulateTransform(DirectX::XMMATRIX accu_tf) noexcept(!IS
 	}
 }
 
-void Scene::Node::Accept(TNodeProbe& probe) noexcept(!IS_DEBUG)
+void Scene::Node::Accept(TNodeProbe& probe) noexcept(!_DEBUG)
 {
 	if (probe.VisitNode(*this))
 	{
@@ -264,7 +264,7 @@ void Scene::Node::Accept(TNodeProbe& probe) noexcept(!IS_DEBUG)
 	}
 }
 
-void Scene::Node::Accept(MaterialProbe& probe) noexcept(!IS_DEBUG)
+void Scene::Node::Accept(MaterialProbe& probe) noexcept(!_DEBUG)
 {
 	probe.SetSelectStatus(m_selected);
 	for (auto& i : m_pMeshes)
@@ -275,7 +275,7 @@ void Scene::Node::Accept(MaterialProbe& probe) noexcept(!IS_DEBUG)
 	}
 }
 
-void Scene::Node::AcceptToShowTree(NodeProbe& probe) noexcept(!IS_DEBUG)
+void Scene::Node::AcceptToShowTree(NodeProbe& probe) noexcept(!_DEBUG)
 {
 	if (probe.PushNode(*this))
 	{
@@ -348,17 +348,17 @@ std::unique_ptr<Scene::Node> Scene::Model::ParseNode(int& next_id, const aiNode&
 	return pNode;
 }
 
-void Scene::Model::AcceptToShowTree(NodeProbe& probe) noexcept(!IS_DEBUG)
+void Scene::Model::AcceptToShowTree(NodeProbe& probe) noexcept(!_DEBUG)
 {
 	m_pRoot->AcceptToShowTree(node_probe);
 }
 
-void Scene::Model::Accept(TNodeProbe& probe) noexcept(!IS_DEBUG)
+void Scene::Model::Accept(TNodeProbe& probe) noexcept(!_DEBUG)
 {
 	m_pRoot->Accept(node_probe);
 }
 
-void Scene::Model::Submit() const noexcept(!IS_DEBUG)
+void Scene::Model::Submit() const noexcept(!_DEBUG)
 {
 	m_pRoot->Submit(
 		DirectX::XMMatrixIdentity() *
@@ -367,7 +367,7 @@ void Scene::Model::Submit() const noexcept(!IS_DEBUG)
 	);
 }
 
-void Scene::Model::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
+void Scene::Model::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!_DEBUG)
 {
 	for (auto& i : m_pMeshes)
 	{
@@ -375,7 +375,7 @@ void Scene::Model::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
 	}
 }
 
-void Scene::Model::ApplyTransformation() noexcept(!IS_DEBUG)
+void Scene::Model::ApplyTransformation() noexcept(!_DEBUG)
 {
 	m_pRoot->SetAccumulateTransform(
 		DirectX::XMMatrixIdentity() *

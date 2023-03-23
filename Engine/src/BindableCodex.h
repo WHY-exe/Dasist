@@ -7,14 +7,14 @@ class CodeX
 {
 public:
 	template <class T, typename...Params>
-	static std::shared_ptr<T> Resolve(Graphics& gfx, Params&&...p) noexcept(!IS_DEBUG)
+	static std::shared_ptr<T> Resolve(Graphics& gfx, Params&&...p) noexcept(!_DEBUG)
 	{
 		static_assert(std::is_base_of<Bindable, T>::value, "Can only Resolve classes derived from Bindable");
 		return Get().Resolve_<T>(gfx, std::forward<Params>(p)...);
 	}
 private:
 	template <class T, typename...Params>
-	std::shared_ptr<T> Resolve_(Graphics& gfx, Params&&...p) noexcept(!IS_DEBUG)
+	std::shared_ptr<T> Resolve_(Graphics& gfx, Params&&...p) noexcept(!_DEBUG)
 	{
 		auto key = T::GenUID(std::forward<Params>(p)...);
 		auto i = m_binds.find(key);

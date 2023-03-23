@@ -5,7 +5,7 @@ class Rasterizer:public Bindable
 {
 public:
 	Rasterizer(Graphics& gfx, bool twoside);
-	void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override;
+	void Bind(Graphics& gfx) noexcept(!_DEBUG) override;
 	static std::shared_ptr<Rasterizer> Resolve(Graphics& gfx, bool twoside);
 	std::wstring GetUID() noexcept;	
 	static std::wstring GenUID(bool twoside) noexcept;

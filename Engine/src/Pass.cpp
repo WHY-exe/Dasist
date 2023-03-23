@@ -9,7 +9,7 @@ namespace Rgph{
 	{
 	}
 	
-	void Pass::Reset() noexcept(!IS_DEBUG)
+	void Pass::Reset() noexcept(!_DEBUG)
 	{
 	}
 	

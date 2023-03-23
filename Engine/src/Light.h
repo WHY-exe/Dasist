@@ -10,7 +10,7 @@ public:
 	PointLight(Graphics& gfx);
 	void Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept;
 	void Submit() noexcept;
-	void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
+	void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!_DEBUG);
 	void SpwanControlWindow() noexcept;
 private:
 	DirectX::XMFLOAT3 m_pos;

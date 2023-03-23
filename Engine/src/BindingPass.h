@@ -24,7 +24,7 @@ namespace Rgph
 		std::shared_ptr<class RenderTarget> renderTarget;
 		std::shared_ptr<class DepthStencil> depthStencil;
 	private:
-		void BindBufferResources( Graphics& gfx ) const noexcept(!IS_DEBUG);
+		void BindBufferResources( Graphics& gfx ) const noexcept(!_DEBUG);
 	private:
 		std::vector<std::shared_ptr<Bindable>> binds;
 	};

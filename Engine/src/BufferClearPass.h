@@ -9,7 +9,7 @@ namespace Rgph
 	{
 	public:
 		BufferClearPass( std::string name );
-		void Execute( Graphics& gfx ) const noexcept(!IS_DEBUG) override;
+		void Execute( Graphics& gfx ) const noexcept(!_DEBUG) override;
 	private:
 		std::shared_ptr<BufferResource> buffer;
 	};

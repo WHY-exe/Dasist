@@ -9,7 +9,7 @@ namespace DCBuf
 	class LayoutCodeX
 	{
 	public:
-		static CookedLayout Resolve(RawLayout&& layout) noexcept(!IS_DEBUG);
+		static CookedLayout Resolve(RawLayout&& layout) noexcept(!_DEBUG);
 	private:
 		static LayoutCodeX& Get_() noexcept;
 		std::unordered_map<std::string, std::shared_ptr<LayoutElement>> m_elTable;

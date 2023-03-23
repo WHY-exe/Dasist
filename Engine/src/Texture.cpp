@@ -15,7 +15,7 @@ Texture::Texture(Graphics& gfx, const std::wstring& szPath, unsigned int slot)
 	texDesc.Height = s.GetHeight();
 	texDesc.MipLevels = 0;
 	texDesc.ArraySize = 1;
-	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	texDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	texDesc.SampleDesc.Count = 1;
 	texDesc.SampleDesc.Quality = 0;
 	texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -47,12 +47,12 @@ Texture::Texture(Graphics& gfx, const std::wstring& szPath, unsigned int slot)
 	GetContext(gfx)->GenerateMips(m_pTexView.Get());
 }
 
-void Texture::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
+void Texture::Bind(Graphics& gfx) noexcept(!_DEBUG)
 {
 	GetContext(gfx)->PSSetShaderResources(m_slot, 1u, m_pTexView.GetAddressOf());
 }
 
-std::shared_ptr<Texture> Texture::Resolve(Graphics& gfx, const std::wstring& path, unsigned int slot) noexcept(!IS_DEBUG)
+std::shared_ptr<Texture> Texture::Resolve(Graphics& gfx, const std::wstring& path, unsigned int slot) noexcept(!_DEBUG)
 {
 	return CodeX::Resolve<Texture>(gfx, path, slot);
 }

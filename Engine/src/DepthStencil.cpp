@@ -28,23 +28,23 @@ DepthStencil::DepthStencil(Graphics& gfx)
 {
 }
 
-void DepthStencil::BindAsBuffer(Graphics& gfx) noexcept(!IS_DEBUG)
+void DepthStencil::BindAsBuffer(Graphics& gfx) noexcept(!_DEBUG)
 {
     GetContext(gfx)->OMSetRenderTargets(0u, nullptr, m_pDSV.Get());
 }
 
-void DepthStencil::BindAsBuffer(Graphics& gfx, BufferResource* renderTarget) noexcept(!IS_DEBUG)
+void DepthStencil::BindAsBuffer(Graphics& gfx, BufferResource* renderTarget) noexcept(!_DEBUG)
 {
     assert(dynamic_cast<RenderTarget*>(renderTarget) != nullptr);
     BindAsBuffer(gfx, static_cast<RenderTarget*>(renderTarget));
 }
 
-void DepthStencil::BindAsBuffer(Graphics& gfx, RenderTarget* renderTarget) noexcept(!IS_DEBUG)
+void DepthStencil::BindAsBuffer(Graphics& gfx, RenderTarget* renderTarget) noexcept(!_DEBUG)
 {
     renderTarget->BindAsBuffer(gfx, this);
 }
 
-void DepthStencil::Clear(Graphics& gfx) noexcept(!IS_DEBUG)
+void DepthStencil::Clear(Graphics& gfx) noexcept(!_DEBUG)
 {
     GetContext(gfx)->ClearDepthStencilView(m_pDSV.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0u);
 }
@@ -79,13 +79,13 @@ DepthStencilAsShaderInput::DepthStencilAsShaderInput(Graphics& gfx, UINT slot)
 {
 }
 
-void DepthStencilAsShaderInput::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
+void DepthStencilAsShaderInput::Bind(Graphics& gfx) noexcept(!_DEBUG)
 {
     IMPORT_INFOMAN(gfx);
     GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetShaderResources(m_slot, 1u, m_pShaderResourceView.GetAddressOf()));
 }
 
-void DepthStencilAsShaderInput::Resize(Graphics& gfx, UINT width, UINT height) noexcept(!IS_DEBUG)
+void DepthStencilAsShaderInput::Resize(Graphics& gfx, UINT width, UINT height) noexcept(!_DEBUG)
 {
     *this = DepthStencilAsShaderInput(gfx, width, height, m_slot);
 }
@@ -102,12 +102,12 @@ DepthStencilAsTraget::DepthStencilAsTraget(Graphics& gfx)
 {
 }
 
-void DepthStencilAsTraget::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
+void DepthStencilAsTraget::Bind(Graphics& gfx) noexcept(!_DEBUG)
 {
     assert("Cannot bind OuputOnlyDepthStencil as shader input" && false);
 }
 
-void DepthStencilAsTraget::Resize(Graphics& gfx, UINT width, UINT height) noexcept(!IS_DEBUG)
+void DepthStencilAsTraget::Resize(Graphics& gfx, UINT width, UINT height) noexcept(!_DEBUG)
 {
     *this = DepthStencilAsTraget(gfx, width, height);
 }

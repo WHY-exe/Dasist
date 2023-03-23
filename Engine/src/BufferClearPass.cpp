@@ -15,7 +15,7 @@ namespace Rgph
 		RegisterSource( DirectBufferSource<BufferResource>::Make( "buffer",buffer ) );
 	}
 
-	void BufferClearPass::Execute( Graphics& gfx ) const noexcept(!IS_DEBUG)
+	void BufferClearPass::Execute( Graphics& gfx ) const noexcept(!_DEBUG)
 	{			
 		if (gfx.sizeSignalDS && dynamic_cast<DepthStencil*>(buffer.get()))
 		{

@@ -18,7 +18,7 @@ namespace DCBuf
 		};
 	};
 
-	std::string LayoutElement::GetSignature() const noexcept(!IS_DEBUG)
+	std::string LayoutElement::GetSignature() const noexcept(!_DEBUG)
 	{
 		switch (m_type)
 		{
@@ -34,7 +34,7 @@ namespace DCBuf
 			return "???";
 		}
 	}
-	std::pair<size_t, const LayoutElement*> LayoutElement::CaculateIndexingOffset(size_t index, size_t offset) const noexcept(!IS_DEBUG)
+	std::pair<size_t, const LayoutElement*> LayoutElement::CaculateIndexingOffset(size_t index, size_t offset) const noexcept(!_DEBUG)
 	{
 		assert("Indexing into non-Array element" && m_type == Array);
 		const auto& data = static_cast<ExtraData::Array&>(*m_pExtraData);
@@ -45,7 +45,7 @@ namespace DCBuf
 	{
 		return m_type != Empty;
 	}
-	LayoutElement& LayoutElement::operator[](const std::string& key) noexcept(!IS_DEBUG)
+	LayoutElement& LayoutElement::operator[](const std::string& key) noexcept(!_DEBUG)
 	{
 		assert("key into non-Struct element" && m_type == Struct);
 		for (auto& mem : static_cast<ExtraData::Struct&>(*m_pExtraData).m_layoutElements)
@@ -57,16 +57,16 @@ namespace DCBuf
 		}
 		return GetEmptyElement();
 	}
-	const LayoutElement& LayoutElement::operator[](const std::string& key) const noexcept(!IS_DEBUG)
+	const LayoutElement& LayoutElement::operator[](const std::string& key) const noexcept(!_DEBUG)
 	{
 		return const_cast<LayoutElement&>(*this)[key];
 	}
-	LayoutElement& LayoutElement::T() noexcept(!IS_DEBUG)
+	LayoutElement& LayoutElement::T() noexcept(!_DEBUG)
 	{
 		assert("accessing T of non-array" && m_type == Array);
 		return *static_cast<ExtraData::Array&>(*m_pExtraData).m_layoutElement;
 	}
-	const LayoutElement& LayoutElement::T() const noexcept(!IS_DEBUG)
+	const LayoutElement& LayoutElement::T() const noexcept(!_DEBUG)
 	{
 		return const_cast<LayoutElement&>(*this).T();
 	}
@@ -98,7 +98,7 @@ namespace DCBuf
 			return 0u;
 		}
 	}
-	LayoutElement& LayoutElement::Add( const std::string& name, DataType dt) noexcept(!IS_DEBUG)
+	LayoutElement& LayoutElement::Add( const std::string& name, DataType dt) noexcept(!_DEBUG)
 	{
 		assert("Add non-struct in layout" && m_type == Struct);
 		assert("Invalid symbol name in Struct" && ValidateSymbolName(name));
@@ -113,7 +113,7 @@ namespace DCBuf
 		struct_data.emplace_back( name, LayoutElement{ dt });
 		return *this;
 	}
-	LayoutElement& LayoutElement::Set(size_t size, DataType dt) noexcept(!IS_DEBUG)
+	LayoutElement& LayoutElement::Set(size_t size, DataType dt) noexcept(!_DEBUG)
 	{
 		assert("Setting non-Array in layout" && m_type == Array);
 		assert(size != 0u);
@@ -126,7 +126,7 @@ namespace DCBuf
 	{
 		return GetOffsetEnd() - GetOffsetBegin();
 	}
-	LayoutElement::LayoutElement(DataType dt) noexcept(!IS_DEBUG)
+	LayoutElement::LayoutElement(DataType dt) noexcept(!_DEBUG)
 		:
 		m_type(dt)
 	{
@@ -142,7 +142,7 @@ namespace DCBuf
 
 	}
 
-	size_t LayoutElement::Finalize(size_t offsetIn) noexcept(!IS_DEBUG)
+	size_t LayoutElement::Finalize(size_t offsetIn) noexcept(!_DEBUG)
 	{
 		switch (m_type)
 		{
@@ -176,7 +176,7 @@ namespace DCBuf
 		return result;
 	}
 
-	size_t LayoutElement::FinalizeForStruct(size_t offsetIn) noexcept(!IS_DEBUG)
+	size_t LayoutElement::FinalizeForStruct(size_t offsetIn) noexcept(!_DEBUG)
 	{
 		auto& data = static_cast<ExtraData::Struct&>(*m_pExtraData).m_layoutElements;
 		m_offset = AdvanceToBoundary(offsetIn);
@@ -187,7 +187,7 @@ namespace DCBuf
 		}
 		return offsetNext;
 	}
-	size_t LayoutElement::FinalizeForArray(size_t offsetIn) noexcept(!IS_DEBUG)
+	size_t LayoutElement::FinalizeForArray(size_t offsetIn) noexcept(!_DEBUG)
 	{
 		auto& data = static_cast<ExtraData::Array&>(*m_pExtraData);		
 		m_offset = AdvanceToBoundary(offsetIn);
@@ -275,7 +275,7 @@ namespace DCBuf
 		Layout(std::move(pRoot))
 	{
 	}
-	const LayoutElement& CookedLayout::operator[](const std::string& key) const noexcept(!IS_DEBUG)
+	const LayoutElement& CookedLayout::operator[](const std::string& key) const noexcept(!_DEBUG)
 	{
 		return (*m_pRoot)[key];
 	}
@@ -292,16 +292,16 @@ namespace DCBuf
 	{
 		return m_pLayout->Exists();
 	}
-	ConstElementRef ConstElementRef::operator[](const std::string& key) const noexcept(!IS_DEBUG)
+	ConstElementRef ConstElementRef::operator[](const std::string& key) const noexcept(!_DEBUG)
 	{
 		return {m_offset, m_pByte, &(*m_pLayout)[key]};
 	}
-	ConstElementRef ConstElementRef::operator[](size_t index) const noexcept(!IS_DEBUG)
+	ConstElementRef ConstElementRef::operator[](size_t index) const noexcept(!_DEBUG)
 	{
 		const auto data = m_pLayout->CaculateIndexingOffset(index, m_offset);
 		return { data.first, m_pByte, data.second };
 	}
-	ConstElementRef::Ptr ConstElementRef::operator&() const noexcept(!IS_DEBUG)
+	ConstElementRef::Ptr ConstElementRef::operator&() const noexcept(!_DEBUG)
 	{
 		return ConstElementRef::Ptr(this);
 	}
@@ -343,7 +343,7 @@ namespace DCBuf
 		const auto data = m_pLayout->CaculateIndexingOffset(index, m_offset);
 		return { data.first, m_pByte, data.second };
 	}
-	ElementRef::Ptr ElementRef::operator&() const noexcept(!IS_DEBUG)
+	ElementRef::Ptr ElementRef::operator&() const noexcept(!_DEBUG)
 	{
 		return ElementRef::Ptr(const_cast<ElementRef*>(this));
 	}
@@ -366,28 +366,28 @@ namespace DCBuf
 		m_pLayoutRoot(layout.RelinquishRoot()),
 		m_Data(m_pLayoutRoot->GetOffsetEnd())
 	{}
-	Buffer::Buffer(const Buffer& buffer) noexcept(!IS_DEBUG)
+	Buffer::Buffer(const Buffer& buffer) noexcept(!_DEBUG)
 		:
 		m_pLayoutRoot(buffer.m_pLayoutRoot),
 		m_Data(buffer.m_Data)
 	{}
 
-	Buffer::Buffer(Buffer&& buffer) noexcept(!IS_DEBUG)
+	Buffer::Buffer(Buffer&& buffer) noexcept(!_DEBUG)
 		:
 		m_pLayoutRoot(std::move(buffer.m_pLayoutRoot)),
 		m_Data(std::move(buffer.m_Data))
 	{}
 
-	ElementRef Buffer::operator[](const std::string& key) noexcept(!IS_DEBUG)
+	ElementRef Buffer::operator[](const std::string& key) noexcept(!_DEBUG)
 	{
 		return { 0u, m_Data.data(), &(*m_pLayoutRoot)[key] };
 	}
 
-	ConstElementRef Buffer::operator[](const std::string& key) const noexcept(!IS_DEBUG)
+	ConstElementRef Buffer::operator[](const std::string& key) const noexcept(!_DEBUG)
 	{
 		return const_cast<Buffer&>(*this)[key];
 	}
-	Buffer& Buffer::operator=(const Buffer& right) noexcept(!IS_DEBUG)
+	Buffer& Buffer::operator=(const Buffer& right) noexcept(!_DEBUG)
 	{
 		m_pLayoutRoot = right.ShareLayoutRoot();
 		m_Data = right.m_Data;
@@ -407,7 +407,7 @@ namespace DCBuf
 		return const_cast<LayoutElement&>(*m_pLayoutRoot);
 	}
 
-	void Buffer::CopyFrom(const Buffer& buffer) noexcept(!IS_DEBUG)
+	void Buffer::CopyFrom(const Buffer& buffer) noexcept(!_DEBUG)
 	{
 		assert(&GetRootLayoutElement() == &buffer.GetRootLayoutElement());
 		std::copy(buffer.m_Data.begin(), buffer.m_Data.end(), m_Data.begin());

@@ -1,7 +1,7 @@
 #include "LayoutCodeX.h"
 namespace DCBuf{
 
-	CookedLayout LayoutCodeX::Resolve(RawLayout&& layout) noexcept(!IS_DEBUG)
+	CookedLayout LayoutCodeX::Resolve(RawLayout&& layout) noexcept(!_DEBUG)
 	{
 		auto sig = layout.GetSignature();
 		auto& map = Get_().m_elTable;

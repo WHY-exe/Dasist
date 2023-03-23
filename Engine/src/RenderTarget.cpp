@@ -49,7 +49,7 @@ RenderTarget::RenderTarget(Graphics& gfx, ID3D11Texture2D* pTexture)
     );
 }
 
-void RenderTarget::BindAsBuffer(Graphics& gfx) noexcept(!IS_DEBUG)
+void RenderTarget::BindAsBuffer(Graphics& gfx) noexcept(!_DEBUG)
 {
     GetContext(gfx)->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), nullptr);
     // configure viewport
@@ -64,13 +64,13 @@ void RenderTarget::BindAsBuffer(Graphics& gfx) noexcept(!IS_DEBUG)
     GetContext(gfx)->RSSetViewports(1u, &vp);
 }
 
-void RenderTarget::BindAsBuffer(Graphics& gfx, BufferResource* depthStencil) noexcept(!IS_DEBUG)
+void RenderTarget::BindAsBuffer(Graphics& gfx, BufferResource* depthStencil) noexcept(!_DEBUG)
 {
     assert(dynamic_cast<DepthStencil*>(depthStencil) != nullptr);
     BindAsBuffer(gfx, static_cast<DepthStencil*>(depthStencil));
 }
 
-void RenderTarget::BindAsBuffer(Graphics& gfx, DepthStencil* ds) noexcept(!IS_DEBUG)
+void RenderTarget::BindAsBuffer(Graphics& gfx, DepthStencil* ds) noexcept(!_DEBUG)
 {
     GetContext(gfx)->OMSetRenderTargets(1u, m_pTarget.GetAddressOf(), ds ? ds->m_pDSV.Get() : nullptr);
     // configure viewport
@@ -102,19 +102,19 @@ void RenderTarget::Remake(Graphics& gfx, ID3D11Texture2D* pTexture)
     );
 }
 
-void RenderTarget::CleanUp() noexcept(!IS_DEBUG)
+void RenderTarget::CleanUp() noexcept(!_DEBUG)
 {
     m_pTarget.Reset();
     m_pTexture.Reset();
 }
 
-void RenderTarget::Clear(Graphics& gfx)  noexcept(!IS_DEBUG)
+void RenderTarget::Clear(Graphics& gfx)  noexcept(!_DEBUG)
 {
     // when there are several render targets, be careful about the alpha channel
     Clear(gfx, { 0.0f, 0.0f, 0.0f, 0.4f });
 }
 
-void RenderTarget::Clear(Graphics& gfx, std::array<float, 4> color)  noexcept(!IS_DEBUG)
+void RenderTarget::Clear(Graphics& gfx, std::array<float, 4> color)  noexcept(!_DEBUG)
 {
     GetContext(gfx)->ClearRenderTargetView(m_pTarget.Get(), color.data());
 }
@@ -142,7 +142,7 @@ RenderTargetAsShaderTexture::RenderTargetAsShaderTexture(Graphics& gfx, ID3D11Te
 {
 }
 
-void RenderTargetAsShaderTexture::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
+void RenderTargetAsShaderTexture::Bind(Graphics& gfx) noexcept(!_DEBUG)
 {
     GetContext(gfx)->PSSetShaderResources(m_slot, 1u, m_pPSTextureView.GetAddressOf());
 }
@@ -152,7 +152,7 @@ void RenderTargetAsShaderTexture::Resize(Graphics& gfx, UINT width, UINT height)
     *this = RenderTargetAsShaderTexture(gfx, width, height, m_slot);
 }
 
-void RenderTargetAsOutputTarget::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
+void RenderTargetAsOutputTarget::Bind(Graphics& gfx) noexcept(!_DEBUG)
 {
     assert("Cannot bind OuputOnlyRenderTarget as shader input" && false);
 }

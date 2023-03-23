@@ -54,7 +54,7 @@ class PixelConstantBufferEx : public ConstantBufferEx
 {
 public:
     using ConstantBufferEx::ConstantBufferEx;
-    void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override
+    void Bind(Graphics& gfx) noexcept(!_DEBUG) override
     {
        GetContext(gfx)->PSSetConstantBuffers(m_slot, 1u, m_pBuffer.GetAddressOf());
     }
@@ -63,7 +63,7 @@ class VertexConstantBufferEx : public ConstantBufferEx
 {
 public:
     using ConstantBufferEx::ConstantBufferEx;
-    void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override
+    void Bind(Graphics& gfx) noexcept(!_DEBUG) override
     {
         GetContext(gfx)->VSSetConstantBuffers(m_slot, 1u, m_pBuffer.GetAddressOf());
     }
@@ -109,7 +109,7 @@ public:
             m_dirty = true;
         }
     }
-    void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override
+    void Bind(Graphics& gfx) noexcept(!_DEBUG) override
     {
         if (m_dirty)
         {

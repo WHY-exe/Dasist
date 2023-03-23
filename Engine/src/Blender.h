@@ -7,7 +7,7 @@ class Blender : public Bindable
 {
 public:
 	Blender(Graphics& gfx, bool enBlend, std::optional<float> factor = {});
-	void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override;
+	void Bind(Graphics& gfx) noexcept(!_DEBUG) override;
 	void SetFactor(float factor) noexcept;
 	float GetFactor() const noexcept;
 	static std::shared_ptr<Blender> Resolve(Graphics& gfx, bool enBlend, std::optional<float> factor = {}) noexcept;

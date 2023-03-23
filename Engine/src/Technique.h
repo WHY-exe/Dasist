@@ -13,7 +13,7 @@ public:
 	void SetActiveState(bool is_active) noexcept;
 	bool IsActive() const noexcept;
 	void Accept(Probe& probe) noexcept;
-	void Link(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
+	void Link(Rgph::RenderGraph& rg) noexcept(!_DEBUG);
 	const std::string& GetTechName() const noexcept;
 private:
 	std::string m_Name;

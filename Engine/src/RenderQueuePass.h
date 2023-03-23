@@ -10,8 +10,8 @@ namespace Rgph
 	public:
 		using BindingPass::BindingPass;
 		void Accept( Job job ) noexcept;
-		void Execute( Graphics& gfx ) const noexcept(!IS_DEBUG) override;
-		void Reset() noexcept(!IS_DEBUG) override;
+		void Execute( Graphics& gfx ) const noexcept(!_DEBUG) override;
+		void Reset() noexcept(!_DEBUG) override;
 	private:
 		std::vector<Job> jobs;
 	};

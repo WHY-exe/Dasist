@@ -16,8 +16,8 @@ namespace Rgph
 		void RenderWidgets(Graphics& gfx);
 	private:
 		// private functions
-		void SetKernelGauss( int radius,float sigma ) noexcept(!IS_DEBUG);
-		void SetKernelBox(int radius) noexcept(!IS_DEBUG);
+		void SetKernelGauss( int radius,float sigma ) noexcept(!_DEBUG);
+		void SetKernelBox(int radius) noexcept(!_DEBUG);
 	private:
 		enum class KernelType
 		{

@@ -10,7 +10,7 @@ VS_PS_TFCB::VS_PS_TFCB(Graphics& gfx, const Drawable& parent, UINT slotV, UINT s
 	}
 }
 
-void VS_PS_TFCB::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
+void VS_PS_TFCB::Bind(Graphics& gfx) noexcept(!_DEBUG)
 {
 	TransformCbuf::Bind(gfx);
 	UpdateBindImpl(gfx, GetTransform(gfx));

@@ -22,7 +22,7 @@ VertexShader::VertexShader(Graphics& gfx, const std::wstring szPath)
     );
 }
 
-void VertexShader::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
+void VertexShader::Bind(Graphics& gfx) noexcept(!_DEBUG)
 {
     // bind vertex shader to the pipeline
     GetContext(gfx)->VSSetShader(m_pVertexShader.Get(), nullptr, 0u);
@@ -33,7 +33,7 @@ ID3DBlob* VertexShader::GetByteCode() const noexcept
     return m_pByteCodeBlob.Get();
 }
 
-std::shared_ptr<VertexShader> VertexShader::Resolve(Graphics& gfx, const std::wstring& path) noexcept(!IS_DEBUG)
+std::shared_ptr<VertexShader> VertexShader::Resolve(Graphics& gfx, const std::wstring& path) noexcept(!_DEBUG)
 {
     return CodeX::Resolve<VertexShader>(gfx, path);
 }

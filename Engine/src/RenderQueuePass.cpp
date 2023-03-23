@@ -7,7 +7,7 @@ namespace Rgph
 		jobs.push_back( job );
 	}
 
-	void RenderQueuePass::Execute( Graphics& gfx ) const noexcept(!IS_DEBUG)
+	void RenderQueuePass::Execute( Graphics& gfx ) const noexcept(!_DEBUG)
 	{
 		BindAll( gfx );
 
@@ -17,7 +17,7 @@ namespace Rgph
 		}
 	}
 
-	void RenderQueuePass::Reset() noexcept(!IS_DEBUG)
+	void RenderQueuePass::Reset() noexcept(!_DEBUG)
 	{
 		jobs.clear();
 	}

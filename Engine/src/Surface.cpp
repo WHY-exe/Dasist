@@ -1,54 +1,98 @@
+#include "InitWin.h"
 #include "Surface.h"
+#include "StrManager.h"
+#include "StrManager.h"
+#include "WinException.h"
 #include <sstream>
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-Surface::Surface(const std::string file_path)
-	:
-	m_pPixelBuffer(
-		stbi_load(file_path.c_str(), &m_imgWidth, &m_imgHeight, &m_imgComp, 4),
-		stbi_image_free
-	),
-	m_hasAlpha(false)
+#include <DirectXTex\DirectXTex.h>
+
+#pragma comment(lib, "DirectXTex.lib")
+
+Surface::Surface(UINT width, UINT height)
 {
-	if (m_pPixelBuffer.get() == nullptr)
-	{
-		using namespace std::string_literals;
-		throw std::logic_error("stb_image error:检查文件格式或文件路径\n" + "文件路径："s + file_path);
-	}
-	unsigned int counter = 0; 
-	for (const unsigned char* i = m_pPixelBuffer.get();
-		i < m_pPixelBuffer.get() + (long long)m_imgWidth * m_imgHeight; 
-		i++, counter++)
-	{
-		if (*i != 255 && (counter + 1) % 4 == 0)
-		{
-			m_hasAlpha = true;
-			break;
-		}
-	}
+	WND_CALL(
+		m_scratchImage.Initialize2D(
+			format, width, height, 1u, 1u
+		)
+	);
 }
 
-const unsigned char* Surface::GetBufferPtr() const noexcept
+Surface::Surface(const std::string file_path)
 {
-	return m_pPixelBuffer.get();
+	std::string img_format = SplitString(file_path, ".")[1];
+	if (img_format == "tga")
+	{
+		WND_CALL(
+			DirectX::LoadFromTGAFile(
+				ANSI_TO_UTF8_STR(file_path).c_str(),
+				nullptr,
+				m_scratchImage
+			)
+		);
+	}
+	else
+	{
+		WND_CALL(
+			DirectX::LoadFromWICFile(
+				ANSI_TO_UTF8_STR(file_path).c_str(),
+				DirectX::WIC_FLAGS_IGNORE_SRGB, nullptr,
+				m_scratchImage
+			)
+		);
+	}
+	if (m_scratchImage.GetImage(0, 0, 0)->format != format)
+	{
+		DirectX::ScratchImage convert;
+		WND_CALL(
+			DirectX::Convert(
+				*m_scratchImage.GetImage(0, 0, 0),
+				format,
+				DirectX::TEX_FILTER_DEFAULT,
+				DirectX::TEX_THRESHOLD_DEFAULT,
+				convert
+			)
+		);
+		m_scratchImage = std::move(convert);
+	}
+
+}
+
+const BYTE* Surface::GetBufferPtr() const noexcept
+{
+	return m_scratchImage.GetPixels();
+}
+
+void Surface::PutPixel(UINT col_idx, UINT row_idx, Color color) noexcept(!_DEBUG)
+{
+	assert(row_idx >= 0);
+	assert(col_idx >= 0);
+	assert(row_idx <= GetHeight());
+	assert(col_idx <= GetWidth());
+	auto pixel_data = m_scratchImage.GetImage(0, 0, 0);
+	reinterpret_cast<Color*>(&pixel_data->pixels[row_idx * pixel_data->rowPitch])[col_idx] = color;
+}
+
+Color Surface::GetPixel(UINT col_idx, UINT row_idx) const noexcept(!_DEBUG)
+{
+	assert(row_idx >= 0);
+	assert(col_idx >= 0);
+	assert(row_idx <= GetHeight());
+	assert(col_idx <= GetWidth());
+	auto pixel_data = m_scratchImage.GetImage(0, 0, 0);
+	return reinterpret_cast<Color*>(&pixel_data->pixels[row_idx * pixel_data->rowPitch])[col_idx];
 }
 
 bool Surface::HasAlpha() const noexcept
 {
-	return m_hasAlpha;
+	return !m_scratchImage.IsAlphaAllOpaque();
 }
 
-int Surface::GetWidth() const noexcept
+UINT Surface::GetWidth() const noexcept
 {
-	return m_imgWidth;
+	return (UINT)m_scratchImage.GetMetadata().width;
 }
 
-int Surface::GetHeight() const noexcept
+UINT Surface::GetHeight() const noexcept
 {
-	return m_imgHeight;
-}
-
-int Surface::GetComp() const noexcept
-{
-	return m_imgComp;
+	return (UINT)m_scratchImage.GetMetadata().height;
 }

@@ -34,7 +34,7 @@ std::wstring IndexBuffer::GetUID() const noexcept
     return GenUID(m_Tag);
 }
 
-void IndexBuffer::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
+void IndexBuffer::Bind(Graphics& gfx) noexcept(!_DEBUG)
 {
     GetContext(gfx)->IASetIndexBuffer(m_IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
 }

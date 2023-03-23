@@ -53,7 +53,7 @@ namespace Rgph
 		m_globalSinks.push_back( std::move( in ) );
 	}
 
-	void RenderGraph::Execute( Graphics& gfx ) noexcept(!IS_DEBUG)
+	void RenderGraph::Execute( Graphics& gfx ) noexcept(!_DEBUG)
 	{
 		assert( finalized );
 		for( auto& p : m_passes )

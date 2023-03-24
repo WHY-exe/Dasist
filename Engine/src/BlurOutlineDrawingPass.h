@@ -28,7 +28,7 @@ namespace Rgph
 			AddBind( Blender::Resolve( gfx,false ) );
 			RegisterSource( DirectBindableSource<RenderTarget>::Make( "scratchOut",renderTarget ) );
 		}
-		void Execute( Graphics& gfx ) const noexcept(!_DEBUG) override
+		void Execute( Graphics& gfx ) const noexcept(!IS_DEBUG) override
 		{
 			renderTarget->Clear( gfx );
 			RenderQueuePass::Execute( gfx );

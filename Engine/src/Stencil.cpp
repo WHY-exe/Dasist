@@ -41,11 +41,11 @@ Stencil::Stencil(Graphics& gfx, Mod mod)
 
 	GetDevice(gfx)->CreateDepthStencilState(&depthDesc, &m_pStencilState);
 }
-void Stencil::Bind(Graphics& gfx) noexcept(!_DEBUG)
+void Stencil::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
 	GetContext(gfx)->OMSetDepthStencilState(m_pStencilState.Get(), 0xFF);
 }
-std::shared_ptr<Stencil> Stencil::Resolve(Graphics& gfx, Mod mode) noexcept(!_DEBUG)
+std::shared_ptr<Stencil> Stencil::Resolve(Graphics& gfx, Mod mode) noexcept(!IS_DEBUG)
 {
 	return CodeX::Resolve<Stencil>(gfx, mode);
 }

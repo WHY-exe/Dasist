@@ -39,7 +39,7 @@ Blender::Blender(Graphics& gfx, bool enBlend, std::optional<float> factor)
     GFX_THROW_INFO(GetDevice(gfx)->CreateBlendState(&blenddesc, &m_pBlendState));
  }
 
-void Blender::Bind(Graphics& gfx) noexcept(!_DEBUG)
+void Blender::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
     const float* data = m_factors ? m_factors->data() : nullptr;
     GetContext(gfx)->OMSetBlendState(m_pBlendState.Get(), data, 0xFFFFFFFFu);

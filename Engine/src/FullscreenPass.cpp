@@ -6,7 +6,7 @@ namespace Rgph
 {
 	namespace dx = DirectX;
 
-	FullscreenPass::FullscreenPass( const std::string name,Graphics& gfx ) noexcept(!_DEBUG)
+	FullscreenPass::FullscreenPass( const std::string name,Graphics& gfx ) noexcept(!IS_DEBUG)
 		:
 		BindingPass( std::move( name ) )
 	{
@@ -29,7 +29,7 @@ namespace Rgph
 		AddBind( Rasterizer::Resolve( gfx,false ) );
 	}
 
-	void FullscreenPass::Execute( Graphics& gfx ) const noexcept(!_DEBUG)
+	void FullscreenPass::Execute( Graphics& gfx ) const noexcept(!IS_DEBUG)
 	{
 		BindAll( gfx );
 		gfx.DrawIndexed( 6u );

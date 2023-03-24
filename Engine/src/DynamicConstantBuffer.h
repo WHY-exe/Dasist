@@ -106,33 +106,33 @@ namespace DCBuf
 		friend class RawLayout;
 		friend struct ExtraData;
 	public:
-		std::string GetSignature() const noexcept(!_DEBUG);
+		std::string GetSignature() const noexcept(!IS_DEBUG);
 		bool Exists() const noexcept;
-		std::pair<size_t, const LayoutElement*> CaculateIndexingOffset(size_t index, size_t offset) const noexcept(!_DEBUG);
-		LayoutElement& operator[](const std::string& key) noexcept(!_DEBUG);
+		std::pair<size_t, const LayoutElement*> CaculateIndexingOffset(size_t index, size_t offset) const noexcept(!IS_DEBUG);
+		LayoutElement& operator[](const std::string& key) noexcept(!IS_DEBUG);
 		// [] only works for Structs; access member (child node in tree) by name
-		const LayoutElement& operator[](const std::string& key) const noexcept(!_DEBUG);
+		const LayoutElement& operator[](const std::string& key) const noexcept(!IS_DEBUG);
 		// T() only works for Arrays; gets the array type layout object
 		// needed to further configure an array's type
-		LayoutElement& T() noexcept(!_DEBUG);
-		const LayoutElement& T() const noexcept(!_DEBUG);
+		LayoutElement& T() noexcept(!IS_DEBUG);
+		const LayoutElement& T() const noexcept(!IS_DEBUG);
 		size_t GetOffsetBegin() const noexcept;
 		size_t GetOffsetEnd() const noexcept;
 		size_t GetSizeInBytes() const noexcept;
-		LayoutElement& Add(const std::string& name, DataType dt) noexcept(!_DEBUG);
+		LayoutElement& Add(const std::string& name, DataType dt) noexcept(!IS_DEBUG);
 		template<DataType T>
-		LayoutElement& Add(const std::string& name) noexcept(!_DEBUG)
+		LayoutElement& Add(const std::string& name) noexcept(!IS_DEBUG)
 		{
 			return Add(std::move(name), T);
 		}
-		LayoutElement& Set(size_t size, DataType dt) noexcept(!_DEBUG);
+		LayoutElement& Set(size_t size, DataType dt) noexcept(!IS_DEBUG);
 		template<DataType T>
-		LayoutElement& Set(size_t size) noexcept(!_DEBUG)
+		LayoutElement& Set(size_t size) noexcept(!IS_DEBUG)
 		{
 			return Set(size, T);
 		}
 		template <typename T>
-		size_t Resolve() const noexcept(!_DEBUG)
+		size_t Resolve() const noexcept(!IS_DEBUG)
 		{
 			switch (ReverseMap<T>::type)
 			{
@@ -147,12 +147,12 @@ namespace DCBuf
 		}
 	private:
 		LayoutElement() = default;
-		LayoutElement(DataType dt) noexcept(!_DEBUG);
+		LayoutElement(DataType dt) noexcept(!IS_DEBUG);
 		// sets all offsets for element and subelements, prepending padding when necessary
 		// returns offset directly after this element
-		size_t Finalize(size_t offsetIn) noexcept(!_DEBUG);
-		size_t FinalizeForStruct(size_t offsetIn) noexcept(!_DEBUG);
-		size_t FinalizeForArray(size_t offsetIn) noexcept(!_DEBUG);
+		size_t Finalize(size_t offsetIn) noexcept(!IS_DEBUG);
+		size_t FinalizeForStruct(size_t offsetIn) noexcept(!IS_DEBUG);
+		size_t FinalizeForArray(size_t offsetIn) noexcept(!IS_DEBUG);
 		std::string GetSignatureForStruct() const noexcept;
 		std::string GetSignatureForArray() const noexcept;
 		// return singleton instance of empty layout element
@@ -194,7 +194,7 @@ namespace DCBuf
 		RawLayout() noexcept;
 		LayoutElement& operator[](const std::string& key) noexcept;
 		template<DataType Type>
-		LayoutElement& Add(const std::string& key) noexcept(!_DEBUG)
+		LayoutElement& Add(const std::string& key) noexcept(!IS_DEBUG)
 		{
 			return m_pRoot->Add<Type>(key);
 		}
@@ -209,7 +209,7 @@ namespace DCBuf
 		friend class LayoutCodeX;
 		friend class Buffer;
 	public:
-		const LayoutElement& operator[](const std::string& key) const noexcept(!_DEBUG);
+		const LayoutElement& operator[](const std::string& key) const noexcept(!IS_DEBUG);
 		std::shared_ptr<LayoutElement> ShareRoot() const noexcept;
 	private:
 		CookedLayout(std::shared_ptr<LayoutElement> pRoot) noexcept;
@@ -233,7 +233,7 @@ namespace DCBuf
 			friend class ConstElementRef;
 		public:
 			template<typename T>
-			operator T* () const noexcept(!_DEBUG)
+			operator T* () const noexcept(!IS_DEBUG)
 			{
 				static_assert(RevaerseMap<std::remove_const_t<T>>::valid, "Unsupprted Sysype used in pointer conversion");
 				return &static_cast<const T&>(*m_ref);
@@ -244,11 +244,11 @@ namespace DCBuf
 		};
 	public:
 		bool Exists() const noexcept;
-		ConstElementRef operator[](const std::string& key) const noexcept(!_DEBUG);
-		ConstElementRef operator[](size_t index) const noexcept(!_DEBUG);
-		Ptr operator&() const noexcept(!_DEBUG);
+		ConstElementRef operator[](const std::string& key) const noexcept(!IS_DEBUG);
+		ConstElementRef operator[](size_t index) const noexcept(!IS_DEBUG);
+		Ptr operator&() const noexcept(!IS_DEBUG);
 		template<typename T>
-		operator const T& () const noexcept(!_DEBUG)
+		operator const T& () const noexcept(!IS_DEBUG)
 		{
 			static_assert(ReverseMap<std::remove_const_t<T>>::valid, "Unsupported SysType used in conversion");
 			return reinterpret_cast<const T*>(m_pByte + m_offset + m_pLayout->Resolve<T>());
@@ -271,7 +271,7 @@ namespace DCBuf
 			friend class ElementRef;
 		public:
 			template<typename T>
-			operator T* () const noexcept(!_DEBUG)
+			operator T* () const noexcept(!IS_DEBUG)
 			{
 				static_assert(ReverseMap<std::remove_const_t<T>>::valid, "Unsupported Systype used in pointer conversion");
 				return &static_cast<T&>(*m_ref);
@@ -286,7 +286,7 @@ namespace DCBuf
 		ElementRef operator[](const std::string& key) noexcept;
 		ElementRef operator[](size_t index) noexcept;
 		template<typename S>
-		bool SetIfExist(const S& val) noexcept(!_DEBUG)
+		bool SetIfExist(const S& val) noexcept(!IS_DEBUG)
 		{
 			if (Exists())
 			{
@@ -295,15 +295,15 @@ namespace DCBuf
 			}
 			return false;
 		}
-		Ptr operator&() const noexcept(!_DEBUG);
+		Ptr operator&() const noexcept(!IS_DEBUG);
 		template<typename T>
-		operator T& () const noexcept(!_DEBUG)
+		operator T& () const noexcept(!IS_DEBUG)
 		{
 			static_assert(ReverseMap<std::remove_const_t<T>>::valid, "Unsupported SysType used in conversion");
 			return *reinterpret_cast<T*>(m_pByte + m_offset + m_pLayout->Resolve<T>());
 		}
 		template<typename T>
-		T& operator=(const T& rhs) const noexcept(!_DEBUG)
+		T& operator=(const T& rhs) const noexcept(!IS_DEBUG)
 		{
 			static_assert(ReverseMap<std::remove_const_t<T>>::valid, "Unsupported SysType used in conversion");
 			return static_cast<T&>(*this) = rhs;
@@ -322,15 +322,15 @@ namespace DCBuf
 		Buffer(RawLayout&& layout) noexcept;
 		Buffer(const CookedLayout& layout) noexcept;
 		Buffer(CookedLayout&& layout) noexcept;
-		Buffer(const Buffer& buffer) noexcept(!_DEBUG);
-		Buffer(Buffer&& buffer) noexcept(!_DEBUG);
-		ElementRef operator[](const std::string& key) noexcept(!_DEBUG);
-		ConstElementRef operator[](const std::string& key) const noexcept(!_DEBUG);
-		Buffer& operator=(const Buffer& right) noexcept(!_DEBUG);
+		Buffer(const Buffer& buffer) noexcept(!IS_DEBUG);
+		Buffer(Buffer&& buffer) noexcept(!IS_DEBUG);
+		ElementRef operator[](const std::string& key) noexcept(!IS_DEBUG);
+		ConstElementRef operator[](const std::string& key) const noexcept(!IS_DEBUG);
+		Buffer& operator=(const Buffer& right) noexcept(!IS_DEBUG);
 		size_t GetSizeInBytes() const noexcept;
 		const char* GetData() const noexcept;
 		const LayoutElement& GetRootLayoutElement() const noexcept;
-		void CopyFrom(const Buffer& buffer) noexcept(!_DEBUG);
+		void CopyFrom(const Buffer& buffer) noexcept(!IS_DEBUG);
 		std::shared_ptr<LayoutElement> ShareLayoutRoot() const noexcept;
 	private:
 		std::shared_ptr<LayoutElement> m_pLayoutRoot;

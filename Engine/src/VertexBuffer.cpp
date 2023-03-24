@@ -41,7 +41,7 @@ std::wstring VertexBuffer::GetUID() const noexcept
 	return GenUID(m_Tag);
 }
 
-void VertexBuffer::Bind(Graphics& gfx) noexcept(!_DEBUG)
+void VertexBuffer::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
     // bind the vertex buffer to the pipeline
     const UINT vboffset = 0u;

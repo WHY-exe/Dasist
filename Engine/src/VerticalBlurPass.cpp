@@ -28,7 +28,7 @@ namespace Rgph
 	}
 
 	// see the note on HorizontalBlurPass::Execute
-	void VerticalBlurPass::Execute( Graphics& gfx ) const noexcept(!_DEBUG)
+	void VerticalBlurPass::Execute( Graphics& gfx ) const noexcept(!IS_DEBUG)
 	{
 		auto buf = direction->GetBuffer();
 		buf["isHorizontal"] = false;

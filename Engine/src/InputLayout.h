@@ -10,7 +10,7 @@ public:
 		const Vertex::Layout& layout,
         const class VertexShader& vs
 	);
-	void Bind(Graphics& gfx) noexcept(!_DEBUG) override; 
+	void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override; 
     static std::shared_ptr<InputLayout> Resolve(
         Graphics& gfx,
         const Vertex::Layout& layout, 

@@ -5,9 +5,9 @@ class VertexShader : public Bindable
 {
 public:
 	VertexShader(Graphics& gfx, const std::wstring szPath);
-	void Bind(Graphics& gfx) noexcept(!_DEBUG) override;
+	void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override;
 	ID3DBlob* GetByteCode() const noexcept;
-	static std::shared_ptr<VertexShader> Resolve(Graphics& gfx, const std::wstring& path) noexcept(!_DEBUG);
+	static std::shared_ptr<VertexShader> Resolve(Graphics& gfx, const std::wstring& path) noexcept(!IS_DEBUG);
 	static std::wstring GenUID(const std::wstring& path) noexcept;
 	std::wstring GetUID() const noexcept override;
 protected:

@@ -29,7 +29,7 @@ namespace Rgph
 
 	// this override is necessary because we cannot (yet) link input bindables directly into
 	// the container of bindables (mainly because vector growth buggers references)
-	void HorizontalBlurPass::Execute( Graphics& gfx ) const noexcept(!_DEBUG)
+	void HorizontalBlurPass::Execute( Graphics& gfx ) const noexcept(!IS_DEBUG)
 	{
 		auto buf = direction->GetBuffer();
 		buf["isHorizontal"] = true;

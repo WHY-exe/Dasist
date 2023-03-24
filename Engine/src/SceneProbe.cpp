@@ -56,7 +56,7 @@ Scene::TNodeProbe::TNodeProbe() noexcept
 	DirectX::XMStoreFloat4x4(&m_transformation, DirectX::XMMatrixIdentity());
 }
 
-bool Scene::TNodeProbe::VisitNode(Node& node) noexcept(!_DEBUG)
+bool Scene::TNodeProbe::VisitNode(Node& node) noexcept(!IS_DEBUG)
 {
 	bool dirty = false;
 	const bool isParentSelected = node.ParentSelected();
@@ -123,7 +123,7 @@ bool Scene::TNodeProbe::VisitNode(Node& node) noexcept(!_DEBUG)
 	return dirty;
 }
 
-bool Scene::TNodeProbe::PushNode(Node& node) noexcept(!_DEBUG)
+bool Scene::TNodeProbe::PushNode(Node& node) noexcept(!IS_DEBUG)
 {
 	const int selected_id = (m_pSelectedNode == nullptr) ? -1 : m_pSelectedNode->GetId();
 	const auto imgui_flags = ImGuiTreeNodeFlags_OpenOnArrow
@@ -138,7 +138,7 @@ bool Scene::TNodeProbe::PushNode(Node& node) noexcept(!_DEBUG)
 	return expand;
 }
 
-void Scene::TNodeProbe::PopNode() const noexcept(!_DEBUG)
+void Scene::TNodeProbe::PopNode() const noexcept(!IS_DEBUG)
 {
 	ImGui::TreePop();
 }
@@ -149,7 +149,7 @@ DirectX::XMMATRIX Scene::TNodeProbe::GetTransformMatrix() noexcept
 	return matrix;
 }
 
-void Scene::ModelProbe::SpwanControlWindow(Model& model) noexcept(!_DEBUG)
+void Scene::ModelProbe::SpwanControlWindow(Model& model) noexcept(!IS_DEBUG)
 {
 	if (ImGui::Begin(model.GetName().c_str()))
 	{

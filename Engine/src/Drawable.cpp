@@ -33,7 +33,7 @@ void Drawable::Accept(Probe& probe) noexcept
 	}
 }
 
-void Drawable::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!_DEBUG)
+void Drawable::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
 {
 	for (auto& i :m_Techs)
 	{

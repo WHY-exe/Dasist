@@ -47,12 +47,12 @@ Texture::Texture(Graphics& gfx, const std::wstring& szPath, unsigned int slot)
 	GetContext(gfx)->GenerateMips(m_pTexView.Get());
 }
 
-void Texture::Bind(Graphics& gfx) noexcept(!_DEBUG)
+void Texture::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
 	GetContext(gfx)->PSSetShaderResources(m_slot, 1u, m_pTexView.GetAddressOf());
 }
 
-std::shared_ptr<Texture> Texture::Resolve(Graphics& gfx, const std::wstring& path, unsigned int slot) noexcept(!_DEBUG)
+std::shared_ptr<Texture> Texture::Resolve(Graphics& gfx, const std::wstring& path, unsigned int slot) noexcept(!IS_DEBUG)
 {
 	return CodeX::Resolve<Texture>(gfx, path, slot);
 }

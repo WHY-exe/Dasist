@@ -12,8 +12,8 @@ public:
 	};
 public:
 	Sampler(Graphics& gfx, Type type = Type::Anisotropic, bool reflect = false);
-	void Bind(Graphics& gfx) noexcept(!_DEBUG) override;
-	static std::shared_ptr<Sampler> Resolve(Graphics& gfx, Type type = Type::Anisotropic, bool reflect = false) noexcept(!_DEBUG);
+	void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override;
+	static std::shared_ptr<Sampler> Resolve(Graphics& gfx, Type type = Type::Anisotropic, bool reflect = false) noexcept(!IS_DEBUG);
 	static std::wstring GenUID(Type type, bool reflect) noexcept;
 	std::wstring GetUID() const noexcept override;
 private:

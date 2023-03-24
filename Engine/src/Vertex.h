@@ -110,14 +110,14 @@ namespace Vertex {
 			Element(ElementType type, size_t offset);
 			ElementType GetType() const noexcept;
 			size_t GetOffset() const noexcept;
-			size_t GetOffsetAfter() const noexcept(!_DEBUG);
-			size_t Size() const noexcept(!_DEBUG);
-			static constexpr size_t SizeOf(ElementType type) noexcept(!_DEBUG);
-			D3D11_INPUT_ELEMENT_DESC GetLayoutDesc() const noexcept(!_DEBUG);
+			size_t GetOffsetAfter() const noexcept(!IS_DEBUG);
+			size_t Size() const noexcept(!IS_DEBUG);
+			static constexpr size_t SizeOf(ElementType type) noexcept(!IS_DEBUG);
+			D3D11_INPUT_ELEMENT_DESC GetLayoutDesc() const noexcept(!IS_DEBUG);
 			const char* GetCode() const noexcept;
 		private:
 			template <ElementType type>
-			static D3D11_INPUT_ELEMENT_DESC GenDesc(size_t offset) noexcept(!_DEBUG)
+			static D3D11_INPUT_ELEMENT_DESC GenDesc(size_t offset) noexcept(!IS_DEBUG)
 			{
 				return {Map<type>::semantic, 0u, Map<type>::dxgiFormat, 0u, (UINT)offset, D3D11_INPUT_PER_VERTEX_DATA, 0u};
 			}
@@ -125,10 +125,10 @@ namespace Vertex {
 			size_t m_offset;
 		};
 	public:
-		const Element& Resolve(ElementType Type) const noexcept(!_DEBUG);
-		const Element& ResolveByIndex(size_t i) const noexcept(!_DEBUG);
-		Layout& Append(ElementType Type) noexcept(!_DEBUG);
-		size_t Size() const noexcept(!_DEBUG);
+		const Element& Resolve(ElementType Type) const noexcept(!IS_DEBUG);
+		const Element& ResolveByIndex(size_t i) const noexcept(!IS_DEBUG);
+		Layout& Append(ElementType Type) noexcept(!IS_DEBUG);
+		size_t Size() const noexcept(!IS_DEBUG);
 		size_t Count() const noexcept;
 		const std::vector<D3D11_INPUT_ELEMENT_DESC>& GetD3DLayout() const;
 		std::string GetCode() const noexcept;
@@ -142,14 +142,14 @@ namespace Vertex {
 		friend class DataBuffer;
 	public:
 		template <ElementType Type>
-		auto& Attri() noexcept(!_DEBUG)
+		auto& Attri() noexcept(!IS_DEBUG)
 		{
 			auto pAttri = m_pBuffer + m_layout.Resolve(Type).GetOffset();
 			return *reinterpret_cast<Map<Type>::SysType*>(pAttri);
 		}
 	private:
 		template <typename T>
-		void SetAttributeByIndex(size_t i, T&& val) noexcept(!_DEBUG)
+		void SetAttributeByIndex(size_t i, T&& val) noexcept(!IS_DEBUG)
 		{
 			const auto& element = m_layout.ResolveByIndex(i);
 			auto pAttribute = m_pBuffer;
@@ -166,7 +166,7 @@ namespace Vertex {
 		// 多参数传递（设置顶点的多个信息）
 
 		template <ElementType DestLayoutType, typename Src>
-		void SetAttribute(char* pAttribute, Src&& val) noexcept(!_DEBUG)
+		void SetAttribute(char* pAttribute, Src&& val) noexcept(!IS_DEBUG)
 		{
 			using Dest = Map<DestLayoutType>::SysType;
 			if constexpr (std::is_assignable<Dest, Src>::value)
@@ -177,7 +177,7 @@ namespace Vertex {
 				assert("Parameter attribute type mismatch" && false);
 		}
 	protected:
-		Data(char* pBuffer, const Layout& layout) noexcept(!_DEBUG);
+		Data(char* pBuffer, const Layout& layout) noexcept(!IS_DEBUG);
 	private:
 		char* m_pBuffer = nullptr;
 		const Layout& m_layout;
@@ -187,9 +187,9 @@ namespace Vertex {
 	class ConstData
 	{
 	public:
-		ConstData(const Data& data) noexcept(!_DEBUG);
+		ConstData(const Data& data) noexcept(!IS_DEBUG);
 		template <ElementType Type>
-		const auto& Attri() const noexcept(!_DEBUG)
+		const auto& Attri() const noexcept(!IS_DEBUG)
 		{
 			return const_cast<Data&>(m_data).Attri<Type>();
 		}
@@ -224,9 +224,9 @@ namespace Vertex {
 		Data Back();
 		Data Front();
 		Data operator[](size_t i);
-		ConstData Back() const noexcept(!_DEBUG);
-		ConstData Front() const noexcept(!_DEBUG);
-		ConstData operator[](size_t i) const noexcept(!_DEBUG);
+		ConstData Back() const noexcept(!IS_DEBUG);
+		ConstData Front() const noexcept(!IS_DEBUG);
+		ConstData operator[](size_t i) const noexcept(!IS_DEBUG);
 	private:
 		size_t m_CurAttrIndex;
 		std::vector<char> m_Buffer;

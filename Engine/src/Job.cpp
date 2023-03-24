@@ -8,7 +8,7 @@ Job::Job(const Step* pStep, const Drawable* pDrawable)
 {
 }
 
-void Job::Execute(Graphics& gfx) const noexcept(!_DEBUG)
+void Job::Execute(Graphics& gfx) const noexcept(!IS_DEBUG)
 {
 	if (m_pStep->IsActive())
 	{

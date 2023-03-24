@@ -5,6 +5,7 @@ class Exception: public std::exception
 {
 
 public:
+	Exception(int nLine, const char* szFile, std::string szInfo);
 	Exception(int nLine, const char* szFile);
 	const char* what() const noexcept override;
 	virtual const char* GetType() const noexcept;

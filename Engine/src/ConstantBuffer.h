@@ -68,7 +68,7 @@ class VertexConstantBuffer :public ConstantBuffer<C>
 public:
     using ConstantBuffer<C>::ConstantBuffer;
 
-    void Bind(Graphics& gfx) noexcept(!_DEBUG) override
+    void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override
     {
         GetContext(gfx)->VSSetConstantBuffers(m_slot, 1u, m_pBuffer.GetAddressOf());
     }
@@ -100,7 +100,7 @@ class PixelConstantBuffer :public ConstantBuffer<C>
 public:
     using ConstantBuffer<C>::ConstantBuffer;
 
-    void Bind(Graphics& gfx) noexcept(!_DEBUG) override
+    void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override
     {
         GetContext(gfx)->PSSetConstantBuffers(m_slot, 1u, m_pBuffer.GetAddressOf());
     }

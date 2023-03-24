@@ -36,7 +36,7 @@ namespace Rgph
 		}
 	}
 
-	void BindingPass::BindBufferResources( Graphics& gfx ) const noexcept(!_DEBUG)
+	void BindingPass::BindBufferResources( Graphics& gfx ) const noexcept(!IS_DEBUG)
 	{
 		if( renderTarget )
 		{

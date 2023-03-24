@@ -85,7 +85,7 @@ namespace Rgph
 		Finalize();
 	}
 
-	void BlurOutlineRenderGraph::SetKernelGauss( int radius,float sigma ) noexcept(!_DEBUG)
+	void BlurOutlineRenderGraph::SetKernelGauss( int radius,float sigma ) noexcept(!IS_DEBUG)
 	{
 		assert( radius <= maxRadius );
 		auto k = blurKernel->GetBuffer();
@@ -105,7 +105,7 @@ namespace Rgph
 		}
 		blurKernel->SetBuffer( k );
 	}
-	void BlurOutlineRenderGraph::SetKernelBox(int radius) noexcept(!_DEBUG)
+	void BlurOutlineRenderGraph::SetKernelBox(int radius) noexcept(!IS_DEBUG)
 	{
 		assert(radius <= maxRadius);
 		auto k = blurKernel->GetBuffer();

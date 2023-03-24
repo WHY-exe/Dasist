@@ -17,17 +17,17 @@ size_t Vertex::Layout::Element::GetOffset() const noexcept
 	return m_offset;
 }
 
-size_t Vertex::Layout::Element::GetOffsetAfter() const noexcept(!_DEBUG)
+size_t Vertex::Layout::Element::GetOffsetAfter() const noexcept(!IS_DEBUG)
 {
 	return m_offset + Size();
 }
 
-size_t Vertex::Layout::Element::Size() const noexcept(!_DEBUG)
+size_t Vertex::Layout::Element::Size() const noexcept(!IS_DEBUG)
 {
 	return SizeOf(m_type);
 }
 
-constexpr size_t Vertex::Layout::Element::SizeOf(ElementType type) noexcept(!_DEBUG)
+constexpr size_t Vertex::Layout::Element::SizeOf(ElementType type) noexcept(!IS_DEBUG)
 {
 	switch (type)
 	{
@@ -39,7 +39,7 @@ constexpr size_t Vertex::Layout::Element::SizeOf(ElementType type) noexcept(!_DE
 	return 0u;
 }
 
-D3D11_INPUT_ELEMENT_DESC Vertex::Layout::Element::GetLayoutDesc() const noexcept(!_DEBUG)
+D3D11_INPUT_ELEMENT_DESC Vertex::Layout::Element::GetLayoutDesc() const noexcept(!IS_DEBUG)
 {
 	switch (m_type)
 	{
@@ -63,7 +63,7 @@ const char* Vertex::Layout::Element::GetCode() const noexcept
 	return "Invalid";
 }
 
-const Vertex::Layout::Element& Vertex::Layout::Resolve(ElementType Type) const noexcept(!_DEBUG)
+const Vertex::Layout::Element& Vertex::Layout::Resolve(ElementType Type) const noexcept(!IS_DEBUG)
 {
 	for (const auto& e : m_Elements)
 	{
@@ -76,12 +76,12 @@ const Vertex::Layout::Element& Vertex::Layout::Resolve(ElementType Type) const n
 	return m_Elements.front();
 }
 
-const Vertex::Layout::Element& Vertex::Layout::ResolveByIndex(size_t i) const noexcept(!_DEBUG)
+const Vertex::Layout::Element& Vertex::Layout::ResolveByIndex(size_t i) const noexcept(!IS_DEBUG)
 {
 	return m_Elements[i];
 }
 
-Vertex::Layout& Vertex::Layout::Append(ElementType Type) noexcept(!_DEBUG)
+Vertex::Layout& Vertex::Layout::Append(ElementType Type) noexcept(!IS_DEBUG)
 {
 	Element e(Type, Size());
 	m_d3d_desc.emplace_back(e.GetLayoutDesc());
@@ -89,7 +89,7 @@ Vertex::Layout& Vertex::Layout::Append(ElementType Type) noexcept(!_DEBUG)
 	return *this;
 }
 
-size_t Vertex::Layout::Size() const noexcept(!_DEBUG)
+size_t Vertex::Layout::Size() const noexcept(!IS_DEBUG)
 {
 	return m_Elements.empty() ? 0u : m_Elements.back().GetOffsetAfter();
 }
@@ -114,7 +114,7 @@ std::string Vertex::Layout::GetCode() const noexcept
 	return code;
 }
 
-Vertex::Data::Data(char* pBuffer, const Layout& layout) noexcept(!_DEBUG)
+Vertex::Data::Data(char* pBuffer, const Layout& layout) noexcept(!IS_DEBUG)
 	:
 	m_pBuffer(pBuffer),
 	m_layout(layout)
@@ -122,7 +122,7 @@ Vertex::Data::Data(char* pBuffer, const Layout& layout) noexcept(!_DEBUG)
 	assert(m_pBuffer != nullptr);
 }
 
-Vertex::ConstData::ConstData(const Data& data) noexcept(!_DEBUG)
+Vertex::ConstData::ConstData(const Data& data) noexcept(!IS_DEBUG)
 	:
 	m_data(data)
 {
@@ -159,7 +159,7 @@ Vertex::Data Vertex::DataBuffer::Back()
 	return Vertex::Data(m_Buffer.data() + m_Buffer.size() - ( m_layout.Size() - m_layout.ResolveByIndex(m_CurAttrIndex).GetOffset()), m_layout);
 }
 
-Vertex::ConstData Vertex::DataBuffer::Back() const noexcept(!_DEBUG)
+Vertex::ConstData Vertex::DataBuffer::Back() const noexcept(!IS_DEBUG)
 {
 	return const_cast<DataBuffer*>(this)->Back();
 }
@@ -170,7 +170,7 @@ Vertex::Data Vertex::DataBuffer::Front()
 	return Data(m_Buffer.data(), m_layout);
 }
 
-Vertex::ConstData Vertex::DataBuffer::Front() const noexcept(!_DEBUG)
+Vertex::ConstData Vertex::DataBuffer::Front() const noexcept(!IS_DEBUG)
 {
 	return const_cast<DataBuffer*>(this)->Front();
 }
@@ -181,7 +181,7 @@ Vertex::Data Vertex::DataBuffer::operator[](size_t i)
 	return Data(m_Buffer.data() + m_layout.Size() * i, m_layout);
 }
 
-Vertex::ConstData Vertex::DataBuffer::operator[](size_t i) const noexcept(!_DEBUG)
+Vertex::ConstData Vertex::DataBuffer::operator[](size_t i) const noexcept(!IS_DEBUG)
 {
 	return const_cast<DataBuffer&>(*this)[i];
 }

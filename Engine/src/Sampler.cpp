@@ -37,12 +37,12 @@ Sampler::Sampler(Graphics& gfx, Type type, bool reflect)
 
 }
 
-void Sampler::Bind(Graphics& gfx) noexcept(!_DEBUG)
+void Sampler::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
 	GetContext(gfx)->PSSetSamplers(0u, 1u, m_pSampler.GetAddressOf());
 }
 
-std::shared_ptr<Sampler> Sampler::Resolve(Graphics& gfx, Type type, bool reflect) noexcept(!_DEBUG)
+std::shared_ptr<Sampler> Sampler::Resolve(Graphics& gfx, Type type, bool reflect) noexcept(!IS_DEBUG)
 {
 	return CodeX::Resolve<Sampler>(gfx, type, reflect);
 }

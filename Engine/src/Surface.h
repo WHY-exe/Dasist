@@ -37,8 +37,9 @@ public:
 	Surface(UINT width, UINT height);
 	Surface(const std::string file_path);
 	const BYTE* GetBufferPtr() const noexcept;
-	void PutPixel(UINT col_idx, UINT row_idx, Color color) noexcept(!_DEBUG);
-	Color GetPixel(UINT col_idx, UINT row_idx) const noexcept(!_DEBUG);
+	void PutPixel(UINT col_idx, UINT row_idx, Color color) noexcept(!IS_DEBUG);
+	Color GetPixel(UINT col_idx, UINT row_idx) const noexcept(!IS_DEBUG);
+	void SaveAsFile(const std::string& file_name) const noexcept(!IS_DEBUG);
 	bool HasAlpha() const noexcept;
 	UINT GetWidth() const noexcept;
 	UINT GetHeight() const noexcept;

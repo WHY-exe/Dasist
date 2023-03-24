@@ -55,7 +55,7 @@ void PointLight::Submit() noexcept
 	m_lightBall.Submit();
 }
 
-void PointLight::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!_DEBUG)
+void PointLight::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
 {
 	m_lightBall.LinkTechniques(rg);
 }

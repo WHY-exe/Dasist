@@ -17,17 +17,17 @@ namespace Scene {
 	class NodeProbe
 	{
 	public:
-		virtual bool PushNode(class Node& node) noexcept(!_DEBUG) = 0;
-		virtual void PopNode() const noexcept(!_DEBUG) = 0;
+		virtual bool PushNode(class Node& node) noexcept(!IS_DEBUG) = 0;
+		virtual void PopNode() const noexcept(!IS_DEBUG) = 0;
 	};
 
 	class TNodeProbe : public NodeProbe
 	{
 	public:
 		TNodeProbe() noexcept;
-		bool VisitNode(class Node& node) noexcept(!_DEBUG);
-		bool PushNode(class Node& node) noexcept(!_DEBUG) override;
-		void PopNode() const noexcept(!_DEBUG) override;
+		bool VisitNode(class Node& node) noexcept(!IS_DEBUG);
+		bool PushNode(class Node& node) noexcept(!IS_DEBUG) override;
+		void PopNode() const noexcept(!IS_DEBUG) override;
 		DirectX::XMMATRIX GetTransformMatrix() noexcept;
 	private:
 		class Node* m_pSelectedNode = nullptr;
@@ -37,7 +37,7 @@ namespace Scene {
 	class ModelProbe
 	{
 	public:
-		void SpwanControlWindow(class Model& model) noexcept(!_DEBUG);
+		void SpwanControlWindow(class Model& model) noexcept(!IS_DEBUG);
 	private:
 		TNodeProbe np;
 	};

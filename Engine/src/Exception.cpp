@@ -1,5 +1,13 @@
 #include "Exception.h"
 #include <sstream>
+Exception::Exception(int nLine, const char* szFile, std::string szInfo)
+	:
+	m_nLine(nLine),
+	m_szFile(szFile),
+	WhatInfoBuffer(std::move(szInfo))
+{
+}
+
 Exception::Exception(int nLine, const char* szFile)
 	:
 	m_nLine(nLine),

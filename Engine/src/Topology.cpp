@@ -6,12 +6,12 @@ Topology::Topology(Graphics& gfx, D3D11_PRIMITIVE_TOPOLOGY type)
 {
 }
 
-void Topology::Bind(Graphics& gfx) noexcept(!_DEBUG)
+void Topology::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
 	GetContext(gfx)->IASetPrimitiveTopology(m_type);
 }
 
-std::shared_ptr<Topology> Topology::Resolve(Graphics& gfx, D3D11_PRIMITIVE_TOPOLOGY type) noexcept(!_DEBUG)
+std::shared_ptr<Topology> Topology::Resolve(Graphics& gfx, D3D11_PRIMITIVE_TOPOLOGY type) noexcept(!IS_DEBUG)
 {
 	return CodeX::Resolve<Topology>(gfx, type);
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "Bindable.h"
+#include "Surface.h"
 #include "BufferResource.h"
 #include <array>
 class RenderTarget : public Bindable, public BufferResource
@@ -7,13 +8,15 @@ class RenderTarget : public Bindable, public BufferResource
 public:
 	RenderTarget(Graphics& gfx, UINT width, UINT height);
 	RenderTarget(Graphics& gfx, ID3D11Texture2D* pTexture);
-	void BindAsBuffer(Graphics& gfx) noexcept(!_DEBUG) override;
-	void BindAsBuffer(Graphics& gfx, BufferResource* depthStencil) noexcept(!_DEBUG) override;
-	void BindAsBuffer(Graphics& gfx, class DepthStencil* ds) noexcept(!_DEBUG);
+	void BindAsBuffer(Graphics& gfx) noexcept(!IS_DEBUG) override;
+	void BindAsBuffer(Graphics& gfx, BufferResource* depthStencil) noexcept(!IS_DEBUG) override;
+	void BindAsBuffer(Graphics& gfx, class DepthStencil* ds) noexcept(!IS_DEBUG);
 	void Remake(Graphics& gfx, ID3D11Texture2D* pTexture);
-	void CleanUp() noexcept(!_DEBUG);
-	void Clear(Graphics& gfx) noexcept(!_DEBUG) override;
-	void Clear(Graphics& gfx, std::array<float, 4> color) noexcept(!_DEBUG);
+	UINT GetWidth() const noexcept;
+	UINT GetHeight() const noexcept;
+	void CleanUp() noexcept(!IS_DEBUG);
+	void Clear(Graphics& gfx) noexcept(!IS_DEBUG) override;
+	void Clear(Graphics& gfx, std::array<float, 4> color) noexcept(!IS_DEBUG);
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_pTexture;
 private:
@@ -26,7 +29,8 @@ class RenderTargetAsShaderTexture : public RenderTarget
 public:
 	RenderTargetAsShaderTexture(Graphics& gfx, UINT width, UINT height, UINT slot);
 	RenderTargetAsShaderTexture(Graphics& gfx, ID3D11Texture2D* pTexture, UINT slot);
-	void Bind(Graphics& gfx) noexcept(!_DEBUG) override;
+	Surface ToSurface(Graphics& gfx) noexcept(!IS_DEBUG);
+	void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override;
 	void Resize(Graphics& gfx, UINT width, UINT height) override;
 private:
 	UINT m_slot;
@@ -36,7 +40,7 @@ private:
 class RenderTargetAsOutputTarget : public RenderTarget
 {
 public:
-	void Bind(Graphics& gfx) noexcept(!_DEBUG) override;
+	void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override;
 	RenderTargetAsOutputTarget(Graphics& gfx, UINT width, UINT height);
 	RenderTargetAsOutputTarget(Graphics& gfx, ID3D11Texture2D* pTexture);
 	void Resize(Graphics& gfx, UINT width, UINT height) override;

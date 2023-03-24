@@ -18,7 +18,7 @@ InputLayout::InputLayout(Graphics& gfx, const Vertex::Layout& layout, const Vert
     ));
 }
 
-void InputLayout::Bind(Graphics& gfx) noexcept(!_DEBUG)
+void InputLayout::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
     GetContext(gfx)->IASetInputLayout(m_pInputLayout.Get());
 }

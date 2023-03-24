@@ -37,7 +37,7 @@ public:
         return GenUID_(tag);
     }
     std::wstring GetUID() const noexcept override;
-    void Bind(Graphics& gfx) noexcept(!_DEBUG) override;
+    void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override;
 private:
     static std::wstring GenUID_(std::wstring tag) noexcept;
 private:

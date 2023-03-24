@@ -19,12 +19,12 @@ PixelShader::PixelShader(Graphics& gfx, std::wstring szPath)
     );
 }
 
-void PixelShader::Bind(Graphics& gfx) noexcept(!_DEBUG)
+void PixelShader::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
     GetContext(gfx)->PSSetShader(m_pPixelShader.Get(), nullptr, 0u);
 }
 
-std::shared_ptr<PixelShader> PixelShader::Resolve(Graphics& gfx, const std::wstring& path) noexcept(!_DEBUG)
+std::shared_ptr<PixelShader> PixelShader::Resolve(Graphics& gfx, const std::wstring& path) noexcept(!IS_DEBUG)
 {
     return CodeX::Resolve<PixelShader>(gfx, path);
 }

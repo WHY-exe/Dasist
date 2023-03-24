@@ -19,7 +19,7 @@ namespace Rgph
 	public:
 		RenderGraph( Graphics& gfx );
 		~RenderGraph();
-		void Execute( Graphics& gfx ) noexcept(!_DEBUG);
+		void Execute( Graphics& gfx ) noexcept(!IS_DEBUG);
 		void Reset() noexcept;
 		RenderQueuePass& GetRenderQueue( const std::string& passName );
 	protected:

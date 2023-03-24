@@ -28,5 +28,5 @@ protected:
 #define WND_CALL(hr)\
 	if(FAILED(hr))\
 		throw WND_EXCEPT(hr)
-#endif // !_DEBUG
+#endif // !IS_DEBUG
 

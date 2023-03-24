@@ -19,7 +19,7 @@ Surface::Surface(UINT width, UINT height)
 
 Surface::Surface(const std::string file_path)
 {
-	std::string img_format = SplitString(file_path, ".")[1];
+	const std::string img_format = SplitString(file_path, ".")[1];
 	if (img_format == "tga")
 	{
 		WND_CALL(
@@ -62,7 +62,7 @@ const BYTE* Surface::GetBufferPtr() const noexcept
 	return m_scratchImage.GetPixels();
 }
 
-void Surface::PutPixel(UINT col_idx, UINT row_idx, Color color) noexcept(!_DEBUG)
+void Surface::PutPixel(UINT col_idx, UINT row_idx, Color color) noexcept(!IS_DEBUG)
 {
 	assert(row_idx >= 0);
 	assert(col_idx >= 0);
@@ -72,7 +72,7 @@ void Surface::PutPixel(UINT col_idx, UINT row_idx, Color color) noexcept(!_DEBUG
 	reinterpret_cast<Color*>(&pixel_data->pixels[row_idx * pixel_data->rowPitch])[col_idx] = color;
 }
 
-Color Surface::GetPixel(UINT col_idx, UINT row_idx) const noexcept(!_DEBUG)
+Color Surface::GetPixel(UINT col_idx, UINT row_idx) const noexcept(!IS_DEBUG)
 {
 	assert(row_idx >= 0);
 	assert(col_idx >= 0);
@@ -80,6 +80,35 @@ Color Surface::GetPixel(UINT col_idx, UINT row_idx) const noexcept(!_DEBUG)
 	assert(col_idx <= GetWidth());
 	auto pixel_data = m_scratchImage.GetImage(0, 0, 0);
 	return reinterpret_cast<Color*>(&pixel_data->pixels[row_idx * pixel_data->rowPitch])[col_idx];
+}
+
+void Surface::SaveAsFile(const std::string& file_name) const noexcept(!IS_DEBUG)
+{
+	const auto GetWICID = [](const std::string& file_name)
+	{
+		const std::string img_format = SplitString(file_name, ".")[1];
+		if (img_format == "png")
+		{
+			return DirectX::WIC_CODEC_PNG;
+		}
+		if (img_format == "jpg")
+		{
+			return DirectX::WIC_CODEC_JPEG;
+		}
+		if (img_format == "bmp")
+		{
+			return DirectX::WIC_CODEC_BMP;
+		}
+		throw Exception::Exception(__LINE__, __FILE__, "Unsupported image format type");
+	};
+	WND_CALL(
+		DirectX::SaveToWICFile(
+			*m_scratchImage.GetImage(0, 0, 0),
+			DirectX::WIC_FLAGS_NONE,
+			GetWICCodec(GetWICID(file_name)),
+			ANSI_TO_UTF8_STR(file_name.c_str()).c_str()
+		)
+	);
 }
 
 bool Surface::HasAlpha() const noexcept

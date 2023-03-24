@@ -22,7 +22,7 @@ public:
 	virtual ~Drawable() = default;
 	void Bind(Graphics& gfx) const noexcept;
 	void Accept(Probe& probe) noexcept;
-	void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!_DEBUG);
+	void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
 	void Submit() const noexcept;
 	UINT GetIndexSize() const noexcept;
 private:

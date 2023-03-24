@@ -7,8 +7,8 @@ namespace Rgph{
 	{
 	public:
 		Pass(const std::string& szPassName) noexcept;
-		virtual void Execute(Graphics& gfx) const noexcept(!_DEBUG) = 0;
-		virtual void Reset() noexcept(!_DEBUG);
+		virtual void Execute(Graphics& gfx) const noexcept(!IS_DEBUG) = 0;
+		virtual void Reset() noexcept(!IS_DEBUG);
 		const std::string& GetName() const noexcept;
 		const std::vector<std::unique_ptr<class Sink>>& GetSinks() const;
 		class Source& GetSource(const std::string& registeredName) const;

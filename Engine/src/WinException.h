@@ -17,12 +17,15 @@ protected:
 };
 
 #ifdef _DEBUG
+#define INIT_WND_EXCEPT HRESULT hr
 #define WND_EXCEPT(error_code) WinException(__LINE__, __FILE__, error_code)
 #define WND_LAST_EXCEPT() WinException(__LINE__, __FILE__, GetLastError())
-#define WND_CALL(hr)\
+#define WND_CALL(hr_func)\
+	hr = hr_func;\
 	if(FAILED(hr))\
 		throw WND_EXCEPT(hr)
 #else
+#define INIT_WND_EXCEPT
 #define WND_EXCEPT(error_code)
 #define WND_LAST_EXCEPT()
 #define WND_CALL(hr)\

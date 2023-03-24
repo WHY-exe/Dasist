@@ -3,7 +3,7 @@
 #include "Timer.h"
 #include "BlurOutlineRenderGraph.h"
 #include "Drawable.h"
-#include "Camera.h"
+#include "CameraContainer.h"
 #include "Light.h"
 #include "ImguiManager.h"
 #include "Scene.h"
@@ -24,10 +24,11 @@ private:
 	Timer timer;
 private:
 	// user data
+	double m_delta_time = 0.0;
 	Rgph::BlurOutlineRenderGraph m_rg;
 	std::vector<Scene::Model> scene;
 	Scene::ModelProbe probe;
-	Camera cam;
+	CameraContainer cams;
 	PointLight pointLight;
 	GlobalLight gLight;
 };

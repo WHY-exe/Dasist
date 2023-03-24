@@ -10,6 +10,7 @@
 
 Surface::Surface(UINT width, UINT height)
 {
+	INIT_WND_EXCEPT;
 	WND_CALL(
 		m_scratchImage.Initialize2D(
 			format, width, height, 1u, 1u
@@ -19,6 +20,7 @@ Surface::Surface(UINT width, UINT height)
 
 Surface::Surface(const std::string file_path)
 {
+	INIT_WND_EXCEPT;
 	const std::string img_format = SplitString(file_path, ".")[1];
 	if (img_format == "tga")
 	{
@@ -84,6 +86,7 @@ Color Surface::GetPixel(UINT col_idx, UINT row_idx) const noexcept(!IS_DEBUG)
 
 void Surface::SaveAsFile(const std::string& file_name) const noexcept(!IS_DEBUG)
 {
+	INIT_WND_EXCEPT;
 	const auto GetWICID = [](const std::string& file_name)
 	{
 		const std::string img_format = SplitString(file_name, ".")[1];

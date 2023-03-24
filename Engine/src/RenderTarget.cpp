@@ -155,19 +155,18 @@ RenderTargetAsShaderTexture::RenderTargetAsShaderTexture(Graphics& gfx, ID3D11Te
 Surface RenderTargetAsShaderTexture::ToSurface(Graphics& gfx) noexcept(!IS_DEBUG)
 {
     IMPORT_INFOMAN(gfx);
-    namespace wrl = Microsoft::WRL;
 
     // creating a temp texture compatible with the source, but with CPU read access
-    wrl::ComPtr<ID3D11Resource> pResSource;
+    Microsoft::WRL::ComPtr<ID3D11Resource> pResSource;
     m_pPSTextureView->GetResource(&pResSource);
-    wrl::ComPtr<ID3D11Texture2D> pTexSource;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexSource;
     pResSource.As(&pTexSource);
     D3D11_TEXTURE2D_DESC textureDesc;
     pTexSource->GetDesc(&textureDesc);
     textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
     textureDesc.Usage = D3D11_USAGE_STAGING;
     textureDesc.BindFlags = 0;
-    wrl::ComPtr<ID3D11Texture2D> pTexTemp;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexTemp;
     GFX_THROW_INFO(GetDevice(gfx)->CreateTexture2D(
         &textureDesc, nullptr, &pTexTemp
     ));

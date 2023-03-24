@@ -1,5 +1,6 @@
 #include "BufferClearPass.h"
 #include "RenderTarget.h"
+#include "Signal.h"
 #include "DepthStencil.h"
 #include "Sink.h"
 #include "Source.h"
@@ -17,11 +18,11 @@ namespace Rgph
 
 	void BufferClearPass::Execute( Graphics& gfx ) const noexcept(!IS_DEBUG)
 	{			
-		if (gfx.sizeSignalDS && dynamic_cast<DepthStencil*>(buffer.get()))
-		{
-			buffer->Resize(gfx, gfx.GetWindowWidth(), gfx.GetWindowHeight());
-			gfx.sizeSignalDS = false;
-		}
+		SIGNAL_CONDITIONAL(
+			gfx.sizeSignalDS, 
+			dynamic_cast<DepthStencil*>(buffer.get()), 
+			buffer->Resize(gfx, gfx.GetWindowWidth(), gfx.GetWindowHeight())
+		);
 		buffer->Clear( gfx );
 	}
 }

@@ -31,11 +31,11 @@ PointLight::PointLight(Graphics& gfx)
 	m_PSCbuf = std::make_unique<CachingPixelConstantBuffer>(gfx, m_cBuffer, 0u);
 }
 
-void PointLight::Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept
+void PointLight::Update(Graphics& gfx) noexcept
 {	
 	const auto worPos = DirectX::XMLoadFloat3(&m_pos);
 	DirectX::XMFLOAT3 ViewPos;
-	DirectX::XMStoreFloat3(&ViewPos, DirectX::XMVector3Transform(worPos, viewTF));
+	DirectX::XMStoreFloat3(&ViewPos, DirectX::XMVector3Transform(worPos, gfx.GetCamera()));
 	m_cBuffer["LightPos"] = ViewPos;
 	m_cBuffer["Ambient"] = m_ambient;
 	m_cBuffer["DiffuseColor"] = m_diffuseColor;
@@ -100,12 +100,12 @@ GlobalLight::GlobalLight(Graphics& gfx)
 	m_PSCbuf = std::make_unique<CachingPixelConstantBuffer>(gfx, m_cBuffer, 1u);
 }
 
-void GlobalLight::Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept
+void GlobalLight::Update(Graphics& gfx) noexcept
 {
 	
 	const auto worPos = DirectX::XMLoadFloat3(&m_pos);
 	DirectX::XMFLOAT3 ViewPos;
-	DirectX::XMStoreFloat3(&ViewPos, DirectX::XMVector3Transform(worPos, viewTF));
+	DirectX::XMStoreFloat3(&ViewPos, DirectX::XMVector3Transform(worPos, gfx.GetCamera()));
 	m_cBuffer["LightPos"] = ViewPos;
 	m_cBuffer["Ambient"] = m_ambient;
 	m_cBuffer["DiffuseColor"] = m_diffuseColor;

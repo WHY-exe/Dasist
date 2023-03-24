@@ -1,33 +1,55 @@
 #include "Camera.h"
 #include "imgui.h"
 #include "MathTool.h"
+#include "Graphics.h"
 #include <algorithm>
-Camera::Camera()
+Camera::Camera(Graphics& gfx, std::string szName)
 	:
+	m_szName(szName),	
+	m_defaultViewWidth(gfx.GetWindowWidth()),
+	m_defaultViewHeight(gfx.GetWindowHeight()),
+	m_viewWidth((float)(gfx.GetWindowWidth())),
+	m_viewHeight((float)(gfx.GetWindowHeight())),
+	m_NearZ(0.5f),
+	m_FarZ(100000.0f),
 	m_pos(0.0f, 100.0f, -25.0f),
 	m_rot(0.0f, 0.0f, 0.0f)
 {
 }
 
-DirectX::XMMATRIX Camera::GetMatrix() const
+Camera::Camera(float ViewWidth, float ViewHeight, std::string szName)
+	:
+	m_szName(szName),
+	m_defaultViewWidth(UINT(ViewWidth)),
+	m_defaultViewHeight(UINT(ViewHeight)),
+	m_viewWidth(ViewWidth),
+	m_viewHeight(ViewHeight),
+	m_NearZ(0.5f),
+	m_FarZ(100000.0f),
+	m_pos(0.0f, 100.0f, -25.0f),
+	m_rot(0.0f, 0.0f, 0.0f)
 {
-	if (m_bView)
-	{
-		return GetFPMatrix();
-	}
-	else
-	{
-		return GetTPMatrix();
-	}
+}
+
+DirectX::XMMATRIX Camera::GetCameraMatrix() const
+{
+	return GetFPMatrix();
+}
+
+DirectX::XMMATRIX Camera::GetPerspectiveViewMX() const noexcept(!IS_DEBUG)
+{
+	return DirectX::XMMatrixPerspectiveLH(1.0f, (float)(m_viewHeight/m_viewWidth), m_NearZ, m_FarZ);
+}
+
+const std::string& Camera::GetName() const noexcept
+{
+	return m_szName;
 }
 
 void Camera::Rotate(float dx, float dy) noexcept
 {
-	if (m_bView)
-	{
-		m_rot.y = math_tool::wrap_angle(m_rot.y + dx * m_rot_speed);
-		m_rot.x = std::clamp(m_rot.x + dy * m_rot_speed, 0.995f * (-PI) / 2.0f, 0.995f * PI / 2.0f);
-	}
+	m_rot.y = math_tool::wrap_angle(m_rot.y + dx * m_rot_speed);
+	m_rot.x = std::clamp(m_rot.x + dy * m_rot_speed, 0.995f * (-PI) / 2.0f, 0.995f * PI / 2.0f);
 }
 
 void Camera::Translate(float dx, float dy, float dz)
@@ -46,6 +68,12 @@ void Camera::Translate(float dx, float dy, float dz)
 bool Camera::MouseStatus() const noexcept
 {
 	return m_hideMouse;
+}
+
+void Camera::UpdateDefaultValues(Graphics& gfx) noexcept
+{
+	m_defaultViewHeight = gfx.GetWindowHeight();
+	m_defaultViewWidth = gfx.GetWindowWidth();
 }
 
 DirectX::XMMATRIX Camera::GetFPMatrix() const
@@ -73,58 +101,49 @@ DirectX::XMMATRIX Camera::GetTPMatrix() const
 		   DirectX::XMMatrixTranslation(-m_pos.x, -m_pos.y, -m_pos.z);
 }
 
-void Camera::SpwanControlWindow()
+void Camera::ShowControlWidget() noexcept(!IS_DEBUG)
 {
-	if (ImGui::Begin("Camera"))
+	ImGui::Text("Position");
+	ImGui::SliderFloat("X", &m_pos.x, -80.0f, 80.0f, "%.1f");
+	ImGui::SliderFloat("Y", &m_pos.y, -80.0f, 80.0f, "%.1f");
+	ImGui::SliderFloat("Z", &m_pos.z, -80.0f, 80.0f, "%.1f");		
+	ImGui::Text("Rotation");
+	ImGui::SliderAngle("AngleX", &m_rot.x, 0.995f * -90.0f, 0.995f * 90.0f, "%.1f");
+	ImGui::SliderAngle("AngleY", &m_rot.y, -180.0f, 180.0f, "%.1f");
+	ImGui::Text("Projection");
+	ImGui::SliderFloat("ViewWidth", &m_viewWidth, -0, 2000.0f, "%.1f");
+	ImGui::SliderFloat("ViewHeight", &m_viewHeight, -0, 2000.0f, "%.1f");
+	ImGui::SliderFloat("NearZ", &m_NearZ, 0.1f, 80.0f, "%.1f");
+	ImGui::SliderFloat("FarZ", &m_FarZ, 0.1f, 10000.0f, "%.1f");
+	if (ImGui::Button("Reset Projection"))
 	{
-		ImGui::Text("Position");
-		ImGui::SliderFloat("X", &m_pos.x, -80.0f, 80.0f, "%.1f");
-		ImGui::SliderFloat("Y", &m_pos.y, -80.0f, 80.0f, "%.1f");
-		ImGui::SliderFloat("Z", &m_pos.z, -80.0f, 80.0f, "%.1f");		
-		ImGui::Text("Angle");
-		if (m_bView)
-		{
-			ImGui::SliderAngle("AngleX", &m_rot.x, 0.995f * -90.0f, 0.995f * 90.0f, "%.1f");
-			ImGui::SliderAngle("AngleY", &m_rot.y, -180.0f, 180.0f, "%.1f");
-		}
-		else
-		{
-			ImGui::SliderAngle("AngleX", &m_rot.x, -180.0f, 180.0f, "%.1f");
-			ImGui::SliderAngle("AngleY", &m_rot.y, -180.0f, 180.0f, "%.1f");
-			ImGui::SliderAngle("AngleZ", &m_rot.z, -180.0f, 180.0f, "%.1f");
-		}
-		if (ImGui::Button("First Person View"))
-		{
-			m_bView = true;
-			m_rot = { 0.0f, 0.0f ,0.0f };
-		}
-		
-		if (ImGui::Button("Thrid Person View"))
-		{
-			m_bView = false;
-			m_rot = { 0.0f, 0.0f ,0.0f };
-		}
-		if (ImGui::Button("Reset"))
-		{
-			m_bView = true;
-			m_pos = homePos;
-			m_rot = { 0.0f, 0.0f ,0.0f };
-		}
-		if (!m_hideMouse)
-		{
-			if (ImGui::Button("Hide Mouse"))
-			{
-				HideMouse();
-			}
-		}
-		else
-		{
-			ImGui::Text("Press escape to go back to ctrl mod");
-		}
-		
+		m_viewWidth  = float(m_defaultViewWidth);
+		m_viewHeight = float(m_defaultViewHeight);
+		m_NearZ = 0.5f;
+		m_FarZ = 10000.0f;
 	}
-	ImGui::End();
-
+	ImGui::Text("Reset to default");
+	if (ImGui::Button("Reset"))
+	{
+		m_pos = homePos;
+		m_rot = { 0.0f, 0.0f ,0.0f };
+		m_viewWidth = float(m_defaultViewWidth);
+		m_viewHeight = float(m_defaultViewHeight);
+		m_NearZ = 0.5f;
+		m_FarZ = 10000.0f;
+	}
+	ImGui::Text("First Person Shooter experience");
+	if (!m_hideMouse)
+	{
+		if (ImGui::Button("First Person Mouse"))
+		{
+			HideMouse();
+		}
+	}
+	else
+	{
+		ImGui::Text("Press escape to exit this mod");
+	}
 }
 
 void Camera::HideMouse() noexcept

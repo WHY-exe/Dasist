@@ -13,7 +13,8 @@ App::App()
 	m_gfx(m_wnd.GetGfx()),
 	pointLight(m_gfx),
 	gLight(m_gfx),
-	m_rg(m_gfx)
+	m_rg(m_gfx),
+	cams(m_gfx)
 {
 	Scene::ModelSetting op1;
 	op1.szModelPath = "res\\model\\Sponza\\sponza.obj";
@@ -37,29 +38,38 @@ WPARAM App::Run()
 {
 	while (true)
 	{
+		timer.Mark();
 		// c++ 17 required
 		if (const auto ecode = Window::RunWindow())
 		{
 			return *ecode;
 		}
-		DoWinLogic();
-		DoFrame();
+		if (m_delta_time >= (1.0f / 30.0f))
+		{
+			DoWinLogic();
+			DoFrame();
+			m_delta_time = 0.0;
+		}
+		m_delta_time += timer.Peek();
 	}
 }
 
 void App::DoFrame()
 {
 	m_gfx.BeginFrame();
-	pointLight.Submit();
-	cam.SpwanControlWindow();
-	m_gfx.SetCamera(cam.GetMatrix());
-	gLight.Update(m_gfx, cam.GetMatrix());
-	pointLight.Update(m_gfx, cam.GetMatrix());
+
+	cams.Bind(m_gfx);
+
+	gLight.Update(m_gfx);
+	pointLight.Update(m_gfx);
     m_rg.Execute(m_gfx);
+
 	for (auto& i : scene)
 	{
 		probe.SpwanControlWindow(i);
+	
 	}
+	cams.SpawControlWindow();
 	gLight.SpwanControlWindow();
 	pointLight.SpwanControlWindow();
 	m_rg.RenderWidgets(m_gfx);
@@ -71,9 +81,9 @@ void App::DoWinLogic()
 {
 	if (m_wnd.kbd.KeyIsPressed(VK_ESCAPE))
 	{
-		cam.ShowMouse();
+		cams.GetCamera().ShowMouse();
 	}
-	if (cam.MouseStatus())
+	if (cams.GetCamera().MouseStatus())
 	{
 		m_wnd.DisableCursor();
 	}
@@ -81,27 +91,27 @@ void App::DoWinLogic()
 		m_wnd.EnableCursor();
 	if (m_wnd.kbd.KeyIsPressed('W'))
 	{
-		cam.Translate(0.0f, 0.0f, 10.0f);
+		cams.GetCamera().Translate(0.0f, 0.0f, 10.0f);
 	}
 	if (m_wnd.kbd.KeyIsPressed('A'))
 	{
-		cam.Translate(-10.0f, 0.0f, 0.0f);
+		cams.GetCamera().Translate(-10.0f, 0.0f, 0.0f);
 	}
 	if (m_wnd.kbd.KeyIsPressed('R'))
 	{
-		cam.Translate(0.0f, 10.0f, 0.0f);
+		cams.GetCamera().Translate(0.0f, 10.0f, 0.0f);
 	}
 	if (m_wnd.kbd.KeyIsPressed('S'))
 	{
-		cam.Translate(0.0f, 0.0f, -10.0f);
+		cams.GetCamera().Translate(0.0f, 0.0f, -10.0f);
 	}
 	if (m_wnd.kbd.KeyIsPressed('D'))
 	{
-		cam.Translate(10.0f, 0.0f, 0.0f);
+		cams.GetCamera().Translate(10.0f, 0.0f, 0.0f);
 	}
 	if (m_wnd.kbd.KeyIsPressed('F'))
 	{
-		cam.Translate(0.0f, -10.0f, 0.0f);
+		cams.GetCamera().Translate(0.0f, -10.0f, 0.0f);
 	}
 
 
@@ -109,7 +119,7 @@ void App::DoWinLogic()
 	{
 		if (!m_wnd.CursorEnabled())
 		{
-			cam.Rotate((float)d->x, (float)d->y);
+			cams.GetCamera().Rotate((float)d->x, (float)d->y);
 		}
 	}
 

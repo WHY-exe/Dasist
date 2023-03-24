@@ -325,6 +325,9 @@
     <ClCompile Include="src\RenderTarget.cpp">
       <Filter>BufferResource</Filter>
     </ClCompile>
+    <ClCompile Include="src\CameraContainer.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Job.h">
@@ -563,6 +566,12 @@
     </ClInclude>
     <ClInclude Include="src\RenderTarget.h">
       <Filter>BufferResource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CameraContainer.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Signal.h">
+      <Filter>Tool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

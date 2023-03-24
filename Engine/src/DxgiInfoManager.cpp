@@ -4,6 +4,7 @@
 #pragma comment(lib, "dxguid.lib")
 DxgiInfoManager::DxgiInfoManager()
 {
+	INIT_WND_EXCEPT;
 	// define the function signature of DXGIGetDebugInterface
 	typedef HRESULT (WINAPI* DXGIGetDebugInterface)(REFIID, void **);
 	// load the dll library to get the function
@@ -34,6 +35,7 @@ void DxgiInfoManager::Set() noexcept
 
 std::vector<std::string> DxgiInfoManager::GetMessages() const
 {
+	INIT_WND_EXCEPT;
 	std::vector<std::string> v_szMsg;
 	const auto end = m_pDxgiInfoQueue->GetNumStoredMessages(DXGI_DEBUG_ALL);
 	for (auto i = next; i < end; i++)

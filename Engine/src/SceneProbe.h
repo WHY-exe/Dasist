@@ -17,6 +17,7 @@ namespace Scene {
 	class NodeProbe
 	{
 	public:
+		virtual ~NodeProbe() {};
 		virtual bool PushNode(class Node& node) noexcept(!IS_DEBUG) = 0;
 		virtual void PopNode() const noexcept(!IS_DEBUG) = 0;
 	};

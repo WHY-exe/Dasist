@@ -92,12 +92,6 @@ void Window::InitWindow(std::wstring szWinTitile, int nWidth, int nHeight)
 	ImGui_ImplWin32_Init(m_hWnd);
 	// init graphics object
 	m_pGfx = std::make_unique<Graphics>(m_hWnd, nWidth, nHeight);
-	m_pGfx->SetProjection(
-		DirectX::XMMatrixPerspectiveLH(
-			1.0f, (float)m_nHeight / (float)m_nWidth,
-			0.5f, 10000.0f
-		)
-	);
 	// 使用硬件raw input
 	//（鼠标的移动距离直接记录而非光标的移动距离的记录）
 	RAWINPUTDEVICE rid;
@@ -339,13 +333,8 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			m_pGfx->ResetWindowSize(m_nWidth, m_nHeight);
 			m_pGfx->sizeSignalDS = true;
+			m_pGfx->sizeSignalPrj = true;
 			m_pGfx->ResizeFrameBuffer(m_nWidth, m_nHeight);
-			m_pGfx->SetProjection(
-				DirectX::XMMatrixPerspectiveLH(
-					1.0f, (float)m_nHeight / (float)m_nWidth,
-					0.5f, 10000.0f
-				)
-			);
 		}
 		break;
 	}

@@ -8,7 +8,7 @@ class PointLight
 {
 public:
 	PointLight(Graphics& gfx);
-	void Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept;
+	void Update(Graphics& gfxF) noexcept;
 	void Submit() noexcept;
 	void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
 	void SpwanControlWindow() noexcept;
@@ -37,7 +37,7 @@ private:
 	};
 public:
 	GlobalLight(Graphics& gfx);
-	void Update(Graphics& gfx, DirectX::FXMMATRIX viewTF) noexcept;
+	void Update(Graphics& gfx) noexcept;
 	void SpwanControlWindow() noexcept;
 private:
 	DirectX::XMFLOAT3 m_pos;

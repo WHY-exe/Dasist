@@ -53,6 +53,7 @@ private:
 	void RemakeRenderTarget();
 public:
 	bool sizeSignalDS = false;
+	bool sizeSignalPrj = false;
 private:
 	int m_winWidth;
 	int m_winHeight;

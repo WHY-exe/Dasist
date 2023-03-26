@@ -172,10 +172,7 @@ void MeshData::SetMaterial(Graphics& gfx, const aiMesh& mesh, const aiMaterial* 
 		else {
 			material.Get(AI_MATKEY_SHININESS, shininess);
 		}
-		if (m_szModelName == "PointLight")
-			m_szPSPath = L"res\\cso\\lightBall.cso";
-		else
-			m_szPSPath += std::wstring(m_texInfo.m_difTex.get() ? L"Tex" : L"") + (m_texInfo.m_specTex.get() ? L"Spec" : L"")
+		m_szPSPath += std::wstring(m_texInfo.m_difTex.get() ? L"Tex" : L"") + (m_texInfo.m_specTex.get() ? L"Spec" : L"")
 				+ (m_texInfo.m_normTex.get() ? L"Norm" : L"") + (m_texInfo.m_hasAlpha ? L"Alpha" : L"") + L".cso";
 		m_szVSPath += std::wstring(m_texInfo.m_normTex.get() ? L"Norm" : L"") + L".cso";
 

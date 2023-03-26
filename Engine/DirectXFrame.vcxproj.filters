@@ -133,6 +133,9 @@
     <Filter Include="BufferResource">
       <UniqueIdentifier>{d6bc1f92-cc28-4bfa-a26f-94a88f58012b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Drawable\Geometry">
+      <UniqueIdentifier>{ffd86211-abaf-4add-a1cf-40ecec75c622}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Job.cpp">
@@ -326,6 +329,12 @@
       <Filter>BufferResource</Filter>
     </ClCompile>
     <ClCompile Include="src\CameraContainer.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LightIndicator.cpp">
+      <Filter>Light</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CameraIndicator.cpp">
       <Filter>Camera</Filter>
     </ClCompile>
   </ItemGroup>
@@ -572,6 +581,24 @@
     </ClInclude>
     <ClInclude Include="src\Signal.h">
       <Filter>Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LightIndicator.h">
+      <Filter>Light</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cube.h">
+      <Filter>Drawable\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Plane.h">
+      <Filter>Drawable\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Sphere.h">
+      <Filter>Drawable\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IndexedTriangleList.h">
+      <Filter>Drawable\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CameraIndicator.h">
+      <Filter>Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

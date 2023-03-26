@@ -1,8 +1,8 @@
 #pragma once
-#define SIGNAL(signal, function)\
+#define SIGNAL(signal, SIGNAL_FUNCTION)\
 	if (signal)\
 	{\
-		function;\
+		SIGNAL_FUNCTION;\
 		signal = false;\
 	}
 #define SIGNAL_CONDITIONAL(signal, conditional, function)\

@@ -3,24 +3,28 @@
 #include <imgui.h>
 CameraContainer::CameraContainer(Graphics& gfx)
 	:
-	m_defaultViewWidth(float(gfx.GetWindowWidth())),
-	m_defaultViewHeight(float(gfx.GetWindowHeight()))
+	m_gfx(gfx)
 {
-	Add(gfx);
+	for (size_t i = 0; i < 2; i++)
+	{
+		Add(gfx);
+	}
+
 }
 Camera& CameraContainer::GetCamera() noexcept
 {
 	return *m_Container[m_cur_idx];
 }
-void CameraContainer::UpdateDefaultValues(Graphics& gfx) noexcept(!IS_DEBUG)
-{
-	m_defaultViewHeight = gfx.GetWindowHeight();
-	m_defaultViewWidth = gfx.GetWindowWidth();
-}
+
 void CameraContainer::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
-	UpdateDefaultValues(gfx);
-	SIGNAL(gfx.sizeSignalPrj, m_Container[m_cur_idx]->UpdateDefaultValues(gfx));
+#define SIGNAL_FUNCTION\
+	for (auto& i : m_Container)\
+	{\
+		i->UpdateDefaultValues(gfx);\
+	}
+	SIGNAL(gfx.sizeSignalPrj, SIGNAL_FUNCTION);
+#undef SIGNAL_FUNCTION
 	gfx.SetProjection(m_Container[m_cur_idx]->GetPerspectiveViewMX());
 	gfx.SetCamera(m_Container[m_cur_idx]->GetCameraMatrix());
 }
@@ -47,24 +51,57 @@ void CameraContainer::SpawControlWindow() noexcept(!IS_DEBUG)
 		}
 		if (ImGui::Button("Add Camera"))
 		{
-			Add(m_defaultViewWidth, m_defaultViewHeight);
+			Add(m_gfx);
+			signalCamAdded = true;
+		} 
+		if(m_Container.size() > 1)
+		{ 
+			if (ImGui::Button("Delete Camera"))
+			{
+				DeleteCurCamera();
+			}
 		}
 		m_Container[m_cur_idx]->ShowControlWidget();
 		ImGui::End();
 	}
 }
 
+void CameraContainer::DeleteCurCamera() noexcept(!IS_DEBUG)
+{
+	m_Container.erase(m_Container.begin() + m_cur_idx);
+	m_cur_idx == 0 ? m_cur_idx = 0 : m_cur_idx--;
+}
+
 void CameraContainer::Add(std::unique_ptr<Camera>& camera) noexcept(!IS_DEBUG)
 {
 	m_Container.push_back(std::move(camera));
-}
-
-void CameraContainer::Add(float ViewWidth, float ViewHeight) noexcept(!IS_DEBUG)
-{
-	m_Container.emplace_back(std::make_unique<Camera>(ViewWidth, ViewHeight, "Camera" + std::to_string(m_Container.size() + 1)));
+	m_lifeTimeSize++;
 }
 
 void CameraContainer::Add(Graphics& gfx) noexcept(!IS_DEBUG)
 {
-	m_Container.emplace_back(std::make_unique<Camera>(gfx, "Camera" + std::to_string(m_Container.size()+1)));
+	m_Container.emplace_back(std::make_unique<Camera>(gfx, "Camera" + std::to_string(m_lifeTimeSize++)));
+}
+
+void CameraContainer::LinkTechniques(Rgph::RenderGraph& rg)
+{
+	for (auto& i : m_Container)
+	{
+		i->LinkTechniques(rg);
+	}
+}
+
+void CameraContainer::LinkAddedCamera(Rgph::RenderGraph& rg)
+{
+	(*(m_Container.end() - 1))->LinkTechniques(rg);
+}
+
+void CameraContainer::Submit() const
+{
+	for (size_t i = 0; i < m_Container.size(); i++)
+	{
+		if (i != m_cur_idx)
+			m_Container[i]->Submit();
+	}
+		
 }

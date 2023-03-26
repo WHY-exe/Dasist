@@ -8,15 +8,19 @@ class CameraContainer
 public:
 	CameraContainer(Graphics& gfx);
 	Camera& GetCamera() noexcept;
-	void UpdateDefaultValues(Graphics& gfx) noexcept(!IS_DEBUG);
 	void Bind(Graphics& gfx) noexcept(!IS_DEBUG);
 	void SpawControlWindow() noexcept(!IS_DEBUG);
+	void DeleteCurCamera() noexcept(!IS_DEBUG);
 	void Add(std::unique_ptr<Camera>& camera) noexcept(!IS_DEBUG);
-	void Add(float ViewWidth, float ViewHeight) noexcept(!IS_DEBUG);
 	void Add(Graphics& gfx) noexcept(!IS_DEBUG);
+	void LinkTechniques(Rgph::RenderGraph& rg);
+	void LinkAddedCamera(Rgph::RenderGraph& rg);
+	void Submit() const;
+	bool signalCamAdded = false;
 private:
-	unsigned int m_cur_idx = 0;
-	float m_defaultViewWidth, m_defaultViewHeight;
+	unsigned int m_cur_idx = 0u;
+	unsigned int m_lifeTimeSize = 1u;
+	Graphics& m_gfx;
 	std::vector<std::unique_ptr<Camera>> m_Container;
 };
 

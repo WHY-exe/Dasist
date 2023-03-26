@@ -13,22 +13,11 @@ Camera::Camera(Graphics& gfx, std::string szName)
 	m_NearZ(0.5f),
 	m_FarZ(100000.0f),
 	m_pos(0.0f, 100.0f, -25.0f),
-	m_rot(0.0f, 0.0f, 0.0f)
+	m_rot(0.0f, 0.0f, 0.0f),
+	m_indicator(gfx)
 {
-}
-
-Camera::Camera(float ViewWidth, float ViewHeight, std::string szName)
-	:
-	m_szName(szName),
-	m_defaultViewWidth(UINT(ViewWidth)),
-	m_defaultViewHeight(UINT(ViewHeight)),
-	m_viewWidth(ViewWidth),
-	m_viewHeight(ViewHeight),
-	m_NearZ(0.5f),
-	m_FarZ(100000.0f),
-	m_pos(0.0f, 100.0f, -25.0f),
-	m_rot(0.0f, 0.0f, 0.0f)
-{
+	m_indicator.SetPos(m_pos);
+	m_indicator.SetRot(m_rot);
 }
 
 DirectX::XMMATRIX Camera::GetCameraMatrix() const
@@ -107,9 +96,11 @@ void Camera::ShowControlWidget() noexcept(!IS_DEBUG)
 	ImGui::SliderFloat("X", &m_pos.x, -80.0f, 80.0f, "%.1f");
 	ImGui::SliderFloat("Y", &m_pos.y, -80.0f, 80.0f, "%.1f");
 	ImGui::SliderFloat("Z", &m_pos.z, -80.0f, 80.0f, "%.1f");		
+	m_indicator.SetPos(m_pos);
 	ImGui::Text("Rotation");
 	ImGui::SliderAngle("AngleX", &m_rot.x, 0.995f * -90.0f, 0.995f * 90.0f, "%.1f");
 	ImGui::SliderAngle("AngleY", &m_rot.y, -180.0f, 180.0f, "%.1f");
+	m_indicator.SetRot(m_rot);
 	ImGui::Text("Projection");
 	ImGui::SliderFloat("ViewWidth", &m_viewWidth, -0, 2000.0f, "%.1f");
 	ImGui::SliderFloat("ViewHeight", &m_viewHeight, -0, 2000.0f, "%.1f");
@@ -156,3 +147,12 @@ void Camera::ShowMouse() noexcept
 	m_hideMouse = false;
 }
 
+void Camera::LinkTechniques(Rgph::RenderGraph& rg)
+{
+	m_indicator.LinkTechniques(rg);
+}
+
+void Camera::Submit() const
+{
+	m_indicator.Submit();
+}

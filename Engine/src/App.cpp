@@ -2,6 +2,7 @@
 #include <sstream>
 #include <iomanip>
 #include "Surface.h"
+#include "Signal.h"
 #include "imgui.h"
 #include "Vertex.h"
 #include "VertexShader.h"
@@ -30,6 +31,8 @@ App::App()
 		i.LinkTechniques(m_rg);		
 		i.Submit();
 	}
+	cams.LinkTechniques(m_rg);
+	cams.Submit();
 	pointLight.LinkTechniques(m_rg);
 	pointLight.Submit();
 }
@@ -57,7 +60,16 @@ WPARAM App::Run()
 void App::DoFrame()
 {
 	m_gfx.BeginFrame();
-
+	SIGNAL(
+		cams.signalCamAdded,
+		cams.LinkAddedCamera(m_rg)
+	)
+	for (auto& i : scene)
+	{
+		i.Submit();
+	}
+	cams.Submit();
+	pointLight.Submit();
 	cams.Bind(m_gfx);
 
 	gLight.Update(m_gfx);
@@ -75,6 +87,7 @@ void App::DoFrame()
 	m_rg.RenderWidgets(m_gfx);
 	//
 	m_gfx.EndFrame();
+	m_rg.Reset();
 }
 
 void App::DoWinLogic()

@@ -1,9 +1,9 @@
 #pragma once
 #include <DirectXMath.h>
 #include "ConstantBufferEx.h"
+#include "LightIndicator.h"
 #include "DynamicConstantBuffer.h"
 #include <memory>
-#include "Scene.h"
 class PointLight
 {
 public:
@@ -22,7 +22,7 @@ private:
 	float m_attQuad = 0.00005f;
 	std::unique_ptr<CachingPixelConstantBuffer> m_PSCbuf;
 	DCBuf::Buffer m_cBuffer;
-	Scene::Model m_lightBall;
+	LightIndicator m_indicator;
 };
 
 class GlobalLight

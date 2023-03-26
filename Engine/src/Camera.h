@@ -1,11 +1,15 @@
 #pragma once
 #include <DirectXMath.h>
+#include "CameraIndicator.h"
 #include <string>
+namespace Rgph
+{
+	class RenderGraph;
+}
 class Camera
 {
 public:
 	Camera(class Graphics& gfx, std::string szName);
-	Camera(float ViewWidth, float ViewHeight, std::string szName);
 	DirectX::XMMATRIX GetCameraMatrix() const;
 	DirectX::XMMATRIX GetPerspectiveViewMX() const noexcept(!IS_DEBUG);
 	const std::string& GetName() const noexcept;
@@ -16,10 +20,13 @@ public:
 	void ShowControlWidget() noexcept(!IS_DEBUG);
 	void HideMouse() noexcept;
 	void ShowMouse() noexcept;
+	void LinkTechniques(Rgph::RenderGraph& rg);
+	void Submit() const;
 private:
 	DirectX::XMMATRIX GetFPMatrix() const;
 	DirectX::XMMATRIX GetTPMatrix() const;
 private:
+	CameraIndicator m_indicator;
 	std::string m_szName;
 	bool m_hideMouse = false;
 	unsigned int m_defaultViewWidth;

@@ -2,14 +2,10 @@
 #include "imgui.h"
 PointLight::PointLight(Graphics& gfx)
 	:
-	m_pos(0.0f, 500.0f, 0.0f)
+	m_pos(0.0f, 500.0f, 0.0f),
+	m_indicator(gfx)
 {
-	Scene::ModelSetting op;
-	op.szModelPath = "res\\model\\sphere.obj";
-	op.szModelName = "PointLight";
-	m_lightBall = Scene::Model(gfx, op);
-	m_lightBall.Scale(0.3f);
-
+	m_indicator.SetScale(10.0f);
 	DCBuf::RawLayout cBufferLayout;
 	cBufferLayout.Add<DCBuf::Float3>("LightPos");
 	cBufferLayout.Add<DCBuf::Float3>("Ambient");
@@ -46,18 +42,17 @@ void PointLight::Update(Graphics& gfx) noexcept
 
 	m_PSCbuf->SetBuffer(m_cBuffer);
 	m_PSCbuf->Bind(gfx);
-	m_lightBall.SetPos(m_pos);
-	m_lightBall.ApplyTransformation();
+	m_indicator.SetPos(m_pos);
 }
 
 void PointLight::Submit() noexcept
 {
-	m_lightBall.Submit();
+	m_indicator.Submit();
 }
 
 void PointLight::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
 {
-	m_lightBall.LinkTechniques(rg);
+	m_indicator.LinkTechniques(rg);
 }
 
 void PointLight::SpwanControlWindow() noexcept

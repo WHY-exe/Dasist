@@ -26,10 +26,8 @@ protected:
 		throw WND_EXCEPT(hr)
 #else
 #define INIT_WND_EXCEPT
-#define WND_EXCEPT(error_code)
+#define WND_EXCEPT(error_code) erro_code
 #define WND_LAST_EXCEPT()
-#define WND_CALL(hr)\
-	if(FAILED(hr))\
-		throw WND_EXCEPT(hr)
+#define WND_CALL(hr) hr
 #endif // !IS_DEBUG
 

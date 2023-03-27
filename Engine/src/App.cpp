@@ -10,7 +10,7 @@
 App::App()
 	:
 	m_imguiMan(),
-	m_wnd(L"WindowTitle", 1000, 700),
+	m_wnd(L"Engine", 1000, 700),
 	m_gfx(m_wnd.GetGfx()),
 	pointLight(m_gfx),
 	gLight(m_gfx),

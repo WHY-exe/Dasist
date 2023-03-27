@@ -33,6 +33,7 @@ void CameraContainer::SpawControlWindow() noexcept(!IS_DEBUG)
 {	
 	if (ImGui::Begin("Cameras"))
 	{
+		ImGui::Text("Active Camera");
 		if (ImGui::BeginCombo("Current Camera", m_Container[m_cur_idx]->GetName().c_str()))
 		{
 			for (int n = 0; n < m_Container.size(); n++)
@@ -49,6 +50,7 @@ void CameraContainer::SpawControlWindow() noexcept(!IS_DEBUG)
 			}
 			ImGui::EndCombo();
 		}
+
 		if (ImGui::Button("Add Camera"))
 		{
 			Add(m_gfx);
@@ -56,12 +58,29 @@ void CameraContainer::SpawControlWindow() noexcept(!IS_DEBUG)
 		} 
 		if(m_Container.size() > 1)
 		{ 
-			if (ImGui::Button("Delete Camera"))
+			if (ImGui::Button("Delete Current Camera"))
 			{
 				DeleteCurCamera();
 			}
 		}
-		m_Container[m_cur_idx]->ShowControlWidget();
+		ImGui::Text("Controled Camera");
+		if (ImGui::BeginCombo("Controled Camera", m_Container[m_cur_selected_cam]->GetName().c_str()))
+		{
+			for (int n = 0; n < m_Container.size(); n++)
+			{
+				const bool isSelected = m_cur_selected_cam == n;
+				if (ImGui::Selectable(m_Container[n]->GetName().c_str(), isSelected))
+				{
+					m_cur_selected_cam = n;
+				}
+				if (isSelected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
+		m_Container[m_cur_selected_cam]->ShowControlWidget();
 		ImGui::End();
 	}
 }

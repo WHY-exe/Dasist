@@ -16,7 +16,7 @@ void Drawable::SetEssentialBind(size_t index, std::shared_ptr<Bindable> bind) no
 	else
 	{
 		assert(index < m_essential_binds.size());
-		m_essential_binds[index] = std::move(bind);
+		m_essential_binds[index] = bind;
 	}
 }
 

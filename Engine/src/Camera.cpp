@@ -97,6 +97,9 @@ DirectX::XMMATRIX Camera::GetTPMatrix() const
 
 void Camera::ShowControlWidget() noexcept(!IS_DEBUG)
 {
+	auto check_dirty = [](bool& dirty, bool func) {
+		dirty =  dirty || func;
+	};
 	ImGui::Text("Position");
 	ImGui::SliderFloat("X", &m_pos.x, -80.0f, 80.0f, "%.1f");
 	ImGui::SliderFloat("Y", &m_pos.y, -80.0f, 80.0f, "%.1f");
@@ -108,18 +111,23 @@ void Camera::ShowControlWidget() noexcept(!IS_DEBUG)
 	ImGui::SliderAngle("AngleY", &m_rot.y, -180.0f, 180.0f, "%.1f");
 	m_indicator.SetRot(m_rot);
 	m_fov_indi.SetRot(m_rot);
+	bool proj_dirty = false;
 	ImGui::Text("Projection");
-	ImGui::SliderFloat("ViewWidth", &m_viewWidth, -0, 2000.0f, "%.1f");
-	ImGui::SliderFloat("ViewHeight", &m_viewHeight, -0, 2000.0f, "%.1f");
-	ImGui::SliderFloat("NearZ", &m_NearZ, 0.1f, 80.0f, "%.1f");
-	ImGui::SliderFloat("FarZ", &m_FarZ, 0.1f, 3000.0f, "%.1f");
-	m_fov_indi.SetVertices(m_gfx, m_viewWidth, m_viewHeight, m_NearZ, m_FarZ);
+	check_dirty(proj_dirty, ImGui::SliderFloat("ViewWidth", &m_viewWidth, -0, 2000.0f, "%.1f"));
+	check_dirty(proj_dirty, ImGui::SliderFloat("ViewHeight", &m_viewHeight, -0, 2000.0f, "%.1f"));
+	check_dirty(proj_dirty, ImGui::SliderFloat("NearZ", &m_NearZ, 0.1f, 80.0f, "%.1f"));
+	check_dirty(proj_dirty, ImGui::SliderFloat("FarZ", &m_FarZ, 0.1f, 3000.0f, "%.1f"));
+	if (proj_dirty)
+	{
+		m_fov_indi.SetVertices(m_gfx, m_viewWidth / 10.0f, m_viewHeight / 10.0f, m_NearZ, m_FarZ);
+	}
 	if (ImGui::Button("Reset Projection"))
 	{
 		m_viewWidth  = float(m_defaultViewWidth);
 		m_viewHeight = float(m_defaultViewHeight);
 		m_NearZ = 0.5f;
 		m_FarZ = 2500.0f;
+		m_fov_indi.SetVertices(m_gfx, m_viewWidth / 10.0f, m_viewHeight / 10.0f, m_NearZ, m_FarZ);
 	}
 	ImGui::Text("Reset to default");
 	if (ImGui::Button("Reset"))
@@ -130,8 +138,11 @@ void Camera::ShowControlWidget() noexcept(!IS_DEBUG)
 		m_viewHeight = float(m_defaultViewHeight);
 		m_NearZ = 0.5f;
 		m_FarZ = 2500.0f;
+		m_fov_indi.SetVertices(m_gfx, m_viewWidth / 10.0f, m_viewHeight / 10.0f, m_NearZ, m_FarZ);
 	}
 	ImGui::Text("First Person Shooter experience");
+	ImGui::Checkbox("Enable Camera Indicator", &m_enCamIndi);
+	ImGui::Checkbox("Enable Camera FOV Indicator", &m_enFOVIndi);
 	if (!m_hideMouse)
 	{
 		if (ImGui::Button("First Person Mouse"))
@@ -163,6 +174,8 @@ void Camera::LinkTechniques(Rgph::RenderGraph& rg)
 
 void Camera::Submit() const
 {
-	m_indicator.Submit();
-	m_fov_indi.Submit();
+	if(m_enCamIndi)
+		m_indicator.Submit();
+	if (m_enFOVIndi)
+		m_fov_indi.Submit();
 }

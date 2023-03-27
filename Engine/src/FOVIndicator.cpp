@@ -80,9 +80,9 @@ void FOVIndicator::SetVertices(Graphics& gfx, float width, float height, float n
 	layout.Append(Vertex::Position3D);
 	Vertex::DataBuffer vertices(layout);
 	{
-		const float zRatio = farZ / nearZ / 400.0f;
-		const float nearX = width / 2.0f;
-		const float nearY = height / 2.0f;
+		const float zRatio = farZ / nearZ / 20.0f;
+		const float nearX = width / 20.0f;
+		const float nearY = height / 20.0f;
 		const float farX = nearX * zRatio;
 		const float farY = nearY * zRatio;
 		vertices.EmplaceBack(DirectX::XMFLOAT3{ -nearX,nearY,nearZ });
@@ -94,7 +94,7 @@ void FOVIndicator::SetVertices(Graphics& gfx, float width, float height, float n
 		vertices.EmplaceBack(DirectX::XMFLOAT3{ farX,-farY,farZ });
 		vertices.EmplaceBack(DirectX::XMFLOAT3{ -farX,-farY,farZ });
 	}
-	SetEssentialBind(0, VertexBuffer::Resolve(gfx, L"$fov", vertices));
+	SetEssentialBind(0, std::make_shared<VertexBuffer>(gfx, L"$fov", vertices));
 }
 
 void FOVIndicator::SetPos(DirectX::XMFLOAT3 pos) noexcept

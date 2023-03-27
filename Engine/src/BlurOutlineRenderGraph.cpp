@@ -1,4 +1,5 @@
 #include "BlurOutlineRenderGraph.h"
+#include "WireFramePass.h"
 #include "BufferClearPass.h"
 #include "LambertianPass.h"
 #include "OutlineDrawingPass.h"
@@ -34,8 +35,14 @@ namespace Rgph
 			AppendPass( std::move( pass ) );
 		}
 		{
+			auto pass = std::make_unique<WireFramePass>(gfx, "wireframe");
+			pass->SetSinkLinkage("renderTarget", "lambertian.renderTarget");
+			pass->SetSinkLinkage("depthStencil", "lambertian.depthStencil");
+			AppendPass(std::move(pass));
+		}
+		{
 			auto pass = std::make_unique<OutlineMaskGenerationPass>( gfx,"outlineMask" );
-			pass->SetSinkLinkage( "depthStencil","lambertian.depthStencil" );
+			pass->SetSinkLinkage( "depthStencil","wireframe.depthStencil" );
 			AppendPass( std::move( pass ) );
 		}
 
@@ -73,13 +80,14 @@ namespace Rgph
 		}
 		{
 			auto pass = std::make_unique<VerticalBlurPass>( "vertical",gfx );
-			pass->SetSinkLinkage( "renderTarget","lambertian.renderTarget" );
+			pass->SetSinkLinkage( "renderTarget","wireframe.renderTarget" );
 			pass->SetSinkLinkage( "depthStencil","outlineMask.depthStencil" );
 			pass->SetSinkLinkage( "scratchIn","horizontal.scratchOut" );
 			pass->SetSinkLinkage( "kernel","$.blurKernel" );
 			pass->SetSinkLinkage( "direction","$.blurDirection" );
 			AppendPass( std::move( pass ) );
 		}
+
 		SetSinkTarget( "backbuffer","vertical.renderTarget" );
 
 		Finalize();

@@ -1,4 +1,4 @@
-<img src="C:\Users\29478\source\repos\DirectX11\DirectXFrame\renderGraphcpng.png" alt="renderGraphcpng" style="zoom: 50%;" />
+<img src="renderGraphcpng.png" alt="renderGraphcpng" style="zoom: 50%;" />
 
 首先什么是**RenderGraphc**？**RenderGraph**的全称为Rendering Dependency Graph（**RDG**），如果我们直接从字面上翻译，它的意思就是**渲染依赖图**。在我们现有的渲染系统中，我们需要把资源（如，顶点、贴图信息）绑定到渲染管线上，然后渲染管线最后在将最后的结果渲染至**渲染对象**（**Render Target**）上。在我们的渲染特效还不是那么多的时候，我们通常只需要一个渲染对象。但是当我们需要多个渲染效果叠加时，一个渲染对象显然就不是那么够用了。
 

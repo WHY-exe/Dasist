@@ -7,6 +7,19 @@ void Drawable::AddTechnique(Technique& tech) noexcept
 	m_Techs.push_back(std::move(tech));
 }
 
+void Drawable::SetEssentialBind(size_t index, std::shared_ptr<Bindable> bind) noexcept
+{
+	if (m_essential_binds.empty())
+	{
+		AddEssentialBind(std::move(bind));
+	}
+	else
+	{
+		assert(index < m_essential_binds.size());
+		m_essential_binds[index] = std::move(bind);
+	}
+}
+
 void Drawable::AddEssentialBind(std::shared_ptr<Bindable> bind) noexcept
 {
 	if (typeid(*bind) == typeid(IndexBuffer))

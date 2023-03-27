@@ -5,9 +5,6 @@
 #include "Sink.h"
 #include "Source.h"
 #include "Stencil.h"
-
-class Graphics;
-
 namespace Rgph
 {
 	class LambertianPass : public RenderQueuePass

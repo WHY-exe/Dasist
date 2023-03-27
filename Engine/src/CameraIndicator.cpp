@@ -55,24 +55,18 @@ CameraIndicator::CameraIndicator(Graphics& gfx)
 	{
 		Technique line("line_draw");
 		Step only("lambertian");
-
 		auto pvs = VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso");
 		only.AddBind(InputLayout::Resolve(gfx, vertices.GetLayout(), *pvs));
 		only.AddBind(std::move(pvs));
-
 		struct PSColorConstant
 		{
 			DirectX::XMFLOAT3 color = { 0.2f,0.2f,0.6f };
-			float padding;
+			float padding = 0.0f;
 		} colorConst;
-
-		only.AddBind(PixelConstantBuffer<PSColorConstant>::Resolve(gfx, colorConst, 1u));
+		only.AddBind(PixelConstantBuffer<PSColorConstant>::Resolve(gfx, colorConst, 3u));
 		only.AddBind(PixelShader::Resolve(gfx, L"res\\cso\\Solid_PS.cso"));
-
 		only.AddBind(std::make_shared<TransformCbuf>(gfx, *this));
-
 		only.AddBind(Rasterizer::Resolve(gfx, false));
-
 		line.AddStep(only);
 		AddTechnique(line);
 	}

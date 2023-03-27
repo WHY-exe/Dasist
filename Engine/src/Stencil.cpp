@@ -12,6 +12,13 @@ Stencil::Stencil(Graphics& gfx, Mod mod)
 	{
 	case Stencil::Mod::Off:
 		break;
+	case Stencil::Mod::DepthOff:
+		depthDesc.DepthEnable = FALSE;
+		depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		break;
+	case Stencil::Mod::DepthReversed:
+		depthDesc.DepthFunc = D3D11_COMPARISON_GREATER;
+		break;
 	case Stencil::Mod::Write:
 		depthDesc.DepthEnable = FALSE;
 		depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
@@ -64,6 +71,12 @@ std::wstring Stencil::GenUID(Mod mode) noexcept
 		break;
 	case Stencil::Mod::Mask:
 		mode_str = "Mask";
+		break;
+	case Stencil::Mod::DepthOff:
+		mode_str = "depth-off";
+		break;
+	case Stencil::Mod::DepthReversed:
+		mode_str = "depth-reversed"s;
 		break;
 	}
 	return ANSI_TO_UTF8_STR(typeid(Stencil).name() + "#"s + mode_str);

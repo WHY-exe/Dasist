@@ -8,6 +8,8 @@ public:
 	enum class Mod
 	{
 		Off,
+		DepthOff,
+		DepthReversed,
 		Write,
 		Mask,
 		MaskAndWrite

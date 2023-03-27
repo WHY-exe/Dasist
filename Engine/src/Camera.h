@@ -1,6 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 #include "CameraIndicator.h"
+#include "FOVIndicator.h"
 #include <string>
 namespace Rgph
 {
@@ -26,7 +27,7 @@ private:
 	DirectX::XMMATRIX GetFPMatrix() const;
 	DirectX::XMMATRIX GetTPMatrix() const;
 private:
-	CameraIndicator m_indicator;
+	Graphics& m_gfx;
 	std::string m_szName;
 	bool m_hideMouse = false;
 	unsigned int m_defaultViewWidth;
@@ -34,7 +35,9 @@ private:
 	float m_viewWidth;
 	float m_viewHeight;
 	float m_NearZ;
-	float m_FarZ;
+	float m_FarZ;	
+	FOVIndicator m_fov_indi;
+	CameraIndicator m_indicator;
 	DirectX::XMFLOAT3 m_pos;
 	DirectX::XMFLOAT3 m_rot;
 	static constexpr float m_rot_speed = 0.004f;

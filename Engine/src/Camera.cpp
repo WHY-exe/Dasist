@@ -11,13 +11,18 @@ Camera::Camera(Graphics& gfx, std::string szName)
 	m_viewWidth((float)(gfx.GetWindowWidth())),
 	m_viewHeight((float)(gfx.GetWindowHeight())),
 	m_NearZ(0.5f),
-	m_FarZ(100000.0f),
+	m_FarZ(2500.0f),
 	m_pos(0.0f, 100.0f, -25.0f),
 	m_rot(0.0f, 0.0f, 0.0f),
-	m_indicator(gfx)
+	m_indicator(gfx),
+	m_fov_indi(gfx, m_viewWidth / 10.0f, m_viewHeight / 10.0f, m_NearZ, m_FarZ),
+	m_gfx(gfx)
 {
+	m_indicator.SetScale(10.0f);
 	m_indicator.SetPos(m_pos);
 	m_indicator.SetRot(m_rot);
+	m_fov_indi.SetPos(m_pos);
+	m_fov_indi.SetRot(m_rot);
 }
 
 DirectX::XMMATRIX Camera::GetCameraMatrix() const
@@ -97,21 +102,24 @@ void Camera::ShowControlWidget() noexcept(!IS_DEBUG)
 	ImGui::SliderFloat("Y", &m_pos.y, -80.0f, 80.0f, "%.1f");
 	ImGui::SliderFloat("Z", &m_pos.z, -80.0f, 80.0f, "%.1f");		
 	m_indicator.SetPos(m_pos);
+	m_fov_indi.SetPos(m_pos);
 	ImGui::Text("Rotation");
 	ImGui::SliderAngle("AngleX", &m_rot.x, 0.995f * -90.0f, 0.995f * 90.0f, "%.1f");
 	ImGui::SliderAngle("AngleY", &m_rot.y, -180.0f, 180.0f, "%.1f");
 	m_indicator.SetRot(m_rot);
+	m_fov_indi.SetRot(m_rot);
 	ImGui::Text("Projection");
 	ImGui::SliderFloat("ViewWidth", &m_viewWidth, -0, 2000.0f, "%.1f");
 	ImGui::SliderFloat("ViewHeight", &m_viewHeight, -0, 2000.0f, "%.1f");
 	ImGui::SliderFloat("NearZ", &m_NearZ, 0.1f, 80.0f, "%.1f");
-	ImGui::SliderFloat("FarZ", &m_FarZ, 0.1f, 10000.0f, "%.1f");
+	ImGui::SliderFloat("FarZ", &m_FarZ, 0.1f, 3000.0f, "%.1f");
+	m_fov_indi.SetVertices(m_gfx, m_viewWidth, m_viewHeight, m_NearZ, m_FarZ);
 	if (ImGui::Button("Reset Projection"))
 	{
 		m_viewWidth  = float(m_defaultViewWidth);
 		m_viewHeight = float(m_defaultViewHeight);
 		m_NearZ = 0.5f;
-		m_FarZ = 10000.0f;
+		m_FarZ = 2500.0f;
 	}
 	ImGui::Text("Reset to default");
 	if (ImGui::Button("Reset"))
@@ -121,7 +129,7 @@ void Camera::ShowControlWidget() noexcept(!IS_DEBUG)
 		m_viewWidth = float(m_defaultViewWidth);
 		m_viewHeight = float(m_defaultViewHeight);
 		m_NearZ = 0.5f;
-		m_FarZ = 10000.0f;
+		m_FarZ = 2500.0f;
 	}
 	ImGui::Text("First Person Shooter experience");
 	if (!m_hideMouse)
@@ -150,9 +158,11 @@ void Camera::ShowMouse() noexcept
 void Camera::LinkTechniques(Rgph::RenderGraph& rg)
 {
 	m_indicator.LinkTechniques(rg);
+	m_fov_indi.LinkTechniques(rg);
 }
 
 void Camera::Submit() const
 {
 	m_indicator.Submit();
+	m_fov_indi.Submit();
 }

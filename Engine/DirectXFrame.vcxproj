@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\FOVIndicator.cpp" />
     <ClCompile Include="src\CameraIndicator.cpp" />
     <ClCompile Include="src\LightIndicator.cpp" />
     <ClCompile Include="src\CameraContainer.cpp" />
@@ -88,6 +89,7 @@
     <ClCompile Include="src\Step.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\FOVIndicator.h" />
     <ClInclude Include="src\CameraIndicator.h" />
     <ClInclude Include="src\Cube.h" />
     <ClInclude Include="src\IndexedTriangleList.h" />
@@ -180,6 +182,7 @@
     <ClInclude Include="src\VS_PS_TFCB.h" />
     <ClInclude Include="src\Stencil.h" />
     <ClInclude Include="src\Step.h" />
+    <ClInclude Include="src\WireFramePass.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\BlurPS.hlsl">

@@ -14,6 +14,7 @@ PointLight::PointLight(Graphics& gfx)
 	cBufferLayout.Add<DCBuf::Float>("attConst");
 	cBufferLayout.Add<DCBuf::Float>("attLin");
 	cBufferLayout.Add<DCBuf::Float>("attQuad");
+	cBufferLayout.Add<DCBuf::Bool>("Enable");
 	m_cBuffer = DCBuf::Buffer(std::move(cBufferLayout));
 
 	m_cBuffer["LightPos"] = m_pos;
@@ -23,7 +24,7 @@ PointLight::PointLight(Graphics& gfx)
 	m_cBuffer["attConst"] = m_attConst;
 	m_cBuffer["attLin"] = m_attLinear;
 	m_cBuffer["attQuad"] = m_attQuad;
-
+	m_cBuffer["Enable"] = m_Enable;
 	m_PSCbuf = std::make_unique<CachingPixelConstantBuffer>(gfx, m_cBuffer, 0u);
 }
 
@@ -39,6 +40,7 @@ void PointLight::Update(Graphics& gfx) noexcept
 	m_cBuffer["attConst"] = m_attConst;
 	m_cBuffer["attLin"] = m_attLinear;
 	m_cBuffer["attQuad"] = m_attQuad;
+	m_cBuffer["Enable"] = m_Enable;
 
 	m_PSCbuf->SetBuffer(m_cBuffer);
 	m_PSCbuf->Bind(gfx);
@@ -47,7 +49,8 @@ void PointLight::Update(Graphics& gfx) noexcept
 
 void PointLight::Submit() noexcept
 {
-	m_indicator.Submit();
+	if(m_Enable)
+		m_indicator.Submit();
 }
 
 void PointLight::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
@@ -71,6 +74,7 @@ void PointLight::SpwanControlWindow() noexcept
 		ImGui::SliderFloat("AttConst", &m_attConst, 0.0f, 0.1f, "%.5f");
 		ImGui::SliderFloat("AttLinear", &m_attLinear, 0.0f, 0.1f, "%.5f");
 		ImGui::SliderFloat("AttQuad", &m_attQuad, 0.0f, 0.1f, "%.5f");
+		ImGui::Checkbox("Enable", reinterpret_cast<bool*>(&m_Enable));
 	}
 	ImGui::End();
 }
@@ -85,13 +89,14 @@ GlobalLight::GlobalLight(Graphics& gfx)
 	cBufferLayout.Add<DCBuf::Float3>("Ambient");
 	cBufferLayout.Add<DCBuf::Float3>("DiffuseColor");
 	cBufferLayout.Add<DCBuf::Float>("DiffuseIntensity");
-
+	cBufferLayout.Add<DCBuf::Bool>("Enable");
 	m_cBuffer = DCBuf::Buffer(std::move(cBufferLayout));
 
 	m_cBuffer["LightPos"] = m_pos;
 	m_cBuffer["Ambient"] = m_ambient;
 	m_cBuffer["DiffuseColor"] = m_diffuseColor;
 	m_cBuffer["DiffuseIntensity"] = m_diffuseIntensity;
+	m_cBuffer["Enable"] = m_Enable;
 	m_PSCbuf = std::make_unique<CachingPixelConstantBuffer>(gfx, m_cBuffer, 1u);
 }
 
@@ -105,6 +110,7 @@ void GlobalLight::Update(Graphics& gfx) noexcept
 	m_cBuffer["Ambient"] = m_ambient;
 	m_cBuffer["DiffuseColor"] = m_diffuseColor;
 	m_cBuffer["DiffuseIntensity"] = m_diffuseIntensity;
+	m_cBuffer["Enable"] = m_Enable;
 	m_PSCbuf->SetBuffer(m_cBuffer);
 	m_PSCbuf->Bind(gfx);
 }
@@ -121,6 +127,7 @@ void GlobalLight::SpwanControlWindow() noexcept
 		ImGui::ColorEdit3("AmbientColor", &m_ambient.x);
 		ImGui::Text("LightIntensity");
 		ImGui::SliderFloat("Intensity", &m_diffuseIntensity, 0.0f, 10.0f, "%.2f");
+		ImGui::Checkbox("Enable", reinterpret_cast<bool*>(&m_Enable));
 	}
 	ImGui::End();
 }

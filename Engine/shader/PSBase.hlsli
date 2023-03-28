@@ -34,18 +34,18 @@ struct LightAttri
     float AttQuad;
 };
 
-struct lightData
-{
-    float3 LightViewPos;
-    float3 AmbientColor;
-    float3 DiffuseColor;
-    float DiffuseIntensity;
-    bool enAtt;
-    bool Enable;
-    float AttConst;
-    float AttLinear;
-    float AttQuad;
-};
+//struct lightData
+//{
+//    float3 LightViewPos;
+//    float3 AmbientColor;
+//    float3 DiffuseColor;
+//    float DiffuseIntensity;
+//    bool enAtt;
+//    bool Enable;
+//    float AttConst;
+//    float AttLinear;
+//    float AttQuad;
+//};
 
 
 
@@ -58,6 +58,7 @@ cbuffer pointLightCBuf : register(b0)
     float pAttConst;
     float pAttLinear;
     float pAttQuad;
+    bool pEnable;
 };
 
 
@@ -67,6 +68,7 @@ cbuffer GlobalLightCBuf : register(b1)
     float3 gAmbientColor;
     float3 gDiffuseColor;
     float gDiffuseIntensity;
+    bool gEnable;
 };
 
 cbuffer OBJCBuf : register(b2)
@@ -79,7 +81,7 @@ cbuffer OBJCBuf : register(b2)
     bool hasGloss;
     bool enNormal;
 };
-cbuffer outlineCBuf : register(b3)
+cbuffer SolidColorCBuf : register(b3)
 {
     float4 solid_color;
 }

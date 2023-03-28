@@ -5,7 +5,7 @@
 #include <algorithm>
 Camera::Camera(Graphics& gfx, std::string szName)
 	:
-	m_szName(szName),	
+	m_szName(std::move(szName)),	
 	m_defaultViewWidth(gfx.GetWindowWidth()),
 	m_defaultViewHeight(gfx.GetWindowHeight()),
 	m_viewWidth((float)(gfx.GetWindowWidth())),
@@ -95,7 +95,7 @@ DirectX::XMMATRIX Camera::GetTPMatrix() const
 		   DirectX::XMMatrixTranslation(-m_pos.x, -m_pos.y, -m_pos.z);
 }
 
-void Camera::ShowControlWidget() noexcept(!IS_DEBUG)
+void Camera::ShowControlCameraWidget() noexcept(!IS_DEBUG)
 {
 	auto check_dirty = [](bool& dirty, bool func) {
 		dirty =  dirty || func;
@@ -110,9 +110,9 @@ void Camera::ShowControlWidget() noexcept(!IS_DEBUG)
 	ImGui::SliderAngle("AngleX", &m_rot.x, 0.995f * -90.0f, 0.995f * 90.0f, "%.1f");
 	ImGui::SliderAngle("AngleY", &m_rot.y, -180.0f, 180.0f, "%.1f");
 	m_indicator.SetRot(m_rot);
-	m_fov_indi.SetRot(m_rot);
+	m_fov_indi.SetRot(m_rot);	
+	ImGui::Text("FOV");
 	bool proj_dirty = false;
-	ImGui::Text("Projection");
 	check_dirty(proj_dirty, ImGui::SliderFloat("ViewWidth", &m_viewWidth, -0, 2000.0f, "%.1f"));
 	check_dirty(proj_dirty, ImGui::SliderFloat("ViewHeight", &m_viewHeight, -0, 2000.0f, "%.1f"));
 	check_dirty(proj_dirty, ImGui::SliderFloat("NearZ", &m_NearZ, 0.1f, 80.0f, "%.1f"));
@@ -121,7 +121,8 @@ void Camera::ShowControlWidget() noexcept(!IS_DEBUG)
 	{
 		m_fov_indi.SetVertices(m_gfx, m_viewWidth / 10.0f, m_viewHeight / 10.0f, m_NearZ, m_FarZ);
 	}
-	if (ImGui::Button("Reset Projection"))
+	ImGui::Text("Reset FOV");
+	if (ImGui::Button("Reset controled camera FOV"))
 	{
 		m_viewWidth  = float(m_defaultViewWidth);
 		m_viewHeight = float(m_defaultViewHeight);
@@ -130,6 +131,33 @@ void Camera::ShowControlWidget() noexcept(!IS_DEBUG)
 		m_fov_indi.SetVertices(m_gfx, m_viewWidth / 10.0f, m_viewHeight / 10.0f, m_NearZ, m_FarZ);
 	}
 	ImGui::Text("Reset to default");
+	if (ImGui::Button("Reset controled camera"))
+	{
+		m_pos = homePos;
+		m_rot = { 0.0f, 0.0f ,0.0f };
+		m_viewWidth = float(m_defaultViewWidth);
+		m_viewHeight = float(m_defaultViewHeight);
+		m_NearZ = 0.5f;
+		m_FarZ = 2500.0f;
+		m_fov_indi.SetVertices(m_gfx, m_viewWidth / 10.0f, m_viewHeight / 10.0f, m_NearZ, m_FarZ);
+	}
+
+	ImGui::Checkbox("Enable Camera Indicator", &m_enCamIndi);
+	ImGui::Checkbox("Enable Camera FOV Indicator", &m_enFOVIndi);
+}
+
+void Camera::ShowActiveCameraWidget() noexcept(!IS_DEBUG)
+{
+	ImGui::Text("Reset FOV");
+	if (ImGui::Button("Reset FOV"))
+	{
+		m_viewWidth = float(m_defaultViewWidth);
+		m_viewHeight = float(m_defaultViewHeight);
+		m_NearZ = 0.5f;
+		m_FarZ = 2500.0f;
+		m_fov_indi.SetVertices(m_gfx, m_viewWidth / 10.0f, m_viewHeight / 10.0f, m_NearZ, m_FarZ);
+	}
+	ImGui::Text("Reset to default camera value");
 	if (ImGui::Button("Reset"))
 	{
 		m_pos = homePos;
@@ -141,8 +169,6 @@ void Camera::ShowControlWidget() noexcept(!IS_DEBUG)
 		m_fov_indi.SetVertices(m_gfx, m_viewWidth / 10.0f, m_viewHeight / 10.0f, m_NearZ, m_FarZ);
 	}
 	ImGui::Text("First Person Shooter experience");
-	ImGui::Checkbox("Enable Camera Indicator", &m_enCamIndi);
-	ImGui::Checkbox("Enable Camera FOV Indicator", &m_enFOVIndi);
 	if (!m_hideMouse)
 	{
 		if (ImGui::Button("First Person Mouse"))

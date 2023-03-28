@@ -13,7 +13,7 @@ CameraContainer::CameraContainer(Graphics& gfx)
 }
 Camera& CameraContainer::GetCamera() noexcept
 {
-	return *m_Container[m_cur_idx];
+	return *m_Container[m_active_cam_idx];
 }
 
 void CameraContainer::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
@@ -25,8 +25,8 @@ void CameraContainer::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 	}
 	SIGNAL(gfx.sizeSignalPrj, SIGNAL_FUNCTION);
 #undef SIGNAL_FUNCTION
-	gfx.SetProjection(m_Container[m_cur_idx]->GetPerspectiveViewMX());
-	gfx.SetCamera(m_Container[m_cur_idx]->GetCameraMatrix());
+	gfx.SetProjection(m_Container[m_active_cam_idx]->GetPerspectiveViewMX());
+	gfx.SetCamera(m_Container[m_active_cam_idx]->GetCameraMatrix());
 }
 
 void CameraContainer::SpawControlWindow() noexcept(!IS_DEBUG)
@@ -34,14 +34,14 @@ void CameraContainer::SpawControlWindow() noexcept(!IS_DEBUG)
 	if (ImGui::Begin("Cameras"))
 	{
 		ImGui::Text("Active Camera");
-		if (ImGui::BeginCombo("Current Camera", m_Container[m_cur_idx]->GetName().c_str()))
+		if (ImGui::BeginCombo("Current Camera", m_Container[m_active_cam_idx]->GetName().c_str()))
 		{
 			for (int n = 0; n < m_Container.size(); n++)
 			{
-				const bool isSelected = m_cur_idx == n;
+				const bool isSelected = m_active_cam_idx == n;
 				if (ImGui::Selectable(m_Container[n]->GetName().c_str(), isSelected))
 				{
-					m_cur_idx = n;
+					m_active_cam_idx = n;
 				}
 				if (isSelected)
 				{
@@ -50,7 +50,6 @@ void CameraContainer::SpawControlWindow() noexcept(!IS_DEBUG)
 			}
 			ImGui::EndCombo();
 		}
-
 		if (ImGui::Button("Add Camera"))
 		{
 			Add(m_gfx);
@@ -63,15 +62,16 @@ void CameraContainer::SpawControlWindow() noexcept(!IS_DEBUG)
 				DeleteCurCamera();
 			}
 		}
+		m_Container[m_active_cam_idx]->ShowActiveCameraWidget();
 		ImGui::Text("Controled Camera");
-		if (ImGui::BeginCombo("Controled Camera", m_Container[m_cur_selected_cam]->GetName().c_str()))
+		if (ImGui::BeginCombo("Controled Camera", m_Container[m_selected_cam_idx]->GetName().c_str()))
 		{
 			for (int n = 0; n < m_Container.size(); n++)
 			{
-				const bool isSelected = m_cur_selected_cam == n;
+				const bool isSelected = m_selected_cam_idx == n;
 				if (ImGui::Selectable(m_Container[n]->GetName().c_str(), isSelected))
 				{
-					m_cur_selected_cam = n;
+					m_selected_cam_idx = n;
 				}
 				if (isSelected)
 				{
@@ -80,15 +80,15 @@ void CameraContainer::SpawControlWindow() noexcept(!IS_DEBUG)
 			}
 			ImGui::EndCombo();
 		}
-		m_Container[m_cur_selected_cam]->ShowControlWidget();
+		m_Container[m_selected_cam_idx]->ShowControlCameraWidget();
 		ImGui::End();
 	}
 }
 
 void CameraContainer::DeleteCurCamera() noexcept(!IS_DEBUG)
 {
-	m_Container.erase(m_Container.begin() + m_cur_idx);
-	m_cur_idx == 0 ? m_cur_idx = 0 : m_cur_idx--;
+	m_Container.erase(m_Container.begin() + m_active_cam_idx);
+	m_active_cam_idx == 0 ? m_active_cam_idx = 0 : m_active_cam_idx--;
 }
 
 void CameraContainer::Add(std::unique_ptr<Camera>& camera) noexcept(!IS_DEBUG)
@@ -119,7 +119,7 @@ void CameraContainer::Submit() const
 {
 	for (size_t i = 0; i < m_Container.size(); i++)
 	{
-		if (i != m_cur_idx)
+		if (i != m_active_cam_idx)
 			m_Container[i]->Submit();
 	}
 		

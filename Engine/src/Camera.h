@@ -18,7 +18,8 @@ public:
 	void Translate(float dx, float dy, float dz);
 	bool MouseStatus() const noexcept;
 	void UpdateDefaultValues(class Graphics& gfx) noexcept;
-	void ShowControlWidget() noexcept(!IS_DEBUG);
+	void ShowControlCameraWidget() noexcept(!IS_DEBUG);
+	void ShowActiveCameraWidget() noexcept(!IS_DEBUG);
 	void HideMouse() noexcept;
 	void ShowMouse() noexcept;
 	void LinkTechniques(Rgph::RenderGraph& rg);

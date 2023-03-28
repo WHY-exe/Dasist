@@ -34,6 +34,20 @@ struct LightAttri
     float AttQuad;
 };
 
+struct lightData
+{
+    float3 LightViewPos;
+    float3 AmbientColor;
+    float3 DiffuseColor;
+    float DiffuseIntensity;
+    bool enAtt;
+    bool Enable;
+    float AttConst;
+    float AttLinear;
+    float AttQuad;
+};
+
+
 
 cbuffer pointLightCBuf : register(b0)
 {

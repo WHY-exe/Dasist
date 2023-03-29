@@ -662,6 +662,9 @@
     <FxCompile Include="shader\BlurPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="shader\lighting.hlsli">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\DirectXFrame.aps">

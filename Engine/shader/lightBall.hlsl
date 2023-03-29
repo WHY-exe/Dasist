@@ -1,5 +1,5 @@
-#include "PSBase.hlsli"
-
+#include "PSBase.hlsli" 
+#include "lighting.hlsli"
 
 float4 main() : SV_TARGET
 {

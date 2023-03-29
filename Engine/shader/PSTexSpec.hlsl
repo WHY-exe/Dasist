@@ -1,4 +1,5 @@
-#include "PSBase.hlsli"
+#include "PSBase.hlsli" 
+#include "lighting.hlsli"
 float4 main(VSOut vso) : SV_Target
 {
     const float4 SpecularSample = spec.Sample(splr, vso.tc);

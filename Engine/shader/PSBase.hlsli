@@ -3,7 +3,7 @@ Texture2D spec : register(t1);
 Texture2D nmap : register(t2);
 Texture2D amap : register(t3);
 
-SamplerState splr : register(s1);
+SamplerState splr : register(s0);
 
 struct VSOut
 {

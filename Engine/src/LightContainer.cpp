@@ -21,6 +21,7 @@ LightContainer::LightContainer(Graphics& gfx)
 	{
 		UpdateCBuffer(i);
 	}
+	m_PL_CBuffer["cur_light_num"] = (int)(m_point_lights.size());
 	m_PL_PSCbuf = std::make_unique<CachingPixelConstantBuffer>(gfx, m_PL_CBuffer, 0u);
 	//TestCode: add two lights 
 	for (size_t i = 0; i < 2; i++)
@@ -31,6 +32,13 @@ LightContainer::LightContainer(Graphics& gfx)
 
 void LightContainer::Bind(Graphics& gfx) noexcept
 {
+	for (size_t i = 0; i < m_point_lights.size(); i++)
+	{
+		m_point_lights[i]->Update();
+		UpdateCBuffer(i);
+	}
+	int cur_light_num = (int)(m_point_lights.size());
+	m_PL_CBuffer["cur_light_num"] = cur_light_num;
 	m_PL_PSCbuf->SetBuffer(m_PL_CBuffer);
 	m_PL_PSCbuf->Bind(gfx);
 }
@@ -88,13 +96,13 @@ void LightContainer::SpwanControlWindow() noexcept(!IS_DEBUG)
 			}
 			ImGui::EndCombo();
 		}
-		if (ImGui::Button("Add Camera"))
+		if (ImGui::Button("Add Light"))
 		{
 			AddPointLight(m_gfx);
 		}
 		if (m_point_lights.size() > 1)
 		{
-			if (ImGui::Button("Delete Current Camera"))
+			if (ImGui::Button("Delete Current Light"))
 			{
 				DeleteCurLight();
 			}
@@ -106,7 +114,10 @@ void LightContainer::SpwanControlWindow() noexcept(!IS_DEBUG)
 
 void LightContainer::UpdateCBuffer(size_t index) noexcept(!IS_DEBUG)
 {
-	m_PL_CBuffer["lightPositions"][index] = m_point_lights[index]->m_pos;
+	const auto worPos = DirectX::XMLoadFloat3(&m_point_lights[index]->m_pos);
+	DirectX::XMFLOAT3 ViewPos;
+	DirectX::XMStoreFloat3(&ViewPos, DirectX::XMVector3Transform(worPos, m_gfx.GetCamera()));
+	m_PL_CBuffer["lightPositions"][index] = ViewPos;
 	m_PL_CBuffer["lightAmbients"][index] = m_point_lights[index]->m_ambient;
 	m_PL_CBuffer["lightDiffuses"][index] = m_point_lights[index]->m_diffuseColor;
 	m_PL_CBuffer["lightIntensities"][index] = m_point_lights[index]->m_diffuseIntensity;
@@ -114,7 +125,6 @@ void LightContainer::UpdateCBuffer(size_t index) noexcept(!IS_DEBUG)
 	m_PL_CBuffer["attLinear"][index] = m_point_lights[index]->m_attLinear;
 	m_PL_CBuffer["attQuad"][index] = m_point_lights[index]->m_attQuad;
 	m_PL_CBuffer["Enable"][index] = m_point_lights[index]->m_Enable;
-	m_PL_CBuffer["cur_light_num"] = (int)m_point_lights.size();
 }
 
 std::vector<std::string> LightContainer::m_ConstantBufferElements =

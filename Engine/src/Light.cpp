@@ -20,7 +20,7 @@ const std::string& PointLight::GetName() const noexcept
 	return m_szName;
 }
 
-void PointLight::Update(Graphics& gfx) noexcept
+void PointLight::Update() noexcept
 {	
 	m_indicator.SetPos(m_pos);
 }

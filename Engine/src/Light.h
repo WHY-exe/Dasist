@@ -10,7 +10,7 @@ class PointLight
 public:
 	PointLight(Graphics& gfx, int index);
 	const std::string& GetName() const noexcept;
-	void Update(Graphics& gfx) noexcept;
+	void Update() noexcept;
 	void Submit() noexcept;
 	void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
 	void SpwanControlWidgets() noexcept;

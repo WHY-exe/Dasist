@@ -21,7 +21,7 @@ float4 main(VSOut vso) : SV_Target
         matAmbient = amap.Sample(splr, vso.tc);
     float4 matDiffuse = dmap.Sample(splr, vso.tc);
     float4 matSpec = spec_color;
-    SetLightingPixelResult(result, SpecularPower, specular_intensity, vso.ViewPos, ViewNormal);
+    result = SetLightingPixelResult(SpecularPower, specular_intensity, vso.ViewPos, ViewNormal);
     return float4(
         saturate(result.Diffuse) * matDiffuse.rgb +
         saturate(result.Ambient) * matAmbient.rgb +

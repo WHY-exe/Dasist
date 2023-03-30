@@ -11,3 +11,5 @@
 		function;\
 		signal = false;\
 	}
+#define DISABLE_SIGNAL(signal)\
+	signal ? signal = !signal : signal = signal;

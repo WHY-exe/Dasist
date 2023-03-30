@@ -39,6 +39,7 @@ namespace Scene {
 	{
 	public:
 		void SpwanControlWindow(class Model& model) noexcept(!IS_DEBUG);
+		void SpwanControlWindow(class Scene& scene) noexcept(!IS_DEBUG);
 	private:
 		TNodeProbe np;
 	};

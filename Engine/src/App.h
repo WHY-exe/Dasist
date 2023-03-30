@@ -4,7 +4,7 @@
 #include "BlurOutlineRenderGraph.h"
 #include "Drawable.h"
 #include "CameraContainer.h"
-#include "Light.h"
+#include "LightContainer.h"
 #include "ImguiManager.h"
 #include "Scene.h"
 #include "SceneProbe.h"
@@ -26,10 +26,10 @@ private:
 	// user data
 	double m_delta_time = 0.0;
 	Rgph::BlurOutlineRenderGraph m_rg;
-	std::vector<Scene::Model> scene;
+	Scene::Scene scene;
 	Scene::ModelProbe probe;
 	CameraContainer cams;
-	PointLight pointLight;
-	GlobalLight gLight;
+	LightContainer lights;
+	//GlobalLight gLight;
 };
 

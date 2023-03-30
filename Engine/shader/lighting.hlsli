@@ -2,33 +2,34 @@ struct LightComponent
 {
     float3 Diffuse : Diffuse;
     float3 Specular : Specular;
+    float3 Ambient : Ambient;
 };
 struct LightAttri
 {
     float3 lightViewPos;
-    float3 VertexPos;
-    float3 VertexNormal;
     float3 DiffuseColor;
+    float3 AmbientColor;
     float3 DiffuseIntensity;
-    float SpecularPow;
-    bool enableAtt;
-    bool enableSpecMap;
-    float SpecularIntensity;
-    float AttConst;
-    float AttLinear;
-    float AttQuad;
+    float  SpecularPow;
+    bool   enableAtt;
+    bool   enableSpecMap;
+    float  SpecularIntensity;
+    float  AttConst;
+    float  AttLinear;
+    float  AttQuad;
 };
-
+#define MAX_LIGHT_NUM (unsigned int)16
 cbuffer pointLightCBuf : register(b0)
 {
-    float3 pLightViewPos;
-    float3 pAmbientColor;
-    float3 pDiffuseColor;
-    float pDiffuseIntensity;
-    float pAttConst;
-    float pAttLinear;
-    float pAttQuad;
-    bool pEnable;
+    float3 pLightViewPos[MAX_LIGHT_NUM];
+    float3 pAmbientColor[MAX_LIGHT_NUM];
+    float3 pDiffuseColor[MAX_LIGHT_NUM];
+    float  pDiffuseIntensity[MAX_LIGHT_NUM];
+    float  pAttConst[MAX_LIGHT_NUM];
+    float  pAttLinear[MAX_LIGHT_NUM];
+    float  pAttQuad[MAX_LIGHT_NUM];
+    bool   pEnable[MAX_LIGHT_NUM];
+    int    cur_light_num;
 };
 
 
@@ -41,10 +42,11 @@ cbuffer GlobalLightCBuf : register(b1)
     bool gEnable;
 };
 
-LightComponent GetLight(
-    float3 lightViewPos,
+LightComponent GetLight(    
     float3 VertexPos,
     float3 VertexNormal,
+    float3 lightViewPos,
+    float3 AmbientColor,
     float3 DiffuseColor,
     float3 DiffuseIntensity,
     float SpecularIntensity,
@@ -77,16 +79,52 @@ LightComponent GetLight(
     }
     lc.Diffuse = Diffuse;
     lc.Specular = Specular;
+    lc.Ambient = AmbientColor;
     return lc;
 };
+LightAttri GetLightAttriAt(int index, float SpecularPow, float SpecularIntensity)
+{                                         
+    LightAttri la;                    
+    la.lightViewPos      =   pLightViewPos[index];    
+    la.AmbientColor      =   pDiffuseColor[index];
+    la.DiffuseColor      =   pAmbientColor[index];
+    la.DiffuseIntensity  =   pDiffuseIntensity[index];
+    la.SpecularPow       =   SpecularPow;    
+    la.SpecularIntensity =   SpecularIntensity;
+    la.enableAtt         =   true;
+    la.AttConst          =   pAttConst[index];
+    la.AttLinear         =   pAttLinear[index];
+    la.AttQuad           =   pAttQuad[index];
+    return la;
+};
 
-LightComponent GetLight(LightAttri la)
+LightComponent GetLight(LightAttri la, float3 VertexPos, float3 VertexNormal)
 {
-    if (!la.enableAtt)
-        return GetLight(la.lightViewPos, la.VertexPos, la.VertexNormal,
-    la.DiffuseColor, la.DiffuseIntensity, la.SpecularIntensity, la.SpecularPow,
-    la.enableAtt, la.AttConst, la.AttLinear, la.AttQuad);
+    if (la.enableAtt)
+        return 
+            GetLight(
+                VertexPos, VertexNormal,la.lightViewPos, la.AmbientColor, la.DiffuseColor, 
+                la.DiffuseIntensity, la.SpecularIntensity, la.SpecularPow,
+                la.enableAtt, la.AttConst, la.AttLinear, la.AttQuad);
     else
-        return GetLight(la.lightViewPos, la.VertexPos, la.VertexNormal,
-    la.DiffuseColor, la.DiffuseIntensity, la.SpecularIntensity, la.SpecularPow, la.enableSpecMap);
+        return 
+            GetLight(
+                 VertexPos, VertexNormal, la.lightViewPos, la.AmbientColor,
+                 la.DiffuseColor, la.DiffuseIntensity, la.SpecularIntensity, la.SpecularPow);
+};
+void SetLightingPixelResult(out LightComponent result, float SpecularPow, float SpecularIntensity, float3 VertexPos, float3 VertexNormal)
+{
+    result.Diffuse = float3(0.0f, 0.0f, 0.0f);
+    result.Ambient = float3(0.3f, 0.3f, 0.3f);
+    result.Specular = float3(0.0f, 0.0f, 0.0f);
+    for (int i = 0; i < cur_light_num; i++)
+    {
+        if (pEnable[i])
+        {
+            LightComponent light = GetLight(GetLightAttriAt(i, SpecularPow, SpecularIntensity), VertexPos, VertexNormal);
+            result.Ambient += light.Ambient;
+            result.Diffuse += light.Diffuse;
+            result.Specular += light.Specular;
+        }
+    }
 };

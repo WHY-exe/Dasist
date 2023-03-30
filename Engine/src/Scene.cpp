@@ -395,3 +395,31 @@ void Scene::Model::SetPos(DirectX::XMFLOAT3 pos) noexcept
 {
 	m_pos = pos;
 }
+
+void Scene::Scene::AddModel(Graphics& gfx, ModelSetting& setting) noexcept(!IS_DEBUG)
+{
+	m_models.emplace_back(std::make_unique<Model>(gfx, setting));
+	signalModelAdded = true;
+}
+
+void Scene::Scene::LinkAddedModel(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
+{
+	m_models.back()->LinkTechniques(rg);
+}
+
+void Scene::Scene::Submit() const noexcept(!IS_DEBUG)
+{
+	for (auto& i : m_models)
+		i->Submit();
+}
+
+void Scene::Scene::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
+{
+	for (auto& i : m_models)
+		i->LinkTechniques(rg);
+}
+
+std::vector<std::unique_ptr<Scene::Model>>& Scene::Scene::GetModels() noexcept
+{
+	return m_models;
+}

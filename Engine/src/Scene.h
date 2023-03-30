@@ -90,5 +90,18 @@ namespace Scene
 		DirectX::XMFLOAT3 m_pos = {0.0f, 0.0f, 0.0f};
 		float m_scale = 1.0f;
 	};
+	class Scene
+	{
+	public:
+		void AddModel(Graphics& gfx, ModelSetting& setting) noexcept(!IS_DEBUG);
+		void LinkAddedModel(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
+		void Submit() const noexcept(!IS_DEBUG);
+		void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
+		std::vector<std::unique_ptr<Model>>& GetModels() noexcept;
+	public:
+		bool signalModelAdded = false;
+	private:
+		std::vector<std::unique_ptr<Model>> m_models;
+	};
 };
 

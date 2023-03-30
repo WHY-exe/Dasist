@@ -160,3 +160,11 @@ void Scene::ModelProbe::SpwanControlWindow(Model& model) noexcept(!IS_DEBUG)
 	}		
 	ImGui::End();
 }
+
+void Scene::ModelProbe::SpwanControlWindow(Scene& scene) noexcept(!IS_DEBUG)
+{
+	for (auto& i : scene.GetModels())
+	{
+		SpwanControlWindow(*i);
+	}
+}

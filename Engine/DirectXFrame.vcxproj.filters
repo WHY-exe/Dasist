@@ -94,9 +94,6 @@
     <Filter Include="Exception">
       <UniqueIdentifier>{cf2cd777-27fe-4838-96a0-fcc0731a0a65}</UniqueIdentifier>
     </Filter>
-    <Filter Include="EntryPoint4App">
-      <UniqueIdentifier>{930b10b9-b795-477f-8a38-b5fb746ee906}</UniqueIdentifier>
-    </Filter>
     <Filter Include="dx11GfxBase">
       <UniqueIdentifier>{60b8e5f9-6e7e-48d9-b7ee-ae98773e74d4}</UniqueIdentifier>
     </Filter>
@@ -135,6 +132,9 @@
     </Filter>
     <Filter Include="Drawable\Geometry">
       <UniqueIdentifier>{ffd86211-abaf-4add-a1cf-40ecec75c622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App">
+      <UniqueIdentifier>{930b10b9-b795-477f-8a38-b5fb746ee906}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -247,7 +247,7 @@
       <Filter>Exception</Filter>
     </ClCompile>
     <ClCompile Include="src\App.cpp">
-      <Filter>EntryPoint4App</Filter>
+      <Filter>App</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics.cpp">
       <Filter>dx11GfxBase</Filter>
@@ -339,6 +339,9 @@
     </ClCompile>
     <ClCompile Include="src\FOVIndicator.cpp">
       <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LightContainer.cpp">
+      <Filter>Light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -484,7 +487,7 @@
       <Filter>res</Filter>
     </ClInclude>
     <ClInclude Include="src\App.h">
-      <Filter>EntryPoint4App</Filter>
+      <Filter>App</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics.h">
       <Filter>dx11GfxBase</Filter>
@@ -609,6 +612,9 @@
     <ClInclude Include="src\WireFramePass.h">
       <Filter>RenderGraphc\Pass</Filter>
     </ClInclude>
+    <ClInclude Include="src\LightContainer.h">
+      <Filter>Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\PS.hlsl">
@@ -662,9 +668,6 @@
     <FxCompile Include="shader\BlurPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="shader\lighting.hlsli">
-      <Filter>Shader</Filter>
-    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\DirectXFrame.aps">
@@ -674,6 +677,9 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="shader\PSBase.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shader\lighting.hlsli">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

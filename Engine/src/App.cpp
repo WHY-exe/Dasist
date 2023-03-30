@@ -12,29 +12,23 @@ App::App()
 	m_imguiMan(),
 	m_wnd(L"Engine", 1000, 700),
 	m_gfx(m_wnd.GetGfx()),
-	pointLight(m_gfx),
-	gLight(m_gfx),
+	lights(m_gfx),
+	//gLight(m_gfx),
 	m_rg(m_gfx),
 	cams(m_gfx)
 {
 	Scene::ModelSetting op1;
 	op1.szModelPath = "res\\model\\Sponza\\sponza.obj";
 	op1.szModelName = "sponza";
-	scene.emplace_back(Scene::Model(m_gfx, op1));
+	scene.AddModel(m_gfx, op1);
+	DISABLE_SIGNAL(scene.signalModelAdded);
 	//Scene::RenderOption op2;
 	//op2.szModelPath = "res\\model\\Lumie\\Lumie.pmx";
 	//op2.szModelName = "lumie";
-	//model2 = Scene::Model(m_gfx, op2);
-
-	for (auto& i : scene)
-	{
-		i.LinkTechniques(m_rg);		
-		i.Submit();
-	}
+	//model2 = Scene::Model(m_gfx, op2);	
+	scene.LinkTechniques(m_rg);
 	cams.LinkTechniques(m_rg);
-	cams.Submit();
-	pointLight.LinkTechniques(m_rg);
-	pointLight.Submit();
+	lights.LinkTechniques(m_rg);
 }
 
 WPARAM App::Run()
@@ -63,27 +57,24 @@ void App::DoFrame()
 	SIGNAL(
 		cams.signalCamAdded,
 		cams.LinkAddedCamera(m_rg)
-	)
-	for (auto& i : scene)
-	{
-		i.Submit();
-	}
+	);
+	SIGNAL(
+		scene.signalModelAdded,
+		scene.LinkAddedModel(m_rg)
+	);
+	scene.Submit();
 	cams.Submit();
-	pointLight.Submit();
-	cams.Bind(m_gfx);
+	lights.Submit();
 
-	gLight.Update(m_gfx);
-	pointLight.Update(m_gfx);
+	cams.Bind(m_gfx);
+	//gLight.Update(m_gfx);
+	lights.Bind(m_gfx);
     m_rg.Execute(m_gfx);
 
-	for (auto& i : scene)
-	{
-		probe.SpwanControlWindow(i);
-	
-	}
+	probe.SpwanControlWindow(scene);
 	cams.SpawControlWindow();
-	gLight.SpwanControlWindow();
-	pointLight.SpwanControlWindow();
+	//gLight.SpwanControlWindow();
+	lights.SpwanControlWindow();
 	m_rg.RenderWidgets(m_gfx);
 	//
 	m_gfx.EndFrame();

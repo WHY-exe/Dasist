@@ -3,19 +3,14 @@
 
 float4 main(VSOut vso) : SV_Target
 {
-    float3 ViewNormal = normalize(vso.viewNorm);
-    LightComponent gLight = GetLight(
-         gLightViewPos, vso.ViewPos, ViewNormal,
-         gDiffuseColor, gDiffuseIntensity,
-        specular_intensity, specular_pow
-    );
-    LightComponent pLight = GetLight(
-        pLightViewPos, vso.ViewPos, ViewNormal,
-        pDiffuseColor, pDiffuseIntensity,
-        specular_intensity, specular_pow,
-        true, pAttConst, pAttLinear, pAttQuad
-    );
-    float3 Ambient = ambient.rgb;
+    float3 ViewNormal = vso.viewNorm;
+    LightComponent result = { { 0, 0, 0 }, { 0, 0, 0 }, { 0.3, 0.3, 0.3 } };
+    float4 matAmbient = ambient;
+    float4 matSpec = spec_color;
+    SetLightingPixelResult(result, specular_pow, specular_intensity, vso.ViewPos, ViewNormal);
 
-    return float4(saturate(gLight.Diffuse + pLight.Diffuse + ambient.rgb) + (pLight.Specular + gLight.Specular), 1.0f);
+    return float4(
+        saturate(result.Diffuse) +
+        saturate(result.Ambient) * matAmbient.rgb +
+        saturate(result.Specular) * matSpec.rgb, 1.0f);
 }

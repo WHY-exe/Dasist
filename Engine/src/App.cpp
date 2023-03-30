@@ -62,6 +62,10 @@ void App::DoFrame()
 		scene.signalModelAdded,
 		scene.LinkAddedModel(m_rg)
 	);
+	SIGNAL(
+		lights.lightAddedSignal,
+		lights.LinkAddedLight(m_rg)
+	)
 	scene.Submit();
 	cams.Submit();
 	lights.Submit();

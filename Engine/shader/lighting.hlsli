@@ -28,8 +28,8 @@ cbuffer pointLightCBuf : register(b0)
     float  pAttConst[MAX_LIGHT_NUM];
     float  pAttLinear[MAX_LIGHT_NUM];
     float  pAttQuad[MAX_LIGHT_NUM];
-    bool   pEnable[MAX_LIGHT_NUM];
-    int    cur_light_num;
+    bool   pEnable[MAX_LIGHT_NUM];    
+    int  cur_light_num;
 };
 
 
@@ -86,8 +86,8 @@ LightAttri GetLightAttriAt(int index, float SpecularPow, float SpecularIntensity
 {                                         
     LightAttri la;                    
     la.lightViewPos      =   pLightViewPos[index];    
-    la.AmbientColor      =   pDiffuseColor[index];
-    la.DiffuseColor      =   pAmbientColor[index];
+    la.AmbientColor      =   pAmbientColor[index];
+    la.DiffuseColor      =   pDiffuseColor[index];
     la.DiffuseIntensity  =   pDiffuseIntensity[index];
     la.SpecularPow       =   SpecularPow;    
     la.SpecularIntensity =   SpecularIntensity;
@@ -115,10 +115,11 @@ LightComponent GetLight(LightAttri la, float3 VertexPos, float3 VertexNormal)
 LightComponent SetLightingPixelResult(float SpecularPow, float SpecularIntensity, float3 VertexPos, float3 VertexNormal)
 {
     LightComponent result_in;
-    result_in.Diffuse = float3(0.0f, 0.0f, 0.0f);
-    result_in.Ambient = float3(0.3f, 0.3f, 0.3f);
+    result_in.Diffuse = float3(0.0f, 0.0f, 0.0f);   
     result_in.Specular = float3(0.0f, 0.0f, 0.0f);
-    for (int i = 0; i < 2; i++)
+    result_in.Ambient = float3(0.3f, 0.3f, 0.3f);
+ 
+    for (int i = 0; i < MAX_LIGHT_NUM; i++)
     {
         if (pEnable[i])
         {

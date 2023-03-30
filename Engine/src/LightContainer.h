@@ -9,10 +9,13 @@ public:
 	LightContainer(Graphics& gfx);
 	void Bind(Graphics& gfx) noexcept;
 	void Submit() noexcept;
+	void LinkAddedLight(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
 	void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
 	void AddPointLight(Graphics& gfx) noexcept(!IS_DEBUG);
 	void DeleteCurLight() noexcept;
 	void SpwanControlWindow() noexcept(!IS_DEBUG);
+public:
+	bool lightAddedSignal = false;
 private:
 	void UpdateCBuffer(size_t index) noexcept(!IS_DEBUG);
 private:

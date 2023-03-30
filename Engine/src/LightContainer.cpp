@@ -1,4 +1,5 @@
 #include "LightContainer.h"
+#include "Signal.h"
 #include <imgui.h>
 LightContainer::LightContainer(Graphics& gfx)
 	:
@@ -28,6 +29,7 @@ LightContainer::LightContainer(Graphics& gfx)
 	{
 		AddPointLight(gfx);
 	}
+	DISABLE_SIGNAL(lightAddedSignal);
 }
 
 void LightContainer::Bind(Graphics& gfx) noexcept
@@ -51,6 +53,11 @@ void LightContainer::Submit() noexcept
 	}
 }
 
+void LightContainer::LinkAddedLight(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
+{
+	m_point_lights.back()->LinkTechniques(rg);
+}
+
 void LightContainer::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
 {
 	for (auto& i : m_point_lights)
@@ -62,6 +69,7 @@ void LightContainer::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
 void LightContainer::AddPointLight(Graphics& gfx) noexcept(!IS_DEBUG)
 {
 	m_point_lights.emplace_back(std::make_unique<PointLight>(gfx, m_life_time_light_num));
+	lightAddedSignal = true;
 	m_life_time_light_num++;
 }
 

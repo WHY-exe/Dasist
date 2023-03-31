@@ -8,11 +8,6 @@ PointLight::PointLight(Graphics& gfx, int index)
 	m_szName("PointLight" + std::to_string(index))
 {
 	m_indicator.SetScale(10.0f);
-	DCBuf::RawLayout cBufferLayout;
-	cBufferLayout.Add<DCBuf::Integer>("Index");
-	m_PL_CBuffer = DCBuf::Buffer(std::move(cBufferLayout));
-	m_PL_CBuffer["Index"] = index;
-	m_PL_PSCbuf = std::make_unique<CachingPixelConstantBuffer>(gfx, m_PL_CBuffer, 4u);
 }
 
 const std::string& PointLight::GetName() const noexcept

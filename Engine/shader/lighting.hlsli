@@ -20,7 +20,8 @@ struct LightAttri
 };
 #define MAX_LIGHT_NUM (unsigned int)16
 cbuffer pointLightCBuf : register(b0)
-{
+{    
+    uint   cur_light_num;
     float3 pLightViewPos[MAX_LIGHT_NUM];
     float3 pAmbientColor[MAX_LIGHT_NUM];
     float3 pDiffuseColor[MAX_LIGHT_NUM];
@@ -29,7 +30,6 @@ cbuffer pointLightCBuf : register(b0)
     float  pAttLinear[MAX_LIGHT_NUM];
     float  pAttQuad[MAX_LIGHT_NUM];
     bool   pEnable[MAX_LIGHT_NUM];    
-    int  cur_light_num;
 };
 
 
@@ -119,7 +119,7 @@ LightComponent SetLightingPixelResult(float SpecularPow, float SpecularIntensity
     result_in.Specular = float3(0.0f, 0.0f, 0.0f);
     result_in.Ambient = float3(0.3f, 0.3f, 0.3f);
  
-    for (int i = 0; i < MAX_LIGHT_NUM; i++)
+    for (uint i = 0; i < cur_light_num; i++)
     {
         if (pEnable[i])
         {

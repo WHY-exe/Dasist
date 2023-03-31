@@ -6,6 +6,7 @@ LightContainer::LightContainer(Graphics& gfx)
 	m_gfx(gfx)
 {
 	DCBuf::RawLayout cBufferLayout;
+	cBufferLayout.Add<DCBuf::Integer>("cur_light_num");
 	for (auto& i : m_ConstantBufferElements)
 	{
 		cBufferLayout.Add<DCBuf::Array>(i);
@@ -16,14 +17,15 @@ LightContainer::LightContainer(Graphics& gfx)
 		else if (i == "Enable")
 			cBufferLayout[i].Set<DCBuf::Bool>(MAX_LIGHT_NUM);
 	}
-	cBufferLayout.Add<DCBuf::Integer>("cur_light_num");
-	m_PL_CBuffer = DCBuf::Buffer(std::move(cBufferLayout));
+
+	DCBuf::Buffer CBuffer = DCBuf::Buffer(std::move(cBufferLayout));	
+	CBuffer["cur_light_num"] = (int)(m_point_lights.size());
 	for (size_t i = 0; i < m_point_lights.size(); i++)
 	{
-		UpdateCBuffer(i);
+		UpdateCBuffer(i, CBuffer);
 	}
-	m_PL_CBuffer["cur_light_num"] = (int)(m_point_lights.size());
-	m_PL_PSCbuf = std::make_unique<CachingPixelConstantBuffer>(gfx, m_PL_CBuffer, 0u);
+
+	m_PL_PSCbuf = std::make_unique<CachingPixelConstantBuffer>(gfx, CBuffer, 0u);
 	//TestCode: add two lights 
 	for (size_t i = 0; i < 2; i++)
 	{
@@ -34,14 +36,14 @@ LightContainer::LightContainer(Graphics& gfx)
 
 void LightContainer::Bind(Graphics& gfx) noexcept
 {
+	DCBuf::Buffer CBuffer = m_PL_PSCbuf->GetBuffer();
 	for (size_t i = 0; i < m_point_lights.size(); i++)
 	{
 		m_point_lights[i]->Update();
-		UpdateCBuffer(i);
+		UpdateCBuffer(i, CBuffer);
 	}
-	int cur_light_num = (int)(m_point_lights.size());
-	m_PL_CBuffer["cur_light_num"] = cur_light_num;
-	m_PL_PSCbuf->SetBuffer(m_PL_CBuffer);
+	CBuffer["cur_light_num"] = (int)(m_point_lights.size());
+	m_PL_PSCbuf->SetBuffer(CBuffer);
 	m_PL_PSCbuf->Bind(gfx);
 }
 
@@ -104,9 +106,16 @@ void LightContainer::SpwanControlWindow() noexcept(!IS_DEBUG)
 			}
 			ImGui::EndCombo();
 		}
-		if (ImGui::Button("Add Light"))
+		if (m_point_lights.size() < MAX_LIGHT_NUM)
 		{
-			AddPointLight(m_gfx);
+			if (ImGui::Button("Add Light"))
+			{
+				AddPointLight(m_gfx);
+			}
+		}
+		else
+		{
+			ImGui::Text("Has reached the maximum light number the system support");
 		}
 		if (m_point_lights.size() > 1)
 		{
@@ -120,19 +129,19 @@ void LightContainer::SpwanControlWindow() noexcept(!IS_DEBUG)
 	}
 }
 
-void LightContainer::UpdateCBuffer(size_t index) noexcept(!IS_DEBUG)
+void LightContainer::UpdateCBuffer(size_t index, DCBuf::Buffer& cbuffer) noexcept(!IS_DEBUG)
 {
 	const auto worPos = DirectX::XMLoadFloat3(&m_point_lights[index]->m_pos);
 	DirectX::XMFLOAT3 ViewPos;
 	DirectX::XMStoreFloat3(&ViewPos, DirectX::XMVector3Transform(worPos, m_gfx.GetCamera()));
-	m_PL_CBuffer["lightPositions"][index] = ViewPos;
-	m_PL_CBuffer["lightAmbients"][index] = m_point_lights[index]->m_ambient;
-	m_PL_CBuffer["lightDiffuses"][index] = m_point_lights[index]->m_diffuseColor;
-	m_PL_CBuffer["lightIntensities"][index] = m_point_lights[index]->m_diffuseIntensity;
-	m_PL_CBuffer["attConst"][index] = m_point_lights[index]->m_attConst;
-	m_PL_CBuffer["attLinear"][index] = m_point_lights[index]->m_attLinear;
-	m_PL_CBuffer["attQuad"][index] = m_point_lights[index]->m_attQuad;
-	m_PL_CBuffer["Enable"][index] = m_point_lights[index]->m_Enable;
+	cbuffer["lightPositions"][index] = ViewPos;
+	cbuffer["lightAmbients"][index] = m_point_lights[index]->m_ambient;
+	cbuffer["lightDiffuses"][index] = m_point_lights[index]->m_diffuseColor;
+	cbuffer["lightIntensities"][index] = m_point_lights[index]->m_diffuseIntensity;
+	cbuffer["attConst"][index] = m_point_lights[index]->m_attConst;
+	cbuffer["attLinear"][index] = m_point_lights[index]->m_attLinear;
+	cbuffer["attQuad"][index] = m_point_lights[index]->m_attQuad;
+	cbuffer["Enable"][index] = m_point_lights[index]->m_Enable;
 }
 
 std::vector<std::string> LightContainer::m_ConstantBufferElements =

@@ -24,8 +24,6 @@ private:
 	float m_attConst = 0.0001f;
 	float m_attLinear = 0.0001f;
 	float m_attQuad = 0.00005f;
-	DCBuf::Buffer m_PL_CBuffer;
-	std::unique_ptr<CachingPixelConstantBuffer> m_PL_PSCbuf;
 	BOOL m_Enable = TRUE;
 	LightIndicator m_indicator;
 };

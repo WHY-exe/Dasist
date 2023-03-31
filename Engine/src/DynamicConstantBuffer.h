@@ -24,6 +24,8 @@ namespace DCBuf
 		LEAF_ELEMENT_TYPES
 #undef X
 		Struct,
+		// if you want to use arry along width other basic data,
+		// make sure the basic data type is added before array type
 		Array,
 		Empty
 	};

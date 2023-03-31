@@ -22,6 +22,7 @@ void CameraContainer::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 	for (auto& i : m_Container)\
 	{\
 		i->UpdateDefaultValues(gfx);\
+		i->ResetProjection();\
 	}
 	SIGNAL(gfx.sizeSignalPrj, SIGNAL_FUNCTION);
 #undef SIGNAL_FUNCTION
@@ -91,7 +92,7 @@ void CameraContainer::DeleteCurCamera() noexcept(!IS_DEBUG)
 	m_active_cam_idx == 0 ? m_active_cam_idx = 0 : m_active_cam_idx--;
 }
 
-void CameraContainer::Add(std::unique_ptr<Camera>& camera) noexcept(!IS_DEBUG)
+void CameraContainer::Add(std::shared_ptr<Camera> camera) noexcept(!IS_DEBUG)
 {
 	m_Container.push_back(std::move(camera));
 	m_lifeTimeSize++;
@@ -99,7 +100,7 @@ void CameraContainer::Add(std::unique_ptr<Camera>& camera) noexcept(!IS_DEBUG)
 
 void CameraContainer::Add(Graphics& gfx) noexcept(!IS_DEBUG)
 {
-	m_Container.emplace_back(std::make_unique<Camera>(gfx, "Camera" + std::to_string(m_lifeTimeSize++)));
+	m_Container.emplace_back(std::make_shared<Camera>(gfx, "Camera" + std::to_string(m_lifeTimeSize++)));
 }
 
 void CameraContainer::LinkTechniques(Rgph::RenderGraph& rg)

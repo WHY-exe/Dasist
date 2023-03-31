@@ -1,11 +1,12 @@
 #include "Light.h"
 #include "imgui.h"
-Light::Light(std::string szName, int index) noexcept
+Light::Light(Graphics& gfx, std::string szName, int index) noexcept
 	:
 	m_szName(szName),
 	m_index(index),
 	m_pos(0.0f, 0.0f, 0.0f)
 {
+	m_pCamera = std::make_shared<Camera>(gfx, "lightCam" + std::to_string(index), true);
 }
 
 const std::string& Light::GetName() const noexcept
@@ -27,9 +28,14 @@ void Light::SpwanControlWidgets() noexcept
 	ImGui::SliderFloat("Intensity", &m_diffuseIntensity, 0.0f, 10.0f, "%.2f");
 }
 
+std::shared_ptr<Camera> Light::ShareCamera() const noexcept
+{
+	return m_pCamera;
+}
+
 PointLight::PointLight(Graphics& gfx, int index)
 	:
-	Light("PointLight" + std::to_string(index), index),
+	Light(gfx, "PointLight" + std::to_string(index), index),
 	m_indicator(gfx)
 {
 	m_pos = {0.0f, 500.0f, 0.0f};
@@ -39,6 +45,7 @@ PointLight::PointLight(Graphics& gfx, int index)
 void PointLight::Update() noexcept
 {	
 	m_indicator.SetPos(m_pos);
+	m_pCamera->SetPos(m_pos);
 }
 
 void PointLight::Submit() noexcept

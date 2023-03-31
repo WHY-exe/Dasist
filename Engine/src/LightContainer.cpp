@@ -55,6 +55,11 @@ void LightContainer::Submit() noexcept
 	}
 }
 
+const std::unique_ptr<PointLight>& LightContainer::GetBack() const noexcept
+{
+	return m_point_lights.back();
+}
+
 void LightContainer::LinkAddedLight(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
 {
 	m_point_lights.back()->LinkTechniques(rg);
@@ -127,6 +132,11 @@ void LightContainer::SpwanControlWindow() noexcept(!IS_DEBUG)
 		m_point_lights[m_curPL_Index]->SpwanControlWidgets();
 		ImGui::End();
 	}
+}
+
+const std::vector<std::unique_ptr<PointLight>>& LightContainer::GetContainer() const noexcept
+{
+	return m_point_lights;
 }
 
 void LightContainer::UpdateCBuffer(size_t index, DCBuf::Buffer& cbuffer) noexcept(!IS_DEBUG)

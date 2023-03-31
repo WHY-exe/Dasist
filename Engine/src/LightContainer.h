@@ -9,11 +9,13 @@ public:
 	LightContainer(Graphics& gfx);
 	void Bind(Graphics& gfx) noexcept;
 	void Submit() noexcept;
+	const std::unique_ptr<PointLight>& GetBack() const noexcept;
 	void LinkAddedLight(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
 	void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
 	void AddPointLight(Graphics& gfx) noexcept(!IS_DEBUG);
 	void DeleteCurLight() noexcept;
 	void SpwanControlWindow() noexcept(!IS_DEBUG);
+	const std::vector<std::unique_ptr<PointLight>>& GetContainer() const noexcept;
 public:
 	bool lightAddedSignal = false;
 private:

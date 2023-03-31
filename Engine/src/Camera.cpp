@@ -3,25 +3,30 @@
 #include "MathTool.h"
 #include "Graphics.h"
 #include <algorithm>
-Camera::Camera(Graphics& gfx, std::string szName)
+Camera::Camera(Graphics& gfx, std::string szName, bool tethered)
 	:
+	m_tether_state(tethered),
 	m_szName(std::move(szName)),	
 	m_defaultViewWidth(gfx.GetWindowWidth()),
 	m_defaultViewHeight(gfx.GetWindowHeight()),
 	m_viewWidth((float)(gfx.GetWindowWidth())),
 	m_viewHeight((float)(gfx.GetWindowHeight())),
 	m_NearZ(0.5f),
-	m_FarZ(2500.0f),
-	m_pos(0.0f, 100.0f, -25.0f),
+	m_FarZ(3000.0f),
+	m_pos(0.0f, 0.0f, 0.0f),
 	m_rot(0.0f, 0.0f, 0.0f),
 	m_indicator(gfx),
 	m_fov_indi(gfx, m_viewWidth / 10.0f, m_viewHeight / 10.0f, m_NearZ, m_FarZ),
 	m_gfx(gfx)
 {
 	m_indicator.SetScale(10.0f);
-	m_indicator.SetPos(m_pos);
+	if (!m_tether_state)
+	{
+		m_pos = { 0.0f, 100.0f, -25.0f };
+		m_indicator.SetPos(m_pos);
+		m_fov_indi.SetPos(m_pos);
+	}
 	m_indicator.SetRot(m_rot);
-	m_fov_indi.SetPos(m_pos);
 	m_fov_indi.SetRot(m_rot);
 }
 
@@ -40,6 +45,18 @@ const std::string& Camera::GetName() const noexcept
 	return m_szName;
 }
 
+void Camera::SetPos(float x, float y, float z)
+{
+	m_pos = { x, y, z };
+	m_indicator.SetPos(m_pos);
+	m_fov_indi.SetPos(m_pos);
+}
+
+void Camera::SetPos(DirectX::XMFLOAT3 pos)
+{
+	SetPos(pos.x, pos.y, pos.z);
+}
+
 void Camera::Rotate(float dx, float dy) noexcept
 {
 	m_rot.y = math_tool::wrap_angle(m_rot.y + dx * m_rot_speed);
@@ -48,15 +65,19 @@ void Camera::Rotate(float dx, float dy) noexcept
 
 void Camera::Translate(float dx, float dy, float dz)
 {
+	// 使用重载运算符要用到这个命名空间
 	using namespace DirectX;
-	DirectX::XMVECTOR delta_pos = {dx, dy, dz};
-	// 如果不想让摄像机的前进方向随视角上下移动改变，只需将m_rot.x, 替换为0.0f即可
-	const DirectX::XMVECTOR delta_lookVec = DirectX::XMVector3Transform(
-		delta_pos, DirectX::XMMatrixRotationRollPitchYaw(m_rot.x, m_rot.y, 0.0f)
-	);
-	DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&m_pos);
-	pos += delta_lookVec;
-	DirectX::XMStoreFloat3(&m_pos, pos);
+	if (!m_tether_state)
+	{
+		DirectX::XMVECTOR delta_pos = { dx, dy, dz };
+		// 如果不想让摄像机的前进方向随视角上下移动改变，只需将m_rot.x, 替换为0.0f即可
+		const DirectX::XMVECTOR delta_lookVec = DirectX::XMVector3Transform(
+			delta_pos, DirectX::XMMatrixRotationRollPitchYaw(m_rot.x, m_rot.y, 0.0f)
+		);
+		DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&m_pos);
+		pos += delta_lookVec;
+		DirectX::XMStoreFloat3(&m_pos, pos);
+	}
 }
 
 bool Camera::MouseStatus() const noexcept
@@ -68,6 +89,29 @@ void Camera::UpdateDefaultValues(Graphics& gfx) noexcept
 {
 	m_defaultViewHeight = gfx.GetWindowHeight();
 	m_defaultViewWidth = gfx.GetWindowWidth();
+}
+
+void Camera::ResetProjection() noexcept
+{
+	m_viewWidth = float(m_defaultViewWidth);
+	m_viewHeight = float(m_defaultViewHeight);
+	m_NearZ = 0.5f;
+	m_FarZ = 3000.0f;
+	m_fov_indi.SetVertices(m_gfx, m_viewWidth / 10.0f, m_viewHeight / 10.0f, m_NearZ, m_FarZ);
+}
+
+void Camera::Reset() noexcept
+{
+	if(!m_tether_state)
+	{ 
+		m_pos = homePos;
+		m_indicator.SetPos(m_pos);
+		m_fov_indi.SetPos(m_pos);
+	}
+	m_rot = { 0.0f, 0.0f ,0.0f };		
+	m_indicator.SetRot(m_rot);
+	m_fov_indi.SetRot(m_rot);
+	ResetProjection();	
 }
 
 DirectX::XMMATRIX Camera::GetFPMatrix() const
@@ -100,19 +144,31 @@ void Camera::ShowControlCameraWidget() noexcept(!IS_DEBUG)
 	auto check_dirty = [](bool& dirty, bool func) {
 		dirty =  dirty || func;
 	};
-	ImGui::Text("Position");
-	ImGui::SliderFloat("X", &m_pos.x, -80.0f, 80.0f, "%.1f");
-	ImGui::SliderFloat("Y", &m_pos.y, -80.0f, 80.0f, "%.1f");
-	ImGui::SliderFloat("Z", &m_pos.z, -80.0f, 80.0f, "%.1f");		
-	m_indicator.SetPos(m_pos);
-	m_fov_indi.SetPos(m_pos);
-	ImGui::Text("Rotation");
-	ImGui::SliderAngle("AngleX", &m_rot.x, 0.995f * -90.0f, 0.995f * 90.0f, "%.1f");
-	ImGui::SliderAngle("AngleY", &m_rot.y, -180.0f, 180.0f, "%.1f");
-	m_indicator.SetRot(m_rot);
-	m_fov_indi.SetRot(m_rot);	
+	bool pos_dirty = false;
+	if (!m_tether_state)
+	{
+		ImGui::Text("Position");
+		check_dirty(pos_dirty, ImGui::SliderFloat("X", &m_pos.x, -80.0f, 80.0f, "%.1f"));
+		check_dirty(pos_dirty, ImGui::SliderFloat("Y", &m_pos.y, -80.0f, 80.0f, "%.1f"));
+		check_dirty(pos_dirty, ImGui::SliderFloat("Z", &m_pos.z, -80.0f, 80.0f, "%.1f"));		
+
+	}
+	if (pos_dirty)
+	{
+		m_indicator.SetPos(m_pos);
+		m_fov_indi.SetPos(m_pos);
+	}
+	bool orien_dirty = false;
+	ImGui::Text("Orientation");
+	check_dirty(orien_dirty, ImGui::SliderAngle("AngleX", &m_rot.x, 0.995f * -90.0f, 0.995f * 90.0f, "%.1f"));
+	check_dirty(orien_dirty, ImGui::SliderAngle("AngleY", &m_rot.y, -180.0f, 180.0f, "%.1f"));
+	if (orien_dirty)
+	{
+		m_indicator.SetRot(m_rot);
+		m_fov_indi.SetRot(m_rot);
+	}
+	bool proj_dirty = false;	
 	ImGui::Text("FOV");
-	bool proj_dirty = false;
 	check_dirty(proj_dirty, ImGui::SliderFloat("ViewWidth", &m_viewWidth, -0, 2000.0f, "%.1f"));
 	check_dirty(proj_dirty, ImGui::SliderFloat("ViewHeight", &m_viewHeight, -0, 2000.0f, "%.1f"));
 	check_dirty(proj_dirty, ImGui::SliderFloat("NearZ", &m_NearZ, 0.1f, 80.0f, "%.1f"));
@@ -124,22 +180,12 @@ void Camera::ShowControlCameraWidget() noexcept(!IS_DEBUG)
 	ImGui::Text("Reset FOV");
 	if (ImGui::Button("Reset controled camera FOV"))
 	{
-		m_viewWidth  = float(m_defaultViewWidth);
-		m_viewHeight = float(m_defaultViewHeight);
-		m_NearZ = 0.5f;
-		m_FarZ = 2500.0f;
-		m_fov_indi.SetVertices(m_gfx, m_viewWidth / 10.0f, m_viewHeight / 10.0f, m_NearZ, m_FarZ);
+		ResetProjection();
 	}
 	ImGui::Text("Reset to default");
 	if (ImGui::Button("Reset controled camera"))
 	{
-		m_pos = homePos;
-		m_rot = { 0.0f, 0.0f ,0.0f };
-		m_viewWidth = float(m_defaultViewWidth);
-		m_viewHeight = float(m_defaultViewHeight);
-		m_NearZ = 0.5f;
-		m_FarZ = 2500.0f;
-		m_fov_indi.SetVertices(m_gfx, m_viewWidth / 10.0f, m_viewHeight / 10.0f, m_NearZ, m_FarZ);
+		Reset();
 	}
 
 	ImGui::Checkbox("Enable Camera Indicator", &m_enCamIndi);
@@ -151,22 +197,12 @@ void Camera::ShowActiveCameraWidget() noexcept(!IS_DEBUG)
 	ImGui::Text("Reset FOV");
 	if (ImGui::Button("Reset FOV"))
 	{
-		m_viewWidth = float(m_defaultViewWidth);
-		m_viewHeight = float(m_defaultViewHeight);
-		m_NearZ = 0.5f;
-		m_FarZ = 2500.0f;
-		m_fov_indi.SetVertices(m_gfx, m_viewWidth / 10.0f, m_viewHeight / 10.0f, m_NearZ, m_FarZ);
+		ResetProjection();
 	}
 	ImGui::Text("Reset to default camera value");
 	if (ImGui::Button("Reset"))
 	{
-		m_pos = homePos;
-		m_rot = { 0.0f, 0.0f ,0.0f };
-		m_viewWidth = float(m_defaultViewWidth);
-		m_viewHeight = float(m_defaultViewHeight);
-		m_NearZ = 0.5f;
-		m_FarZ = 2500.0f;
-		m_fov_indi.SetVertices(m_gfx, m_viewWidth / 10.0f, m_viewHeight / 10.0f, m_NearZ, m_FarZ);
+		Reset();
 	}
 	ImGui::Text("First Person Shooter experience");
 	if (!m_hideMouse)

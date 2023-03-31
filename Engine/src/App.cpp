@@ -22,6 +22,11 @@ App::App()
 	op1.szModelName = "sponza";
 	scene.AddModel(m_gfx, op1);
 	DISABLE_SIGNAL(scene.signalModelAdded);
+	for (auto& i : lights.GetContainer())
+	{
+		cams.Add(i->ShareCamera());
+	}
+	DISABLE_SIGNAL(cams.signalCamAdded);
 	//Scene::RenderOption op2;
 	//op2.szModelPath = "res\\model\\Lumie\\Lumie.pmx";
 	//op2.szModelName = "lumie";
@@ -54,18 +59,24 @@ WPARAM App::Run()
 void App::DoFrame()
 {
 	m_gfx.BeginFrame();
+
 	SIGNAL(
 		cams.signalCamAdded,
 		cams.LinkAddedCamera(m_rg)
 	);
+
 	SIGNAL(
 		scene.signalModelAdded,
 		scene.LinkAddedModel(m_rg)
 	);
+#define SIGNAL_FUNTION\
+	lights.LinkAddedLight(m_rg);\
+	cams.Add(lights.GetBack()->ShareCamera())
 	SIGNAL(
 		lights.lightAddedSignal,
-		lights.LinkAddedLight(m_rg)
-	)
+		SIGNAL_FUNTION
+	);
+#undef SIGNAL_FUNTION
 	scene.Submit();
 	cams.Submit();
 	lights.Submit();

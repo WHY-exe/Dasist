@@ -2,20 +2,23 @@
 #include <DirectXMath.h>
 #include "ConstantBufferEx.h"
 #include "LightIndicator.h"
+#include "Camera.h"
 #include "DynamicConstantBuffer.h"
 #include <memory>
 class Light
 {
 	friend class LightContainer;
 public:
-	Light(std::string szName, int index) noexcept;
+	Light(Graphics& gfx, std::string szName, int index) noexcept;
 	const std::string& GetName() const noexcept;
 	virtual void Update() noexcept = 0;
 	virtual void Submit() noexcept = 0 ;
 	virtual void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG) = 0;
 	virtual void SpwanControlWidgets() noexcept;
+	std::shared_ptr<Camera> ShareCamera() const noexcept;
 protected:	
 	int m_index;
+	std::shared_ptr<Camera> m_pCamera;
 	std::string m_szName;
 	BOOL m_Enable = TRUE;
 	DirectX::XMFLOAT3 m_pos;
@@ -44,11 +47,11 @@ class GlobalLight : public Light
 {
 	friend class LightContainer;
 public:
-	GlobalLight(std::string szName, int index) noexcept
+	GlobalLight(Graphics& gfx, std::string szName, int index) noexcept
 		:
-		Light("GlobalLight" + std::to_string(index), index)
+		Light(gfx, "GlobalLight" + std::to_string(index), index)
 	{};
-	void Update() noexcept override{};
+	void Update() noexcept override{ m_pCamera->SetPos(m_pos); };
 	void Submit() noexcept override{};
 	void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG) override {};
 	void SpwanControlWidgets() noexcept override

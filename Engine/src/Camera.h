@@ -10,10 +10,12 @@ namespace Rgph
 class Camera
 {
 public:
-	Camera(class Graphics& gfx, std::string szName);
+	Camera(class Graphics& gfx, std::string szName, bool tethered = false);
 	DirectX::XMMATRIX GetCameraMatrix() const;
 	DirectX::XMMATRIX GetPerspectiveViewMX() const noexcept(!IS_DEBUG);
 	const std::string& GetName() const noexcept;
+	void SetPos(float x, float y, float z);
+	void SetPos(DirectX::XMFLOAT3 pos);
 	void Rotate(float dx, float dy) noexcept;
 	void Translate(float dx, float dy, float dz);
 	bool MouseStatus() const noexcept;
@@ -24,13 +26,16 @@ public:
 	void ShowMouse() noexcept;
 	void LinkTechniques(Rgph::RenderGraph& rg);
 	void Submit() const;
+	void ResetProjection() noexcept;
 private:
+	void Reset() noexcept;
 	DirectX::XMMATRIX GetFPMatrix() const;
 	DirectX::XMMATRIX GetTPMatrix() const;
 private:
 	Graphics& m_gfx;
 	std::string m_szName;
 	bool m_hideMouse = false;
+	bool m_tether_state = false;
 	unsigned int m_defaultViewWidth;
 	unsigned int m_defaultViewHeight;
 	float m_viewWidth;

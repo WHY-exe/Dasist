@@ -81,7 +81,7 @@ void LightContainer::DeleteCurLight() noexcept
 	m_curPL_Index == 0 ? m_curPL_Index = 0 : m_curPL_Index--;
 	for (size_t i = 0; i < m_point_lights.size(); i++)
 	{
-		m_point_lights[i]->m_index = i;
+		m_point_lights[i]->m_index = (int)i;
 	}
 }
 

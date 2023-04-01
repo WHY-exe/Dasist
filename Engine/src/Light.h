@@ -10,6 +10,7 @@ class Light
 	friend class LightContainer;
 public:
 	Light(Graphics& gfx, std::string szName, int index) noexcept;
+	virtual ~Light() { m_pCamera->SetDeleteState(true); };
 	const std::string& GetName() const noexcept;
 	virtual void Update() noexcept = 0;
 	virtual void Submit() noexcept = 0 ;

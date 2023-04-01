@@ -45,6 +45,16 @@ const std::string& Camera::GetName() const noexcept
 	return m_szName;
 }
 
+void Camera::SetDeleteState(bool should_delete) noexcept
+{
+	m_should_delete = should_delete;
+}
+
+bool Camera::ShouldDelete() const noexcept
+{
+	return m_should_delete;
+}
+
 void Camera::SetPos(float x, float y, float z)
 {
 	m_pos = { x, y, z };

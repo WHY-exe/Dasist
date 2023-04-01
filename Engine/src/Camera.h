@@ -14,6 +14,8 @@ public:
 	DirectX::XMMATRIX GetCameraMatrix() const;
 	DirectX::XMMATRIX GetPerspectiveViewMX() const noexcept(!IS_DEBUG);
 	const std::string& GetName() const noexcept;
+	void SetDeleteState(bool should_delete) noexcept;
+	bool ShouldDelete() const noexcept;
 	void SetPos(float x, float y, float z);
 	void SetPos(DirectX::XMFLOAT3 pos);
 	void Rotate(float dx, float dy) noexcept;
@@ -34,6 +36,7 @@ private:
 private:
 	Graphics& m_gfx;
 	std::string m_szName;
+	bool m_should_delete = false;
 	bool m_hideMouse = false;
 	bool m_tether_state = false;
 	unsigned int m_defaultViewWidth;

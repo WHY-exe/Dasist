@@ -71,7 +71,9 @@ void App::DoFrame()
 	);
 #define SIGNAL_FUNTION\
 	lights.LinkAddedLight(m_rg);\
-	cams.Add(lights.GetBack()->ShareCamera())
+	cams.Add(lights.GetBack()->ShareCamera());\
+	cams.LinkAddedCamera(m_rg);\
+	DISABLE_SIGNAL(cams.signalCamAdded)
 	SIGNAL(
 		lights.lightAddedSignal,
 		SIGNAL_FUNTION

@@ -47,11 +47,11 @@ void LightContainer::Bind(Graphics& gfx) noexcept
 	m_PL_PSCbuf->Bind(gfx);
 }
 
-void LightContainer::Submit() noexcept
+void LightContainer::Submit(size_t channel) noexcept
 {
 	for (auto& i: m_point_lights)
 	{
-		i->Submit();
+		i->Submit(channel);
 	}
 }
 

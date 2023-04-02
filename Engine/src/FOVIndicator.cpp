@@ -1,4 +1,5 @@
 #include "FOVIndicator.h"
+#include "Channel.h"
 #include "BindableCommon.h"
 FOVIndicator::FOVIndicator(Graphics& gfx, float width, float height, float nearZ, float farZ)
 {
@@ -33,7 +34,7 @@ FOVIndicator::FOVIndicator(Graphics& gfx, float width, float height, float nearZ
 	AddEssentialBind(IndexBuffer::Resolve(gfx, L"$fov", indices));
 	AddEssentialBind(Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_LINELIST));
 	{
-		Technique line("line_draw");
+		Technique line("line_draw", Channel::main);
 		{
 			Step non_occluded("lambertian");
 			auto pvs = VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso");

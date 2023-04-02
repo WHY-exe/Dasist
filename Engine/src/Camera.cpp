@@ -40,9 +40,25 @@ DirectX::XMMATRIX Camera::GetPerspectiveViewMX() const noexcept(!IS_DEBUG)
 	return DirectX::XMMatrixPerspectiveLH(1.0f, (float)(m_viewHeight/m_viewWidth), m_NearZ, m_FarZ);
 }
 
+void Camera::BindtoGFX(Graphics& gfx) const noexcept(!IS_DEBUG)
+{
+	gfx.SetProjection(GetPerspectiveViewMX());
+	gfx.SetCamera(GetCameraMatrix());
+}
+
 const std::string& Camera::GetName() const noexcept
 {
 	return m_szName;
+}
+
+void Camera::SetTetheredState(bool state) noexcept
+{
+	m_tether_state = state;
+}
+
+bool Camera::GetTetherdState() const noexcept
+{
+	return m_tether_state;
 }
 
 void Camera::SetDeleteState(bool should_delete) noexcept
@@ -244,10 +260,10 @@ void Camera::LinkTechniques(Rgph::RenderGraph& rg)
 	m_fov_indi.LinkTechniques(rg);
 }
 
-void Camera::Submit() const
+void Camera::Submit(size_t channel) const
 {
 	if(m_enCamIndi)
-		m_indicator.Submit();
+		m_indicator.Submit(channel);
 	if (m_enFOVIndi)
-		m_fov_indi.Submit();
+		m_fov_indi.Submit(channel);
 }

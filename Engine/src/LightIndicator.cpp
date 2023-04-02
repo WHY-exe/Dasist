@@ -1,5 +1,6 @@
 #include "LightIndicator.h"
 #include "BindableCommon.h"
+#include "Channel.h"
 #include "Sphere.h"
 LightIndicator::LightIndicator(Graphics& gfx)
 {
@@ -11,7 +12,7 @@ LightIndicator::LightIndicator(Graphics& gfx)
 	AddEssentialBind(Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
 	{
-		Technique line("normal_draw");
+		Technique line("normal_draw", Channel::main);
 		Step only("lambertian");
 
 		auto pvs = VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso");

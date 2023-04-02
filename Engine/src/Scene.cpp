@@ -13,6 +13,7 @@
 #include "Sampler.h"
 #include "Surface.h"
 #include "ConstantBuffer.h"
+#include "Channel.h"
 #include <stdexcept>
 #include "imgui.h"
 #include "StrManager.h"
@@ -49,7 +50,7 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 	);
 	AddEssentialBind(Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 	{
-		Technique shade("shade");
+		Technique shade("shade", Channel::main);
 		{
 			Step normalDraw("lambertian");
 			auto texs = mesh_data.GetTextures();
@@ -88,7 +89,7 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 		AddTechnique(shade);
 	}
 	{
-		Technique outline("OutLine");
+		Technique outline("OutLine", Channel::main);
 		{
 			{
 				Step mask("outlineMask");
@@ -123,11 +124,27 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 		outline.SetActiveState(false);
 		AddTechnique(outline);
 	}
+	{
+		Technique map{"ShadowMap",Channel::shadow};
+		{
+			Step draw("shadowMap");
+
+			// TODO: better sub-layout generation tech for future consideration maybe
+			draw.AddBind(InputLayout::Resolve(gfx, mesh_data.GetVertecies()->GetLayout(), *VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso")));
+
+			draw.AddBind(std::make_shared<TransformCbuf>(gfx));
+
+			// TODO: might need to specify rasterizer when doubled-sided models start being used
+
+			map.AddStep(draw);
+		}
+		AddTechnique(map);
+	}
 }
-void Scene::Mesh::Submit(DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG)
+void Scene::Mesh::Submit(DirectX::FXMMATRIX accumulateTransform, size_t channel) const noexcept(!IS_DEBUG)
 {
 	DirectX::XMStoreFloat4x4(&m_transform, accumulateTransform);
-	Drawable::Submit();
+	Drawable::Submit(channel);
 }
 
 std::string Scene::Mesh::GetName() noexcept
@@ -167,7 +184,7 @@ const DirectX::XMFLOAT4X4& Scene::Node::GetAppliedTransform() const noexcept
 }
 
 
-void Scene::Node::Submit(DirectX::FXMMATRIX accumulateTransform) const noexcept
+void Scene::Node::Submit(DirectX::FXMMATRIX accumulateTransform, size_t channel) const noexcept
 {
 	const auto build =
 		DirectX::XMLoadFloat4x4(&m_AppliedTransform) *
@@ -175,11 +192,11 @@ void Scene::Node::Submit(DirectX::FXMMATRIX accumulateTransform) const noexcept
 		accumulateTransform;
 	for (const auto pm : m_pMeshes)
 	{
-		pm->Submit(build);
+		pm->Submit(build, channel);
 	}
 	for (const auto& pc : m_pChilds)
 	{
-		pc->Submit(build);
+		pc->Submit(build, channel);
 	}
 
 }
@@ -358,12 +375,13 @@ void Scene::Model::Accept(TNodeProbe& probe) noexcept(!IS_DEBUG)
 	m_pRoot->Accept(node_probe);
 }
 
-void Scene::Model::Submit() const noexcept(!IS_DEBUG)
+void Scene::Model::Submit(size_t channel) const noexcept(!IS_DEBUG)
 {
 	m_pRoot->Submit(
 		DirectX::XMMatrixIdentity() *
 		DirectX::XMMatrixScaling(m_scale, m_scale, m_scale) *
-		DirectX::XMMatrixTranslation(m_pos.x, m_pos.y, m_pos.z)
+		DirectX::XMMatrixTranslation(m_pos.x, m_pos.y, m_pos.z),
+		channel
 	);
 }
 
@@ -407,10 +425,10 @@ void Scene::Scene::LinkAddedModel(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
 	m_models.back()->LinkTechniques(rg);
 }
 
-void Scene::Scene::Submit() const noexcept(!IS_DEBUG)
+void Scene::Scene::Submit(size_t channel) const noexcept(!IS_DEBUG)
 {
 	for (auto& i : m_models)
-		i->Submit();
+		i->Submit(channel);
 }
 
 void Scene::Scene::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)

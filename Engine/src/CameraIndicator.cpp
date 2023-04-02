@@ -1,4 +1,5 @@
 #include "CameraIndicator.h"
+#include "Channel.h"
 #include "BindableCommon.h"
 #include "Probe.h"
 
@@ -53,7 +54,7 @@ CameraIndicator::CameraIndicator(Graphics& gfx)
 	AddEssentialBind(Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_LINELIST));
 
 	{
-		Technique line("line_draw");
+		Technique line("line_draw", Channel::main);
 		Step only("lambertian");
 		auto pvs = VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso");
 		only.AddBind(InputLayout::Resolve(gfx, vertices.GetLayout(), *pvs));

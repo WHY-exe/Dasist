@@ -1,15 +1,19 @@
 #include "Technique.h"
 #include "Drawable.h"
-Technique::Technique(const std::string& name) noexcept
+Technique::Technique(const std::string& name, size_t channel) noexcept
 	:
-	m_Name(name)
+	m_Name(name),
+	m_channel(channel)
 {
 }
-void Technique::Submit(const Drawable& d) const noexcept
+void Technique::Submit(const Drawable& d, size_t channelFliter) const noexcept
 {
-	for (auto& s : m_Steps)
+	if ((m_channel & channelFliter) != 0)
 	{
-		s.Submit(d);
+		for (auto& s : m_Steps)
+		{
+			s.Submit(d);
+		}
 	}
 }
 

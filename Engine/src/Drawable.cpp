@@ -54,11 +54,11 @@ void Drawable::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)
 	}
 }
 
-void Drawable::Submit() const noexcept
+void Drawable::Submit(size_t channel) const noexcept
 {
 	for (auto& tech : m_Techs)
 	{
-		tech.Submit(*this);
+		tech.Submit(*this, channel);
 	}
 }
 

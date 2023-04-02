@@ -1,6 +1,7 @@
 #include "App.h"
 #include <sstream>
 #include <iomanip>
+#include "Channel.h"
 #include "Surface.h"
 #include "Signal.h"
 #include "imgui.h"
@@ -79,9 +80,10 @@ void App::DoFrame()
 		SIGNAL_FUNTION
 	);
 #undef SIGNAL_FUNTION
-	scene.Submit();
-	cams.Submit();
-	lights.Submit();
+	m_rg.BindLambertianCamera(cams.GetCamera());
+	scene.Submit(Channel::main);
+	cams.Submit(Channel::main);
+	lights.Submit(Channel::main);
 
 	cams.Bind(m_gfx);
 	//gLight.Update(m_gfx);

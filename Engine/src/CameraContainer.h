@@ -15,7 +15,7 @@ public:
 	void Add(Graphics& gfx) noexcept(!IS_DEBUG);
 	void LinkTechniques(Rgph::RenderGraph& rg);
 	void LinkAddedCamera(Rgph::RenderGraph& rg);
-	void Submit() const;
+	void Submit(size_t channel) const;
 	bool signalCamAdded = false;
 private:
 	unsigned int m_active_cam_idx = 0u;

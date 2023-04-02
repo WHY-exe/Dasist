@@ -8,7 +8,7 @@ class LightContainer
 public:
 	LightContainer(Graphics& gfx);
 	void Bind(Graphics& gfx) noexcept;
-	void Submit() noexcept;
+	void Submit(size_t channel) noexcept;
 	const std::unique_ptr<PointLight>& GetBack() const noexcept;
 	void LinkAddedLight(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
 	void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);

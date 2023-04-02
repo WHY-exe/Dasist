@@ -26,8 +26,7 @@ void CameraContainer::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 	}
 	SIGNAL(gfx.sizeSignalPrj, SIGNAL_FUNCTION);
 #undef SIGNAL_FUNCTION
-	gfx.SetProjection(m_Container[m_active_cam_idx]->GetPerspectiveViewMX());
-	gfx.SetCamera(m_Container[m_active_cam_idx]->GetCameraMatrix());
+	m_Container[m_active_cam_idx]->BindtoGFX(gfx);
 	for (auto i = m_Container.begin(); i != m_Container.end(); i++)
 	{
 		if ((*i)->ShouldDelete() && i != m_Container.begin() + m_active_cam_idx)
@@ -63,11 +62,18 @@ void CameraContainer::SpawControlWindow() noexcept(!IS_DEBUG)
 			Add(m_gfx);
 			signalCamAdded = true;
 		} 
-		if(m_Container.size() > 1)
-		{ 
-			if (ImGui::Button("Delete Current Camera"))
+		if(m_Container.size() > 1  )
+		{
+			if (!m_Container[m_active_cam_idx]->GetTetherdState())
 			{
-				DeleteCurCamera();
+				if (ImGui::Button("Delete Current Camera"))
+				{
+					DeleteCurCamera();
+				}
+			}
+			else
+			{
+				ImGui::Text("This camera is tethered to other object");
 			}
 		}
 		m_Container[m_active_cam_idx]->ShowActiveCameraWidget();
@@ -123,12 +129,12 @@ void CameraContainer::LinkAddedCamera(Rgph::RenderGraph& rg)
 	(*(m_Container.end() - 1))->LinkTechniques(rg);
 }
 
-void CameraContainer::Submit() const
+void CameraContainer::Submit(size_t channel) const
 {
 	for (size_t i = 0; i < m_Container.size(); i++)
 	{
 		if (i != m_active_cam_idx)
-			m_Container[i]->Submit();
+			m_Container[i]->Submit(channel);
 	}
 		
 }

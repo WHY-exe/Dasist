@@ -6,7 +6,7 @@
 class Graphics;
 class Bindable;
 class RenderTarget;
-
+class Camera;
 namespace Rgph
 {
 	class BlurOutlineRenderGraph : public RenderGraph
@@ -14,6 +14,8 @@ namespace Rgph
 	public:
 		BlurOutlineRenderGraph( Graphics& gfx );		
 		void RenderWidgets(Graphics& gfx);
+		void BindLambertianCamera(const Camera& cam) noexcept(!IS_DEBUG);
+		void BindShadowCamera(const Camera& cam) noexcept(!IS_DEBUG);
 	private:
 		// private functions
 		void SetKernelGauss( int radius,float sigma ) noexcept(!IS_DEBUG);
@@ -29,5 +31,6 @@ namespace Rgph
 		float sigma = 5.0f;
 		std::shared_ptr<CachingPixelConstantBuffer> blurKernel;
 		std::shared_ptr<CachingPixelConstantBuffer> blurDirection;
+
 	};
 }

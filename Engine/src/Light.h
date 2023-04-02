@@ -13,7 +13,7 @@ public:
 	virtual ~Light() { m_pCamera->SetDeleteState(true); };
 	const std::string& GetName() const noexcept;
 	virtual void Update() noexcept = 0;
-	virtual void Submit() noexcept = 0 ;
+	virtual void Submit(size_t channel) noexcept = 0;
 	virtual void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG) = 0;
 	virtual void SpwanControlWidgets() noexcept;
 	std::shared_ptr<Camera> ShareCamera() const noexcept;
@@ -33,7 +33,7 @@ class PointLight :public Light
 public:
 	PointLight(Graphics& gfx, int index);
 	void Update() noexcept override;
-	void Submit() noexcept override;
+	void Submit(size_t channel) noexcept override;
 	void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG) override;
 	void SpwanControlWidgets() noexcept override;
 private:
@@ -53,7 +53,7 @@ public:
 		Light(gfx, "GlobalLight" + std::to_string(index), index)
 	{};
 	void Update() noexcept override{ m_pCamera->SetPos(m_pos); };
-	void Submit() noexcept override{};
+	void Submit(size_t channel) noexcept override{};
 	void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG) override {};
 	void SpwanControlWidgets() noexcept override
 	{

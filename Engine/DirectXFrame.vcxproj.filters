@@ -136,6 +136,9 @@
     <Filter Include="App">
       <UniqueIdentifier>{930b10b9-b795-477f-8a38-b5fb746ee906}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Drawable\Indicator">
+      <UniqueIdentifier>{d79b2560-afe6-48ea-aa40-628c0277e14f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Job.cpp">
@@ -331,17 +334,20 @@
     <ClCompile Include="src\CameraContainer.cpp">
       <Filter>Camera</Filter>
     </ClCompile>
-    <ClCompile Include="src\LightIndicator.cpp">
-      <Filter>Light</Filter>
-    </ClCompile>
-    <ClCompile Include="src\CameraIndicator.cpp">
-      <Filter>Camera</Filter>
-    </ClCompile>
     <ClCompile Include="src\FOVIndicator.cpp">
       <Filter>Camera</Filter>
     </ClCompile>
     <ClCompile Include="src\LightContainer.cpp">
       <Filter>Light</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CameraIndicator.cpp">
+      <Filter>Drawable\Indicator</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LightIndicator.cpp">
+      <Filter>Drawable\Indicator</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShadowCamCbuf.cpp">
+      <Filter>Bindable\ConstantBuffer4Shader\VSCB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -588,9 +594,6 @@
     <ClInclude Include="src\Signal.h">
       <Filter>Tool</Filter>
     </ClInclude>
-    <ClInclude Include="src\LightIndicator.h">
-      <Filter>Light</Filter>
-    </ClInclude>
     <ClInclude Include="src\Cube.h">
       <Filter>Drawable\Geometry</Filter>
     </ClInclude>
@@ -603,9 +606,6 @@
     <ClInclude Include="src\IndexedTriangleList.h">
       <Filter>Drawable\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\CameraIndicator.h">
-      <Filter>Camera</Filter>
-    </ClInclude>
     <ClInclude Include="src\FOVIndicator.h">
       <Filter>Camera</Filter>
     </ClInclude>
@@ -614,6 +614,21 @@
     </ClInclude>
     <ClInclude Include="src\LightContainer.h">
       <Filter>Light</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Channel.h">
+      <Filter>BufferResource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ShadowMappingPass.h">
+      <Filter>RenderGraphc\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CameraIndicator.h">
+      <Filter>Drawable\Indicator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LightIndicator.h">
+      <Filter>Drawable\Indicator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ShadowCamCbuf.h">
+      <Filter>Bindable\ConstantBuffer4Shader\VSCB</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

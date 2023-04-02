@@ -48,10 +48,10 @@ void PointLight::Update() noexcept
 	m_pCamera->SetPos(m_pos);
 }
 
-void PointLight::Submit() noexcept
+void PointLight::Submit(size_t channel) noexcept
 {
 	if(m_Enable && m_showIndicator)
-		m_indicator.Submit();
+		m_indicator.Submit(channel);
 }
 
 void PointLight::LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG)

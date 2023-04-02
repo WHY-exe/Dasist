@@ -61,6 +61,7 @@
     <ClCompile Include="src\Mouse.cpp" />
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\Keyboard.cpp" />
+    <ClCompile Include="src\ShadowCamCbuf.cpp" />
     <ClCompile Include="src\Sink.cpp" />
     <ClCompile Include="src\Source.cpp" />
     <ClCompile Include="src\Stencil.cpp" />
@@ -90,6 +91,7 @@
     <ClCompile Include="src\Step.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Channel.h" />
     <ClInclude Include="src\LightContainer.h" />
     <ClInclude Include="src\FOVIndicator.h" />
     <ClInclude Include="src\CameraIndicator.h" />
@@ -106,6 +108,8 @@
     <ClInclude Include="src\DepthStencil.h" />
     <ClInclude Include="src\FullscreenPass.h" />
     <ClInclude Include="src\Plane.h" />
+    <ClInclude Include="src\ShadowCamCbuf.h" />
+    <ClInclude Include="src\ShadowMappingPass.h" />
     <ClInclude Include="src\Signal.h" />
     <ClInclude Include="src\HorizontalBlurPass.h" />
     <ClInclude Include="src\LambertianPass.h" />

@@ -13,7 +13,10 @@ public:
 	Camera(class Graphics& gfx, std::string szName, bool tethered = false);
 	DirectX::XMMATRIX GetCameraMatrix() const;
 	DirectX::XMMATRIX GetPerspectiveViewMX() const noexcept(!IS_DEBUG);
+	void BindtoGFX(Graphics& gfx) const noexcept(!IS_DEBUG);
 	const std::string& GetName() const noexcept;
+	void SetTetheredState(bool state) noexcept;
+	bool GetTetherdState() const noexcept;
 	void SetDeleteState(bool should_delete) noexcept;
 	bool ShouldDelete() const noexcept;
 	void SetPos(float x, float y, float z);
@@ -27,7 +30,7 @@ public:
 	void HideMouse() noexcept;
 	void ShowMouse() noexcept;
 	void LinkTechniques(Rgph::RenderGraph& rg);
-	void Submit() const;
+	void Submit(size_t channel) const;
 	void ResetProjection() noexcept;
 private:
 	void Reset() noexcept;

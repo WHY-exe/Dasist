@@ -20,7 +20,7 @@ public:
 	void Bind(Graphics& gfx) const noexcept;
 	void Accept(Probe& probe) noexcept;
 	void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
-	void Submit() const noexcept;
+	void Submit(size_t channel) const noexcept;
 	UINT GetIndexSize() const noexcept;
 	virtual DirectX::XMMATRIX GetTransformXM() const noexcept = 0;
 protected:

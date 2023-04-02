@@ -5,22 +5,32 @@ class DepthStencil : public Bindable, public BufferResource
 {
 	friend class RenderTarget;
 public:
-	DepthStencil(Graphics& gfx, UINT width, UINT height);
-	DepthStencil(Graphics& gfx);
+	enum class Usage
+	{
+		DepthStencil,
+		DepthForShadow
+	};
+public:
 	void BindAsBuffer(Graphics& gfx) noexcept(!IS_DEBUG) override;
 	void BindAsBuffer(Graphics& gfx, BufferResource* renderTarget) noexcept(!IS_DEBUG) override;
 	void BindAsBuffer(Graphics& gfx, class RenderTarget* renderTarget) noexcept(!IS_DEBUG);
-	void Clear(Graphics& gfx) noexcept(!IS_DEBUG) override;
+	void Clear(Graphics& gfx) noexcept(!IS_DEBUG) override;	
+	UINT GetWidth() const noexcept;
+	UINT GetHeight() const noexcept;
 	const Microsoft::WRL::ComPtr<ID3D11DepthStencilView>& GetView() const noexcept;
 protected:
+	DepthStencil(Graphics& gfx, bool bindShaderResource, UINT width, UINT height, Usage usage);	
+	DepthStencil(Graphics& gfx, bool bindShaderResource, Usage usage);
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>  m_pDSV;
+	UINT m_width;
+	UINT m_height;
 };
 
 class DepthStencilAsShaderInput :public DepthStencil
 {
 public:
-	DepthStencilAsShaderInput(Graphics& gfx, UINT width, UINT height, UINT slot);
-	DepthStencilAsShaderInput(Graphics& gfx, UINT slot);
+	DepthStencilAsShaderInput(Graphics& gfx, UINT width, UINT height, UINT slot, Usage usage = Usage::DepthStencil);
+	DepthStencilAsShaderInput(Graphics& gfx, UINT slot, Usage usage = Usage::DepthStencil	);
 	void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override;
 	void Resize(Graphics& gfx, UINT width, UINT height) noexcept(!IS_DEBUG) override;
 private:

@@ -90,6 +90,18 @@ namespace Rgph
 		m_passes.push_back( std::move( pass ) );
 	}
 
+	Pass& RenderGraph::FindPassByName(const std::string& name)
+	{
+		auto i = std::find_if(m_passes.begin(), m_passes.end(), [&name](auto& p) {
+			return p->GetName() == name;
+		});
+		if (i == m_passes.end())
+		{
+			throw std::runtime_error("Can't Find the Pass with name" + name);
+		}
+		return **i;
+	}
+
 	void RenderGraph::LinkSinks( Pass& pass )
 	{
 		for( auto& si : pass.GetSinks() )

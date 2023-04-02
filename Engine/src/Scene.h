@@ -23,7 +23,7 @@ namespace Scene
 	{
 	public:
 		Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& model_path) noexcept;
-		void Submit(DirectX::FXMMATRIX accumulateTransform) const noexcept(!IS_DEBUG);
+		void Submit(DirectX::FXMMATRIX accumulateTransform, size_t channel) const noexcept(!IS_DEBUG);
 		std::string GetName() noexcept;
 		DirectX::XMMATRIX GetTransformXM() const noexcept override;
 		void SetTransform(DirectX::XMMATRIX transform) noexcept;
@@ -37,7 +37,7 @@ namespace Scene
 		friend class Model;
 	public:
 		Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform);
-		void Submit(DirectX::FXMMATRIX accumulateTransform) const noexcept;
+		void Submit(DirectX::FXMMATRIX accumulateTransform, size_t channel) const noexcept;
 		void SetSelectStatus(bool status) noexcept;
 		int GetId() const noexcept;
 		const std::string& GetName() const noexcept;
@@ -73,7 +73,7 @@ namespace Scene
 			ModelSetting& option, 
 			const aiMaterial* const* pMaterial);
 		const std::string& GetName() const noexcept;
-		void Submit() const noexcept(!IS_DEBUG);
+		void Submit(size_t channel) const noexcept(!IS_DEBUG);
 		void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
 		void ApplyTransformation() noexcept(!IS_DEBUG);
 		std::unique_ptr<Node> ParseNode(int& next_id, const aiNode& node);
@@ -95,7 +95,7 @@ namespace Scene
 	public:
 		void AddModel(Graphics& gfx, ModelSetting& setting) noexcept(!IS_DEBUG);
 		void LinkAddedModel(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
-		void Submit() const noexcept(!IS_DEBUG);
+		void Submit(size_t channel) const noexcept(!IS_DEBUG);
 		void LinkTechniques(Rgph::RenderGraph& rg) noexcept(!IS_DEBUG);
 		std::vector<std::unique_ptr<Model>>& GetModels() noexcept;
 	public:

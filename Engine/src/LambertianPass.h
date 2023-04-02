@@ -14,12 +14,13 @@ namespace Rgph
 	public:
 		LambertianPass( Graphics& gfx,std::string name )
 			:
-			RenderQueuePass( std::move( name ) )
+			RenderQueuePass( std::move( name ) ),
+			m_pShadowCbuf{ std::make_shared<ShadowCamCbuf>(gfx) }
 		{
 			AddBind(m_pShadowCbuf);
 			RegisterSink( DirectBufferSink<RenderTarget>::Make( "renderTarget",renderTarget ) );
 			RegisterSink( DirectBufferSink<DepthStencil>::Make( "depthStencil",depthStencil ) );
-			RegisterSink( DirectBindableSink<Bindable>::Make("shadowMap", m_pShadowMap));
+			RegisterSink( DirectBindableSink<Bindable>::Make("ShadowMap", m_pShadowMap));
 			RegisterSource( DirectBufferSource<RenderTarget>::Make( "renderTarget",renderTarget ) );
 			RegisterSource( DirectBufferSource<DepthStencil>::Make( "depthStencil",depthStencil ) );
 			AddBind( Stencil::Resolve( gfx,Stencil::Mod::Off ) );
@@ -28,9 +29,9 @@ namespace Rgph
 		{
 			m_pCamera = &cam;
 		}
-		void BindShadowCamera(const Camera& cam) noexcept
+		void BindShadowCamera(std::shared_ptr<Camera> cam) noexcept
 		{
-			m_pShadowCbuf->SetCamera(cam);
+			m_pShadowCbuf->SetCamera(std::move(cam));
 		}
 		void Execute( Graphics& gfx ) const noexcept(!IS_DEBUG) override
 		{

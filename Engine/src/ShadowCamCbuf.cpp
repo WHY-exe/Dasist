@@ -13,14 +13,16 @@ void ShadowCamCbuf::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 
 void ShadowCamCbuf::Update(Graphics& gfx) const noexcept
 {
-	Transform tf = {
-		m_pCamera->GetCameraMatrix() * m_pCamera->GetPerspectiveViewMX()
-	};
+	Transform tf;
+	for (size_t i = 0; i < MAX_LIGHT_NUM && i < m_pCameras.size(); i++)
+	{
+		tf.Viewproj[i] = m_pCameras[i]->GetCameraMatrix() * m_pCameras[i]->GetPerspectiveViewMX();
+	}
 	m_vcbuf->Update(gfx, tf);
 }
 
-void ShadowCamCbuf::SetCamera(const Camera& cam) noexcept
+void ShadowCamCbuf::SetCamera(std::shared_ptr<Camera> cam) noexcept
 {
-	m_pCamera = &cam;
+	m_pCameras.push_back(std::move(cam));
 }
 

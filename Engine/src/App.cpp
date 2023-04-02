@@ -35,6 +35,7 @@ App::App()
 	scene.LinkTechniques(m_rg);
 	cams.LinkTechniques(m_rg);
 	lights.LinkTechniques(m_rg);
+	m_rg.BindShadowCamera(lights);
 }
 
 WPARAM App::Run()

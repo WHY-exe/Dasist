@@ -7,6 +7,7 @@ class Graphics;
 class Bindable;
 class RenderTarget;
 class Camera;
+class LightContainer;
 namespace Rgph
 {
 	class BlurOutlineRenderGraph : public RenderGraph
@@ -15,7 +16,7 @@ namespace Rgph
 		BlurOutlineRenderGraph( Graphics& gfx );		
 		void RenderWidgets(Graphics& gfx);
 		void BindLambertianCamera(const Camera& cam) noexcept(!IS_DEBUG);
-		void BindShadowCamera(const Camera& cam) noexcept(!IS_DEBUG);
+		void BindShadowCamera(const LightContainer& lights) noexcept(!IS_DEBUG);
 	private:
 		// private functions
 		void SetKernelGauss( int radius,float sigma ) noexcept(!IS_DEBUG);

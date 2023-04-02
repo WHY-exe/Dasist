@@ -127,12 +127,12 @@ Scene::Mesh::Mesh(Graphics& gfx, MeshData& mesh_data, const std::string& mesh_na
 	{
 		Technique map{"ShadowMap",Channel::shadow};
 		{
-			Step draw("shadowMap");
+			Step draw("shadowMapping");
 
 			// TODO: better sub-layout generation tech for future consideration maybe
 			draw.AddBind(InputLayout::Resolve(gfx, mesh_data.GetVertecies()->GetLayout(), *VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso")));
 
-			draw.AddBind(std::make_shared<TransformCbuf>(gfx));
+			draw.AddBind(std::make_shared<TransformCbuf>(gfx, *this));
 
 			// TODO: might need to specify rasterizer when doubled-sided models start being used
 

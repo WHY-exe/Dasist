@@ -4,6 +4,7 @@
 #include "LambertianPass.h"
 #include "OutlineDrawingPass.h"
 #include "OutlineMaskGenerationPass.h"
+#include "LightContainer.h"
 #include "Source.h"
 #include "HorizontalBlurPass.h"
 #include "VerticalBlurPass.h"
@@ -30,14 +31,14 @@ namespace Rgph
 			AppendPass( std::move( pass ) );
 		}
 		{
-			auto pass = std::make_unique<ShadowMappingPass>( "shadowMapping" );
+			auto pass = std::make_unique<ShadowMappingPass>( gfx, "shadowMapping" );
 			AppendPass(std::move(pass));
 		}
 		{
 			auto pass = std::make_unique<LambertianPass>( gfx,"lambertian" );
-			pass->SetSinkLinkage( "shadowMap", "shadowMapping.ShadowMap" );
-			pass->SetSinkLinkage( "renderTarget","shadowMapping.buffer" );
-			pass->SetSinkLinkage( "depthStencil","clearDS.buffer" );
+			pass->SetSinkLinkage( "ShadowMap", "shadowMapping.ShadowMap" );
+			pass->SetSinkLinkage( "renderTarget", "clearRT.buffer");
+			pass->SetSinkLinkage( "depthStencil", "clearDS.buffer" );
 			AppendPass( std::move( pass ) );
 		}
 		{
@@ -192,8 +193,12 @@ namespace Rgph
 	{
 		dynamic_cast<LambertianPass&>(FindPassByName("lambertian")).BindMainCamera(cam);
 	}
-	void BlurOutlineRenderGraph::BindShadowCamera(const Camera& cam) noexcept(!IS_DEBUG)
+	void BlurOutlineRenderGraph::BindShadowCamera(const LightContainer& lights) noexcept(!IS_DEBUG)
 	{
-		dynamic_cast<ShadowMappingPass&>(FindPassByName("shadowMapping")).BindCamera(cam);
+		for (const auto& i : lights.GetContainer())
+		{
+			dynamic_cast<LambertianPass&>(FindPassByName("lambertian")).BindShadowCamera(i->ShareCamera());
+		}
+
 	}
 }

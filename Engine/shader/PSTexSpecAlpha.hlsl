@@ -1,6 +1,5 @@
-#include "PSBase.hlsli"
 #include "lighting.hlsli"
-
+#include "PSBase.hlsli"
 float4 main(VSOut vso) : SV_Target
 {
     const float4 SpecularSample = spec.Sample(splr, vso.tc);
@@ -18,7 +17,7 @@ float4 main(VSOut vso) : SV_Target
         matAmbient = amap.Sample(splr, vso.tc);
     float4 matDiffuse = dmap.Sample(splr, vso.tc);
     float4 matSpec = spec_color;
-    result = SetLightingPixelResult(SpecularPower, specular_intensity, vso.ViewPos, ViewNormal);
+    result = SetLightingPixelResult(SpecularPower, specular_intensity, vso.ViewPos, ViewNormal, vso.shadowCamPos);
     return float4(
        saturate(result.Diffuse) * matDiffuse.rgb +
        saturate(result.Ambient) * matAmbient.rgb +

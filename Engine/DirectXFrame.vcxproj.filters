@@ -349,6 +349,9 @@
     <ClCompile Include="src\ShadowCamCbuf.cpp">
       <Filter>Bindable\ConstantBuffer4Shader\VSCB</Filter>
     </ClCompile>
+    <ClCompile Include="src\ShadowSampler.cpp">
+      <Filter>Bindable\Sampler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Job.h">
@@ -630,6 +633,9 @@
     <ClInclude Include="src\ShadowCamCbuf.h">
       <Filter>Bindable\ConstantBuffer4Shader\VSCB</Filter>
     </ClInclude>
+    <ClInclude Include="src\ShadowSampler.h">
+      <Filter>Bindable\Sampler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\PS.hlsl">
@@ -688,13 +694,19 @@
     <None Include="res\DirectXFrame.aps">
       <Filter>res</Filter>
     </None>
-    <None Include="shader\VSBase.hlsli">
-      <Filter>Shader</Filter>
-    </None>
     <None Include="shader\PSBase.hlsli">
       <Filter>Shader</Filter>
     </None>
     <None Include="shader\lighting.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shader\VSBase.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shader\VSShadow.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shader\PSShadow.hlsli">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

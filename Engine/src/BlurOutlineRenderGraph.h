@@ -17,6 +17,7 @@ namespace Rgph
 		void RenderWidgets(Graphics& gfx);
 		void BindLambertianCamera(const Camera& cam) noexcept(!IS_DEBUG);
 		void BindShadowCamera(const LightContainer& lights) noexcept(!IS_DEBUG);
+		void BindAddedShadowCamera(std::shared_ptr<Camera> cam) noexcept(!IS_DEBUG);
 	private:
 		// private functions
 		void SetKernelGauss( int radius,float sigma ) noexcept(!IS_DEBUG);

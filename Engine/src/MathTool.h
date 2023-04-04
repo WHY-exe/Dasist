@@ -31,9 +31,24 @@ namespace math_tool {
 		// 这里假设μ为0
 		return ((T)1.0 / sqrt( (T)2.0 * (T)PI_D * square(sigma) )) * exp( -square(x) / ((T)2.0 * square(sigma)) );
 	};
+	inline float rsqrt(float num)
+	{
+		long i;
+		float x2, y;
+		x2 = num / 2;
+		y = num;
+		i = *(long*)&y;
+		// that's why we call Carmack a genius
+		i = 0x5f3759df - (i >> 1);
+		y = *(float*)&i;
+		y = y * (1.5f - x2 * y * y);
+		return y;
+	};
+	inline float sqrt(float num)
+	{
+		return 1.0f / rsqrt(num);
+	};
 	DirectX::XMFLOAT3 ExtraEulerAngle(const DirectX::XMFLOAT4X4 matrix);
 	DirectX::XMFLOAT3 ExtraTranslation(const DirectX::XMFLOAT4X4 matrix);
 	DirectX::XMFLOAT3 ExtraScaling(const DirectX::XMFLOAT4X4 matrix);
-
-
 }

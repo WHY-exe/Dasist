@@ -1,3 +1,4 @@
+#include "PSShadow.hlsli"
 struct LightComponent
 {
     float3 Diffuse : Diffuse;
@@ -112,7 +113,7 @@ LightComponent GetLight(LightAttri la, float3 VertexPos, float3 VertexNormal)
                  VertexPos, VertexNormal, la.lightViewPos, la.AmbientColor,
                  la.DiffuseColor, la.DiffuseIntensity, la.SpecularIntensity, la.SpecularPow);
 };
-LightComponent SetLightingPixelResult(float SpecularPow, float SpecularIntensity, float3 VertexPos, float3 VertexNormal)
+LightComponent SetLightingPixelResult(float SpecularPow, float SpecularIntensity, float3 VertexPos, float3 VertexNormal, float4 shadowpos[16])
 {
     LightComponent result_in;
     result_in.Diffuse = float3(0.0f, 0.0f, 0.0f);   
@@ -121,7 +122,7 @@ LightComponent SetLightingPixelResult(float SpecularPow, float SpecularIntensity
  
     for (uint i = 0; i < cur_light_num; i++)
     {
-        if (pEnable[i])
+        if (pEnable[i] && IsNotShadowed(shadowpos[i]))
         {
             LightComponent light = GetLight(GetLightAttriAt(i, SpecularPow, SpecularIntensity), VertexPos, VertexNormal);
             result_in.Ambient += light.Ambient;

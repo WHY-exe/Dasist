@@ -1,4 +1,4 @@
-#include "VSBase.hlsli"
+#include "VSShadow.hlsli"
 // the sinature of the main function in the vertex shader must be the same
 VSOut main(float3 pos : Position3D, float3 fn : Normal, float3 tan : Tangent, float2 tc : Tex2D)
 {
@@ -9,6 +9,10 @@ VSOut main(float3 pos : Position3D, float3 fn : Normal, float3 tan : Tangent, fl
     vso.viewNorm = mul(fn, (float3x3) modelCamView);
     vso.tan = mul(tan, (float3x3) modelCamView);
     vso.pos = mul(float4(pos, 1.0f), modelProjView);
-    
+    const float4 shadowWorldPos = mul(float4(pos, 1.0f), modelWorldView);
+    for (uint i = 0; i < cur_light_num; i++)
+    {
+        vso.shadowCamPos[i] = ToShadowScreenSpace(shadowWorldPos, shadowView[i]);
+    }
     return vso;
 }

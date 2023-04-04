@@ -12,9 +12,8 @@ struct VSOut
     float3 viewNorm : ViewNormal;
     float3 tan : Tangent;
     float4 pos : SV_Position;
+    float4 shadowCamPos[16] : ShadowPosition;
 };
-
-
 cbuffer OBJCBuf : register(b2)
 {
     float4 ambient;
@@ -25,10 +24,7 @@ cbuffer OBJCBuf : register(b2)
     bool hasGloss;
     bool enNormal;
 };
-cbuffer SolidColorCBuf : register(b3)
-{
-    float4 solid_color;
-}
+
 
 float3 GenNormal(
     float3 SampleNormal,
@@ -42,4 +38,3 @@ float3 GenNormal(
     float3x3 TBN = float3x3(tangent, bitangent, unitNormal);
     return mul(normalT, TBN);
 };
-

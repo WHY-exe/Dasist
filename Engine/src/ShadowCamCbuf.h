@@ -6,14 +6,14 @@
 class ShadowCamCbuf : public Bindable
 {
 public:
-public:
 	struct Transform {
+		UINT cur_light_num;
 		DirectX::XMMATRIX Viewproj[MAX_LIGHT_NUM];
 	};
 public:
-	ShadowCamCbuf(Graphics& gfx, UINT slot = 4u);
+	ShadowCamCbuf(Graphics& gfx, UINT slot = 1u);
 	void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override;
-	void Update(Graphics& gfx) const noexcept;
+	void Update(Graphics& gfx) noexcept;
 	void SetCamera(std::shared_ptr<Camera> cam) noexcept;
 private:
 	std::unique_ptr<VertexConstantBuffer<Transform>> m_vcbuf;

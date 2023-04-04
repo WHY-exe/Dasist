@@ -3,6 +3,7 @@
 #include "Job.h"
 #include "Camera.h"
 #include <vector>
+#include "ShadowSampler.h"
 #include "Sink.h"
 #include "Source.h"
 #include "Stencil.h"
@@ -15,12 +16,14 @@ namespace Rgph
 		LambertianPass( Graphics& gfx,std::string name )
 			:
 			RenderQueuePass( std::move( name ) ),
-			m_pShadowCbuf{ std::make_shared<ShadowCamCbuf>(gfx) }
+			m_pShadowCbuf{ std::make_shared<ShadowCamCbuf>(gfx) },
+			m_pShadowSampler{ std::make_shared<ShadowSampler>(gfx) }
 		{
 			AddBind(m_pShadowCbuf);
+			AddBind(m_pShadowSampler);
 			RegisterSink( DirectBufferSink<RenderTarget>::Make( "renderTarget",renderTarget ) );
 			RegisterSink( DirectBufferSink<DepthStencil>::Make( "depthStencil",depthStencil ) );
-			RegisterSink( DirectBindableSink<Bindable>::Make("ShadowMap", m_pShadowMap));
+			AddBindSink<Bindable>( "ShadowMap" );
 			RegisterSource( DirectBufferSource<RenderTarget>::Make( "renderTarget",renderTarget ) );
 			RegisterSource( DirectBufferSource<DepthStencil>::Make( "depthStencil",depthStencil ) );
 			AddBind( Stencil::Resolve( gfx,Stencil::Mod::Off ) );
@@ -42,7 +45,7 @@ namespace Rgph
 		}
 	private:
 		const Camera* m_pCamera = nullptr;
-		std::shared_ptr<Bindable> m_pShadowMap;
 		std::shared_ptr<ShadowCamCbuf> m_pShadowCbuf;
+		std::shared_ptr<ShadowSampler> m_pShadowSampler;
 	};
 }

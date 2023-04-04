@@ -62,6 +62,7 @@
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\Keyboard.cpp" />
     <ClCompile Include="src\ShadowCamCbuf.cpp" />
+    <ClCompile Include="src\ShadowSampler.cpp" />
     <ClCompile Include="src\Sink.cpp" />
     <ClCompile Include="src\Source.cpp" />
     <ClCompile Include="src\Stencil.cpp" />
@@ -110,6 +111,7 @@
     <ClInclude Include="src\Plane.h" />
     <ClInclude Include="src\ShadowCamCbuf.h" />
     <ClInclude Include="src\ShadowMappingPass.h" />
+    <ClInclude Include="src\ShadowSampler.h" />
     <ClInclude Include="src\Signal.h" />
     <ClInclude Include="src\HorizontalBlurPass.h" />
     <ClInclude Include="src\LambertianPass.h" />
@@ -191,6 +193,13 @@
     <ClInclude Include="src\WireFramePass.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shader\PSShadow.hlsli">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
     <FxCompile Include="shader\BlurPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
@@ -311,6 +320,19 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
+    <None Include="shader\VSShadow.hlsli">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </EntryPointName>
+      <FileType>Document</FileType>
+    </None>
     <FxCompile Include="shader\VSTex.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
@@ -320,12 +342,16 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)bin\$(Platform)\$(Configuration)\res\cso\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)bin\$(Platform)\$(Configuration)\res\cso\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)bin\$(Platform)\$(Configuration)\res\cso\%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="shader\VSTexNorm.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="shader\Solid_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -337,8 +363,8 @@
   <ItemGroup>
     <None Include="shader\lighting.hlsli" />
     <None Include="shader\PSBase.hlsli" />
-    <None Include="shader\VSBase.hlsli" />
     <None Include="res\DirectXFrame.aps" />
+    <None Include="shader\VSBase.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\DirectXFrame.rc" />

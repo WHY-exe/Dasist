@@ -73,6 +73,7 @@ void App::DoFrame()
 	);
 #define SIGNAL_FUNTION\
 	lights.LinkAddedLight(m_rg);\
+	m_rg.BindAddedShadowCamera(lights.GetBack()->ShareCamera());\
 	cams.Add(lights.GetBack()->ShareCamera());\
 	cams.LinkAddedCamera(m_rg);\
 	DISABLE_SIGNAL(cams.signalCamAdded)
@@ -85,9 +86,8 @@ void App::DoFrame()
 	scene.Submit(Channel::main);
 	cams.Submit(Channel::main);
 	lights.Submit(Channel::main);
-
+	scene.Submit(Channel::shadow);
 	cams.Bind(m_gfx);
-	//gLight.Update(m_gfx);
 	lights.Bind(m_gfx);
     m_rg.Execute(m_gfx);
 

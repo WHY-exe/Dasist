@@ -113,7 +113,7 @@ LightComponent GetLight(LightAttri la, float3 VertexPos, float3 VertexNormal)
                  VertexPos, VertexNormal, la.lightViewPos, la.AmbientColor,
                  la.DiffuseColor, la.DiffuseIntensity, la.SpecularIntensity, la.SpecularPow);
 };
-LightComponent SetLightingPixelResult(float SpecularPow, float SpecularIntensity, float3 VertexPos, float3 VertexNormal, float4 shadowpos[16])
+LightComponent SetLightingPixelResult(float SpecularPow, float SpecularIntensity, float3 VertexPos, float3 VertexNormal, float4 shadowpos)
 {
     LightComponent result_in;
     result_in.Diffuse = float3(0.0f, 0.0f, 0.0f);   
@@ -122,12 +122,25 @@ LightComponent SetLightingPixelResult(float SpecularPow, float SpecularIntensity
  
     for (uint i = 0; i < cur_light_num; i++)
     {
-        if (pEnable[i] && IsNotShadowed(shadowpos[i]))
+        if (pEnable[i])
         {
-            LightComponent light = GetLight(GetLightAttriAt(i, SpecularPow, SpecularIntensity), VertexPos, VertexNormal);
-            result_in.Ambient += light.Ambient;
-            result_in.Diffuse += light.Diffuse;
-            result_in.Specular += light.Specular;
+            if (i == 0 )
+            {
+                if (IsNotShadowed(shadowpos))
+                {
+                    LightComponent light = GetLight(GetLightAttriAt(i, SpecularPow, SpecularIntensity), VertexPos, VertexNormal);
+                    result_in.Ambient += light.Ambient;
+                    result_in.Diffuse += light.Diffuse;
+                    result_in.Specular += light.Specular; 
+                }
+            }
+            else
+            {
+                LightComponent light = GetLight(GetLightAttriAt(i, SpecularPow, SpecularIntensity), VertexPos, VertexNormal);
+                result_in.Ambient += light.Ambient;
+                result_in.Diffuse += light.Diffuse;
+                result_in.Specular += light.Specular;
+            }
         }
     }
     return result_in;

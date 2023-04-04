@@ -9,9 +9,6 @@ VSOut main(float3 pos : Position3D, float3 fn : Normal, float3 tan : Tangent, fl
     vso.tan = float3(0.0f, 0.0f, 0.0f);
 	vso.pos = mul(float4(pos, 1.0f), modelProjView);
     const float4 shadowWorldPos = mul(float4(pos, 1.0f), modelWorldView);
-    for (uint i = 0; i < cur_light_num; i++)
-    {
-        vso.shadowCamPos[i] = ToShadowScreenSpace(shadowWorldPos, shadowView[i]);
-    }
+    vso.shadowCamPos = ToShadowScreenSpace(shadowWorldPos);
 	return vso;
 }

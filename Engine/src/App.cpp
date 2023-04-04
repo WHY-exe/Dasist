@@ -73,7 +73,6 @@ void App::DoFrame()
 	);
 #define SIGNAL_FUNTION\
 	lights.LinkAddedLight(m_rg);\
-	m_rg.BindAddedShadowCamera(lights.GetBack()->ShareCamera());\
 	cams.Add(lights.GetBack()->ShareCamera());\
 	cams.LinkAddedCamera(m_rg);\
 	DISABLE_SIGNAL(cams.signalCamAdded)
@@ -83,17 +82,16 @@ void App::DoFrame()
 	);
 #undef SIGNAL_FUNTION
 	m_rg.BindLambertianCamera(cams.GetCamera());
-	scene.Submit(Channel::main);
+	scene.Submit(Channel::main | Channel::shadow);
 	cams.Submit(Channel::main);
 	lights.Submit(Channel::main);
-	scene.Submit(Channel::shadow);
+
 	cams.Bind(m_gfx);
 	lights.Bind(m_gfx);
     m_rg.Execute(m_gfx);
 
 	probe.SpwanControlWindow(scene);
 	cams.SpawControlWindow();
-	//gLight.SpwanControlWindow();
 	lights.SpwanControlWindow();
 	m_rg.RenderWidgets(m_gfx);
 	//

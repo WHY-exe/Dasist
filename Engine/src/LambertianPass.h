@@ -34,7 +34,7 @@ namespace Rgph
 		}
 		void BindShadowCamera(std::shared_ptr<Camera> cam) noexcept
 		{
-			m_pShadowCbuf->SetCamera(std::move(cam));
+			m_pShadowCbuf->SetCamera(*cam);
 		}
 		void Execute( Graphics& gfx ) const noexcept(!IS_DEBUG) override
 		{

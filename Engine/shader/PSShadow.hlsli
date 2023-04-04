@@ -1,8 +1,9 @@
 SamplerState ssplr : register(s1);
 Texture2D smap : register(t4);
 
-bool IsNotShadowed(float4 shadow_pos)
+bool IsNotShadowed(const in float4 shadow_pos)
 {
-    shadow_pos.xyz = shadow_pos.xyz / shadow_pos.w;
-    return shadow_pos.z > 1.0f ? true : smap.Sample(ssplr, shadow_pos.xy).r > (shadow_pos.z - 0.005);
+    const float3 spos = shadow_pos.xyz / shadow_pos.w;
+    const float ssamp_depth = smap.Sample(ssplr, spos.xy).r;
+    return spos.z > 1.0f ? true : ssamp_depth > (spos.z - 0.0001f );
 }

@@ -200,11 +200,7 @@ namespace Rgph
 	void BlurOutlineRenderGraph::BindShadowCamera(const LightContainer& lights) noexcept(!IS_DEBUG)
 	{
 		dynamic_cast<ShadowMappingPass&>(FindPassByName("shadowMapping")).BindCamera(lights.GetContainer()[0]->ShareCamera());
-		for (const auto& i : lights.GetContainer())
-		{
-			dynamic_cast<LambertianPass&>(FindPassByName("lambertian")).BindShadowCamera(i->ShareCamera());
-		}
-
+		dynamic_cast<LambertianPass&>(FindPassByName("lambertian")).BindShadowCamera(lights.GetContainer()[0]->ShareCamera());
 	}
 	void BlurOutlineRenderGraph::BindAddedShadowCamera(std::shared_ptr<Camera> cam) noexcept(!IS_DEBUG)
 	{

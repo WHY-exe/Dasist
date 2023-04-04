@@ -12,7 +12,7 @@ struct VSOut
     float3 viewNorm : ViewNormal;
     float3 tan : Tangent;
     float4 pos : SV_Position;
-    float4 shadowCamPos[16] : ShadowPosition;
+    noperspective float4 shadowCamPos : ShadowPosition;
 };
 cbuffer OBJCBuf : register(b2)
 {

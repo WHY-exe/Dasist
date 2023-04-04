@@ -22,11 +22,22 @@ namespace Rgph
 			AddBind(Blender::Resolve(gfx, false));
 			RegisterSource(DirectBindableSource<DepthStencil>::Make("ShadowMap", depthStencil));
 		}
+		void BindCamera(std::shared_ptr<Camera> cam)
+		{
+			m_pShadowCamera = std::move(cam);
+		}
 		void Execute(Graphics& gfx) const noexcept(!IS_DEBUG) override
 		{
 			depthStencil->Clear(gfx);
+			m_pShadowCamera->BindtoGFX(gfx);
 			RenderQueuePass::Execute(gfx);
 		}
+		void DumpShadowMap(Graphics& gfx, const std::string& path)
+		{
+			depthStencil->ToSurface(gfx).SaveAsFile(path);
+		}
+	private:
+		std::shared_ptr<Camera> m_pShadowCamera;
 	};
 
 }

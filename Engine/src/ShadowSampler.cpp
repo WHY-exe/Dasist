@@ -13,5 +13,5 @@ ShadowSampler::ShadowSampler(Graphics& gfx)
 void ShadowSampler::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
 	IMPORT_INFOMAN(gfx);
-	GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetSamplers(0u, 1u, m_pSampler.GetAddressOf()));
+	GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetSamplers(1u, 1u, m_pSampler.GetAddressOf()));
 }

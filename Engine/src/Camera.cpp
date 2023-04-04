@@ -87,6 +87,8 @@ void Camera::Rotate(float dx, float dy) noexcept
 {
 	m_rot.y = math_tool::wrap_angle(m_rot.y + dx * m_rot_speed);
 	m_rot.x = std::clamp(m_rot.x + dy * m_rot_speed, 0.995f * (-PI) / 2.0f, 0.995f * PI / 2.0f);
+	m_indicator.SetRot(m_rot);
+	m_fov_indi.SetRot(m_rot);
 }
 
 void Camera::Translate(float dx, float dy, float dz)
@@ -103,6 +105,8 @@ void Camera::Translate(float dx, float dy, float dz)
 		DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&m_pos);
 		pos += delta_lookVec;
 		DirectX::XMStoreFloat3(&m_pos, pos);
+		m_indicator.SetPos(m_pos);
+		m_fov_indi.SetPos(m_pos);
 	}
 }
 

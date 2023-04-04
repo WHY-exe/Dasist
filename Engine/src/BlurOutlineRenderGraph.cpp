@@ -189,12 +189,17 @@ namespace Rgph
 		}
 		ImGui::End();
 	}
+	void BlurOutlineRenderGraph::DumpShadowMap(Graphics& gfx, const std::string& path)
+	{
+		dynamic_cast<ShadowMappingPass&>(FindPassByName("shadowMapping")).DumpShadowMap(gfx, path);
+	}
 	void BlurOutlineRenderGraph::BindLambertianCamera(const Camera& cam) noexcept(!IS_DEBUG)
 	{
 		dynamic_cast<LambertianPass&>(FindPassByName("lambertian")).BindMainCamera(cam);
 	}
 	void BlurOutlineRenderGraph::BindShadowCamera(const LightContainer& lights) noexcept(!IS_DEBUG)
 	{
+		dynamic_cast<ShadowMappingPass&>(FindPassByName("shadowMapping")).BindCamera(lights.GetContainer()[0]->ShareCamera());
 		for (const auto& i : lights.GetContainer())
 		{
 			dynamic_cast<LambertianPass&>(FindPassByName("lambertian")).BindShadowCamera(i->ShareCamera());

@@ -130,8 +130,8 @@ void LightContainer::SpwanControlWindow() noexcept(!IS_DEBUG)
 			}
 		}
 		m_point_lights[m_curPL_Index]->SpwanControlWidgets();
-		ImGui::End();
 	}
+	ImGui::End();
 }
 
 const std::vector<std::unique_ptr<PointLight>>& LightContainer::GetContainer() const noexcept

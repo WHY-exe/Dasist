@@ -95,8 +95,8 @@ void CameraContainer::SpawControlWindow() noexcept(!IS_DEBUG)
 			ImGui::EndCombo();
 		}
 		m_Container[m_selected_cam_idx]->ShowControlCameraWidget();
-		ImGui::End();
 	}
+	ImGui::End();
 }
 
 void CameraContainer::DeleteCurCamera() noexcept(!IS_DEBUG)

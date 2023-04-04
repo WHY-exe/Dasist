@@ -64,6 +64,7 @@ DepthStencil::DepthStencil(Graphics& gfx, bool bindShaderResource, UINT width, U
     depthDesc.Usage = D3D11_USAGE_DEFAULT;
     depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | (bindShaderResource ? D3D11_BIND_SHADER_RESOURCE : 0);
     GFX_THROW_INFO(GetDevice(gfx)->CreateTexture2D(&depthDesc, nullptr, &pDepthStencilTex));
+
     D3D11_DEPTH_STENCIL_VIEW_DESC descView = {};
     descView.Format = MapUsageTyped(usage);
     descView.Flags = 0;
@@ -94,6 +95,88 @@ void DepthStencil::BindAsBuffer(Graphics& gfx, BufferResource* renderTarget) noe
 void DepthStencil::BindAsBuffer(Graphics& gfx, RenderTarget* renderTarget) noexcept(!IS_DEBUG)
 {
     renderTarget->BindAsBuffer(gfx, this);
+}
+
+Surface DepthStencil::ToSurface(Graphics& gfx, bool linearlize) const
+{
+    IMPORT_INFOMAN(gfx);
+
+    // creating a temp texture compatible with the source, but with CPU read access
+    Microsoft::WRL::ComPtr<ID3D11Resource> pResSource;
+    m_pDSV->GetResource(&pResSource);
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexSource;
+    pResSource.As(&pTexSource);
+    D3D11_TEXTURE2D_DESC textureDesc;
+    pTexSource->GetDesc(&textureDesc);
+    textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+    textureDesc.Usage = D3D11_USAGE_STAGING;
+    textureDesc.BindFlags = 0;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexTemp;
+    GFX_THROW_INFO(GetDevice(gfx)->CreateTexture2D(
+        &textureDesc, nullptr, &pTexTemp
+    ));
+
+    // copy texture contents
+    GFX_THROW_INFO_ONLY(GetContext(gfx)->CopyResource(pTexTemp.Get(), pTexSource.Get()));
+
+    // create Surface and copy from temp texture to it
+    const auto width = GetWidth();
+    const auto height = GetHeight();
+    Surface s{ width,height };
+    D3D11_MAPPED_SUBRESOURCE msr = {};
+    GFX_THROW_INFO(GetContext(gfx)->Map(pTexTemp.Get(), 0, D3D11_MAP::D3D11_MAP_READ, 0, &msr));
+    auto pSrcBytes = static_cast<const char*>(msr.pData);
+    for (unsigned int y = 0; y < height; y++)
+    {
+        struct Pixel
+        {
+            char pixel[4];
+        };
+        auto pSrcRow = reinterpret_cast<const Color*>(pSrcBytes + msr.RowPitch * size_t(y));
+        for (unsigned int x = 0; x < width; x++)
+        {
+            if (textureDesc.Format == DXGI_FORMAT::DXGI_FORMAT_R24G8_TYPELESS)
+            {
+                const auto raw = 0xFFFFFF & *reinterpret_cast<const unsigned int*>(pSrcRow + x);
+                if (linearlize)
+                {
+                    // mask out the last 8bits
+                    const auto normalized = (float)raw / (float)0xFFFFFF;
+                    const auto linearized = 0.0001f / (1.0001f - normalized);
+                    const auto channel = unsigned char(linearized * 255.0f);
+                    s.PutPixel(x, y, { channel,channel,channel });
+                }
+                else
+                {
+                    const unsigned char channel = raw >> 16;
+                    s.PutPixel(x, y, { channel,channel,channel });
+                }
+            }
+            else if (textureDesc.Format == DXGI_FORMAT::DXGI_FORMAT_R32_TYPELESS)
+            {
+                const auto raw = *reinterpret_cast<const float*>(pSrcRow + x);
+                if (linearlize)
+                {
+                    const auto linearized = 0.0001f / (1.0001f - raw);
+                    const auto channel = unsigned char(linearized * 255.0f);
+                    s.PutPixel(x, y, { channel,channel,channel });
+                }
+                else
+                {
+                    const unsigned char channel = unsigned char(raw * 255.0f);
+                    s.PutPixel(x, y, { channel,channel,channel });
+                }
+
+            }
+            else
+            {
+                throw std::runtime_error("Bad format in Depth Stencil for conversion to Surface");
+            }
+        }
+    }
+    GFX_THROW_INFO_ONLY(GetContext(gfx)->Unmap(pTexTemp.Get(), 0));
+
+    return s;
 }
 
 void DepthStencil::Clear(Graphics& gfx) noexcept(!IS_DEBUG)

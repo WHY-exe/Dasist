@@ -1,5 +1,6 @@
 #pragma once
 #include "Bindable.h"
+#include "Surface.h"
 #include "BufferResource.h"
 class DepthStencil : public Bindable, public BufferResource
 {
@@ -14,6 +15,7 @@ public:
 	void BindAsBuffer(Graphics& gfx) noexcept(!IS_DEBUG) override;
 	void BindAsBuffer(Graphics& gfx, BufferResource* renderTarget) noexcept(!IS_DEBUG) override;
 	void BindAsBuffer(Graphics& gfx, class RenderTarget* renderTarget) noexcept(!IS_DEBUG);
+	Surface ToSurface(Graphics& gfx, bool linearlize = true) const;
 	void Clear(Graphics& gfx) noexcept(!IS_DEBUG) override;	
 	UINT GetWidth() const noexcept;
 	UINT GetHeight() const noexcept;

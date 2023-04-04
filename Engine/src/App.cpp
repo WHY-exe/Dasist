@@ -137,7 +137,10 @@ void App::DoWinLogic()
 	{
 		cams.GetCamera().Translate(0.0f, -10.0f, 0.0f);
 	}
-
+	if (m_wnd.kbd.KeyIsPressed(VK_RETURN))
+	{
+		m_rg.DumpShadowMap(m_gfx, "Shadow.png");
+	}
 
 	while (auto d = m_wnd.mouse.ReadRawDelta())
 	{

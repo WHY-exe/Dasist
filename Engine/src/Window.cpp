@@ -334,6 +334,7 @@ LRESULT Window::MsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			m_pGfx->ResetWindowSize(m_nWidth, m_nHeight);
 			m_pGfx->sizeSignalDS = true;
 			m_pGfx->sizeSignalPrj = true;
+			m_pGfx->sizeSignalSM = true;
 			m_pGfx->ResizeFrameBuffer(m_nWidth, m_nHeight);
 		}
 		break;

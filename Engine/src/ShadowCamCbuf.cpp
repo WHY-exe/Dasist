@@ -18,12 +18,11 @@ void ShadowCamCbuf::Update(Graphics& gfx) noexcept
 			m_pCamera->GetCameraMatrix() * m_pCamera->GetPerspectiveViewMX()
 		)
 	};
-
 	m_vcbuf->Update(gfx, tf);
 }
 
-void ShadowCamCbuf::SetCamera(const Camera& cam) noexcept
+void ShadowCamCbuf::SetCamera(std::shared_ptr<Camera> cam) noexcept
 {
-	m_pCamera = &cam;
+	m_pCamera = std::move(cam);
 }
 

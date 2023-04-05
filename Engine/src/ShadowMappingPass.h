@@ -2,6 +2,7 @@
 #include "RenderQueuePass.h"
 #include "DepthStencil.h"
 #include "Stencil.h"
+#include "Signal.h"
 #include "Blender.h"
 #include "VertexShader.h"
 #include "NullPixelShader.h"
@@ -29,6 +30,11 @@ namespace Rgph
 		void Execute(Graphics& gfx) const noexcept(!IS_DEBUG) override
 		{
 			depthStencil->Clear(gfx);
+			// TODO : resize the depth map when the window's size is changing
+			SIGNAL(
+				gfx.sizeSignalSM,
+				depthStencil->Resize(gfx, gfx.GetWindowWidth(), gfx.GetWindowHeight())
+			);
 			m_pShadowCamera->BindtoGFX(gfx);
 			RenderQueuePass::Execute(gfx);
 		}

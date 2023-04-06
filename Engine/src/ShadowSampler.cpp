@@ -7,6 +7,7 @@ ShadowSampler::ShadowSampler(Graphics& gfx)
 	sampDesc.BorderColor[0] = 1.0f;
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	GFX_THROW_INFO(GetDevice(gfx)->CreateSamplerState(&sampDesc, &m_pSampler));
 }
 

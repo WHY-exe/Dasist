@@ -8,6 +8,7 @@ class Bindable;
 class RenderTarget;
 class Camera;
 class LightContainer;
+class ShadowRasterizer;
 namespace Rgph
 {
 	class BlurOutlineRenderGraph : public RenderGraph
@@ -34,6 +35,6 @@ namespace Rgph
 		float sigma = 5.0f;
 		std::shared_ptr<CachingPixelConstantBuffer> blurKernel;
 		std::shared_ptr<CachingPixelConstantBuffer> blurDirection;
-
+		std::shared_ptr<ShadowRasterizer> shadowRasterizer;
 	};
 }

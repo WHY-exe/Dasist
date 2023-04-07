@@ -117,7 +117,7 @@ LightComponent GetLight(LightAttri la, float3 VertexPos, float3 VertexNormal)
                  VertexPos, VertexNormal, la.lightViewPos, la.AmbientColor,
                  la.DiffuseColor, la.DiffuseIntensity, la.SpecularIntensity, la.SpecularPow);
 };
-LightComponent SetLightingPixelResult(float SpecularPow, float SpecularIntensity, float3 VertexPos, float3 VertexNormal, float4 shadowpos)
+LightComponent SetLightingPixelResult(float SpecularPow, float SpecularIntensity, float3 VertexPos, float3 VertexNormal, float4 shadowpos, float alpha = 1.0f)
 {
     LightComponent result_in;
     result_in.Diffuse = float3(0.0f, 0.0f, 0.0f);   
@@ -130,12 +130,13 @@ LightComponent SetLightingPixelResult(float SpecularPow, float SpecularIntensity
         {
             if (i == 0)
             {
-                if (PCFShadowed(shadowpos))
+                float shadow_weight = PCFShadowed(shadowpos);
+                if (shadow_weight)
                 {
                     LightComponent light = GetLight(GetLightAttriAt(i, SpecularPow, SpecularIntensity), VertexPos, VertexNormal);
-                    result_in.Ambient += light.Ambient * PCFShadowed(shadowpos);
-                    result_in.Diffuse += light.Diffuse * PCFShadowed(shadowpos);
-                    result_in.Specular += light.Specular * PCFShadowed(shadowpos);
+                    result_in.Ambient  += light.Ambient  * shadow_weight;
+                    result_in.Diffuse  += light.Diffuse  * shadow_weight;
+                    result_in.Specular += light.Specular * shadow_weight;
                 }
             }
             else

@@ -21,6 +21,7 @@ namespace Rgph
 			AddBind(NullPixelShader::Resolve(gfx));
 			AddBind(Stencil::Resolve(gfx, Stencil::Mod::Off));
 			AddBind(Blender::Resolve(gfx, false));
+			AddBindSink<Bindable>("shadowRasterizer");
 			RegisterSource(DirectBindableSource<DepthStencil>::Make("ShadowMap", depthStencil));
 		}
 		void BindCamera(std::shared_ptr<Camera> cam)

@@ -62,6 +62,7 @@
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\Keyboard.cpp" />
     <ClCompile Include="src\ShadowCamCbuf.cpp" />
+    <ClCompile Include="src\ShadowRasterizer.cpp" />
     <ClCompile Include="src\ShadowSampler.cpp" />
     <ClCompile Include="src\Sink.cpp" />
     <ClCompile Include="src\Source.cpp" />
@@ -92,6 +93,7 @@
     <ClCompile Include="src\Step.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ShadowRasterizer.h" />
     <ClInclude Include="src\Channel.h" />
     <ClInclude Include="src\LightContainer.h" />
     <ClInclude Include="src\FOVIndicator.h" />

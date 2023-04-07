@@ -14,6 +14,7 @@
 #include "DynamicConstantBuffer.h"
 #include <imgui.h>
 #include "MathTool.h"
+#include "ShadowRasterizer.h"
 namespace Rgph
 {
 	BlurOutlineRenderGraph::BlurOutlineRenderGraph( Graphics& gfx )
@@ -31,7 +32,12 @@ namespace Rgph
 			AppendPass( std::move( pass ) );
 		}
 		{
+			shadowRasterizer = std::make_shared<ShadowRasterizer>(gfx, 0, 0.005f, 1.0f);
+			AddGlobalSource(DirectBindableSource<ShadowRasterizer>::Make("shadowRasterizer", shadowRasterizer));
+		}
+		{
 			auto pass = std::make_unique<ShadowMappingPass>( gfx, "shadowMapping" );
+			pass->SetSinkLinkage("shadowRasterizer", "$.shadowRasterizer");
 			AppendPass(std::move(pass));
 		}
 		{

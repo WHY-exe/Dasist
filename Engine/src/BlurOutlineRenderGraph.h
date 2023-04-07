@@ -17,7 +17,7 @@ namespace Rgph
 		BlurOutlineRenderGraph( Graphics& gfx );		
 		void RenderWidgets(Graphics& gfx);
 		void DumpShadowMap(Graphics& gfx, const std::string& path);
-		void BindLambertianCamera(const Camera& cam) noexcept(!IS_DEBUG);
+		void BindMainCamera(const Camera& cam) noexcept(!IS_DEBUG);
 		void BindShadowCamera(const LightContainer& lights) noexcept(!IS_DEBUG);
 		void BindAddedShadowCamera(std::shared_ptr<Camera> cam) noexcept(!IS_DEBUG);
 	private:

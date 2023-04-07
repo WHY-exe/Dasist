@@ -81,7 +81,7 @@ void App::DoFrame()
 		SIGNAL_FUNTION
 	);
 #undef SIGNAL_FUNTION
-	m_rg.BindLambertianCamera(cams.GetCamera());
+	m_rg.BindMainCamera(cams.GetCamera());
 	scene.Submit(Channel::main | Channel::shadow);
 	cams.Submit(Channel::main);
 	lights.Submit(Channel::main);

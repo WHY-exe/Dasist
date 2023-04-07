@@ -3,10 +3,11 @@
 #include "StrManager.h"
 #include "BindableCodex.h"
 #include <typeinfo>
-Sampler::Sampler(Graphics& gfx, Type type, bool reflect)
+Sampler::Sampler(Graphics& gfx, Type type, bool reflect, UINT slot)
 	:
 	m_type(type),
-	m_reflect(reflect)
+	m_reflect(reflect),
+	m_slot(slot)
 {
 	IMPORT_INFOMAN(gfx);
 	D3D11_SAMPLER_DESC sampDesc = CD3D11_SAMPLER_DESC{ CD3D11_DEFAULT{} };
@@ -39,10 +40,10 @@ Sampler::Sampler(Graphics& gfx, Type type, bool reflect)
 
 void Sampler::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
-	GetContext(gfx)->PSSetSamplers(0u, 1u, m_pSampler.GetAddressOf());
+	GetContext(gfx)->PSSetSamplers(m_slot, 1u, m_pSampler.GetAddressOf());
 }
 
-std::shared_ptr<Sampler> Sampler::Resolve(Graphics& gfx, Type type, bool reflect) noexcept(!IS_DEBUG)
+std::shared_ptr<Sampler> Sampler::Resolve(Graphics& gfx, Type type, bool reflect, UINT slot) noexcept(!IS_DEBUG)
 {
 	return CodeX::Resolve<Sampler>(gfx, type, reflect);
 }

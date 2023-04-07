@@ -9,11 +9,12 @@ InputLayout::InputLayout(Graphics& gfx, const Vertex::Layout& layout, const Vert
     m_vs(vs)
 {
     auto D3DLayout = m_layout.GetD3DLayout();
+    auto byte_code = vs.GetByteCode();
     IMPORT_INFOMAN(gfx);
     GFX_THROW_INFO(GetDevice(gfx)->CreateInputLayout(
         D3DLayout.data(), (UINT)D3DLayout.size(),
-        vs.GetByteCode()->GetBufferPointer(),
-        vs.GetByteCode()->GetBufferSize(),
+        byte_code->GetBufferPointer(),
+        byte_code->GetBufferSize(),
         &m_pInputLayout
     ));
 }
@@ -23,7 +24,7 @@ void InputLayout::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
     GetContext(gfx)->IASetInputLayout(m_pInputLayout.Get());
 }
 
-std::shared_ptr<InputLayout> InputLayout::Resolve(Graphics& gfx, const Vertex::Layout& layout, const VertexShader& vs) noexcept
+std::shared_ptr<InputLayout> InputLayout::Resolve(Graphics& gfx, const Vertex::Layout& layout, const VertexShader& vs) noexcept(!IS_DEBUG)
 {
     return CodeX::Resolve<InputLayout>(gfx, layout, vs);
 }

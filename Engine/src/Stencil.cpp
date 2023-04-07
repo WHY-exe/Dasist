@@ -19,6 +19,10 @@ Stencil::Stencil(Graphics& gfx, Mod mod)
 	case Stencil::Mod::DepthReversed:
 		depthDesc.DepthFunc = D3D11_COMPARISON_GREATER;
 		break;
+	case Stencil::Mod::DepthFirst:
+		depthDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+		depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		break;
 	case Stencil::Mod::Write:
 		depthDesc.DepthEnable = FALSE;
 		depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;

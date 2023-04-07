@@ -15,6 +15,7 @@
 #include <imgui.h>
 #include "MathTool.h"
 #include "ShadowRasterizer.h"
+#include "SkyBoxPass.h"
 namespace Rgph
 {
 	BlurOutlineRenderGraph::BlurOutlineRenderGraph( Graphics& gfx )
@@ -54,8 +55,14 @@ namespace Rgph
 			AppendPass(std::move(pass));
 		}
 		{
+			auto pass = std::make_unique<SkyBoxPass>(gfx, "skyBox");
+			pass->SetSinkLinkage("renderTarget", "wireframe.renderTarget");
+			pass->SetSinkLinkage("depthStencil", "wireframe.depthStencil");
+			AppendPass(std::move(pass));
+		}
+		{
 			auto pass = std::make_unique<OutlineMaskGenerationPass>( gfx,"outlineMask" );
-			pass->SetSinkLinkage( "depthStencil","wireframe.depthStencil" );
+			pass->SetSinkLinkage( "depthStencil","skyBox.depthStencil" );
 			AppendPass( std::move( pass ) );
 		}
 
@@ -93,7 +100,7 @@ namespace Rgph
 		}
 		{
 			auto pass = std::make_unique<VerticalBlurPass>( "vertical",gfx );
-			pass->SetSinkLinkage( "renderTarget","wireframe.renderTarget" );
+			pass->SetSinkLinkage( "renderTarget","skyBox.renderTarget" );
 			pass->SetSinkLinkage( "depthStencil","outlineMask.depthStencil" );
 			pass->SetSinkLinkage( "scratchIn","horizontal.scratchOut" );
 			pass->SetSinkLinkage( "kernel","$.blurKernel" );
@@ -199,9 +206,10 @@ namespace Rgph
 	{
 		dynamic_cast<ShadowMappingPass&>(FindPassByName("shadowMapping")).DumpShadowMap(gfx, path);
 	}
-	void BlurOutlineRenderGraph::BindLambertianCamera(const Camera& cam) noexcept(!IS_DEBUG)
+	void BlurOutlineRenderGraph::BindMainCamera(const Camera& cam) noexcept(!IS_DEBUG)
 	{
 		dynamic_cast<LambertianPass&>(FindPassByName("lambertian")).BindMainCamera(cam);
+		dynamic_cast<SkyBoxPass&>(FindPassByName("skyBox")).BindMainCamera(cam);
 	}
 	void BlurOutlineRenderGraph::BindShadowCamera(const LightContainer& lights) noexcept(!IS_DEBUG)
 	{

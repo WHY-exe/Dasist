@@ -201,6 +201,8 @@ namespace Vertex {
 	{
 	public:
 		DataBuffer(const Layout& layout);
+		DataBuffer(const Layout& layout, size_t size);
+		void Resize(size_t new_size) noexcept;
 		const Layout& GetLayout() const noexcept;
 		const char* GetData() const noexcept;
 		size_t ByteWidth() const noexcept;

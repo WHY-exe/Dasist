@@ -133,6 +133,21 @@ Vertex::DataBuffer::DataBuffer(const Layout& layout)
 	m_layout(layout)
 {}
 
+Vertex::DataBuffer::DataBuffer(const Layout & layout, size_t size)
+	:
+	m_layout(layout)
+{
+	Resize(size);
+}
+
+void Vertex::DataBuffer::Resize(size_t newSize) noexcept
+{
+	const auto size = Size();
+	if (size < newSize)
+	{
+		m_Buffer.resize(m_Buffer.size() + m_layout.Size() * (newSize - size));
+	}
+}
 const Vertex::Layout& Vertex::DataBuffer::GetLayout() const noexcept
 {
 	return m_layout;

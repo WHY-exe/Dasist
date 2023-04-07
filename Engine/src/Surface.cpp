@@ -84,6 +84,11 @@ Color Surface::GetPixel(UINT col_idx, UINT row_idx) const noexcept(!IS_DEBUG)
 	return reinterpret_cast<Color*>(&pixel_data->pixels[row_idx * pixel_data->rowPitch])[col_idx];
 }
 
+size_t Surface::GetBytePitch() const noexcept(!IS_DEBUG)
+{
+	return m_scratchImage.GetImage(0, 0, 0)->rowPitch;
+}
+
 void Surface::SaveAsFile(const std::string& file_name) const noexcept(!IS_DEBUG)
 {
 	INIT_WND_EXCEPT;

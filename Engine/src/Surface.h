@@ -39,6 +39,7 @@ public:
 	const BYTE* GetBufferPtr() const noexcept;
 	void PutPixel(UINT col_idx, UINT row_idx, Color color) noexcept(!IS_DEBUG);
 	Color GetPixel(UINT col_idx, UINT row_idx) const noexcept(!IS_DEBUG);
+	size_t GetBytePitch() const noexcept(!IS_DEBUG);
 	void SaveAsFile(const std::string& file_name) const noexcept(!IS_DEBUG);
 	bool HasAlpha() const noexcept;
 	UINT GetWidth() const noexcept;

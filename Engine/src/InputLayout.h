@@ -14,7 +14,7 @@ public:
     static std::shared_ptr<InputLayout> Resolve(
         Graphics& gfx,
         const Vertex::Layout& layout, 
-        const class VertexShader& vs) noexcept;
+        const class VertexShader& vs) noexcept(!IS_DEBUG);
     static std::wstring GenUID(const Vertex::Layout& layout, const class VertexShader& vs) noexcept;
     std::wstring GetUID() const noexcept override;
 private:

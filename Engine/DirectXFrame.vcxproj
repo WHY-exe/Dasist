@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\SkyBoxCbuf.cpp" />
+    <ClCompile Include="src\CubeTexture.cpp" />
     <ClCompile Include="src\LightContainer.cpp" />
     <ClCompile Include="src\FOVIndicator.cpp" />
     <ClCompile Include="src\CameraIndicator.cpp" />
@@ -93,6 +95,8 @@
     <ClCompile Include="src\Step.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\SkyBoxCbuf.h" />
+    <ClInclude Include="src\CubeTexture.h" />
     <ClInclude Include="src\ShadowRasterizer.h" />
     <ClInclude Include="src\Channel.h" />
     <ClInclude Include="src\LightContainer.h" />
@@ -159,6 +163,7 @@
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Console.h" />
     <ClInclude Include="src\Sink.h" />
+    <ClInclude Include="src\SkyBoxPass.h" />
     <ClInclude Include="src\Source.h" />
     <ClInclude Include="src\Sphere.h" />
     <ClInclude Include="src\Technique.h" />
@@ -316,6 +321,12 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
     </FxCompile>
+    <FxCompile Include="shader\Skybox_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="shader\Solid_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
@@ -335,6 +346,12 @@
       </EntryPointName>
       <FileType>Document</FileType>
     </None>
+    <FxCompile Include="shader\Skybox_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="shader\VSTex.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>

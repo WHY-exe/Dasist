@@ -10,6 +10,7 @@ public:
 		Off,
 		DepthOff,
 		DepthReversed,
+		DepthFirst,
 		Write,
 		Mask,
 		MaskAndWrite

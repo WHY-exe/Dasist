@@ -1,5 +1,6 @@
 #include "CubeTexture.h"
 #include "GfxThrowMacro.h"
+#include "DepthStencil.h"
 CubeTexture::CubeTexture(Graphics& gfx, const std::string& base_path, const std::vector<std::string>& pathes, UINT slot)
 	:
 	m_slot(slot)
@@ -51,4 +52,51 @@ void CubeTexture::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {
 	IMPORT_INFOMAN(gfx);
 	GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetShaderResources(m_slot, 1, m_pCubeTex.GetAddressOf()));
+}
+
+DepthCubeTexure::DepthCubeTexure(Graphics& gfx, UINT size, UINT slot)
+	:
+	m_slot(slot)
+{
+	IMPORT_INFOMAN(gfx);
+	D3D11_TEXTURE2D_DESC texDesc;
+	texDesc.Width  = size;	 // in this case, we expect the all image have the same size
+	texDesc.Height = size;	 // after all, it's cube texture
+	texDesc.MipLevels = 1;
+	texDesc.ArraySize = 6;
+	texDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32_TYPELESS;;
+	texDesc.SampleDesc.Count = 1;
+	texDesc.SampleDesc.Quality = 0;
+	texDesc.Usage = D3D11_USAGE_DEFAULT;
+	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
+	texDesc.CPUAccessFlags = 0;
+	texDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTex;
+	GFX_THROW_INFO(GetDevice(gfx)->CreateTexture2D(&texDesc, nullptr, &pTex));
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = 1;
+	GFX_THROW_INFO(
+		GetDevice(gfx)->CreateShaderResourceView(
+			pTex.Get(), &srvDesc, &m_pCubeTex
+		)
+	);
+	for (size_t i = 0; i < 6; i++)
+	{
+		m_depthTargets.push_back(std::make_shared<DepthStencilAsTraget>(gfx, pTex, i));
+	}
+}
+
+void DepthCubeTexure::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
+{
+	IMPORT_INFOMAN(gfx);
+	GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetShaderResources(m_slot, 1, m_pCubeTex.GetAddressOf()));
+}
+
+std::shared_ptr<DepthStencilAsTraget> DepthCubeTexure::GetDepthTarget(size_t index) noexcept
+{
+	return m_depthTargets[index];
 }

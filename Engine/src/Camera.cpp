@@ -71,6 +71,11 @@ bool Camera::ShouldDelete() const noexcept
 	return m_should_delete;
 }
 
+DirectX::XMFLOAT3 Camera::GetPos() const noexcept
+{
+	return m_pos;
+}
+
 void Camera::SetPos(float x, float y, float z)
 {
 	m_pos = { x, y, z };

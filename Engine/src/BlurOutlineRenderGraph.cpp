@@ -33,12 +33,7 @@ namespace Rgph
 			AppendPass( std::move( pass ) );
 		}
 		{
-			shadowRasterizer = std::make_shared<ShadowRasterizer>(gfx, 0, 0.005f, 1.0f);
-			AddGlobalSource(DirectBindableSource<ShadowRasterizer>::Make("shadowRasterizer", shadowRasterizer));
-		}
-		{
 			auto pass = std::make_unique<ShadowMappingPass>( gfx, "shadowMapping" );
-			pass->SetSinkLinkage("shadowRasterizer", "$.shadowRasterizer");
 			AppendPass(std::move(pass));
 		}
 		{
@@ -204,7 +199,7 @@ namespace Rgph
 	}
 	void BlurOutlineRenderGraph::DumpShadowMap(Graphics& gfx, const std::string& path)
 	{
-		dynamic_cast<ShadowMappingPass&>(FindPassByName("shadowMapping")).DumpShadowMap(gfx, path);
+		//dynamic_cast<ShadowMappingPass&>(FindPassByName("shadowMapping")).DumpShadowMap(gfx, path);
 	}
 	void BlurOutlineRenderGraph::BindMainCamera(const Camera& cam) noexcept(!IS_DEBUG)
 	{

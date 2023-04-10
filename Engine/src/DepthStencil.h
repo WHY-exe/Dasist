@@ -23,6 +23,7 @@ public:
 protected:
 	DepthStencil(Graphics& gfx, bool bindShaderResource, UINT width, UINT height, Usage usage);	
 	DepthStencil(Graphics& gfx, bool bindShaderResource, Usage usage);
+	DepthStencil(Graphics& gfx, Microsoft::WRL::ComPtr<ID3D11Texture2D> pTex, UINT face);
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>  m_pDSV;
 	UINT m_width;
 	UINT m_height;
@@ -45,6 +46,7 @@ class DepthStencilAsTraget : public DepthStencil
 public:
 	DepthStencilAsTraget(Graphics& gfx, UINT width, UINT height);
 	DepthStencilAsTraget(Graphics& gfx);
+	DepthStencilAsTraget(Graphics& gfx, Microsoft::WRL::ComPtr<ID3D11Texture2D> pTex, UINT face);
 	void Bind(Graphics& gfx) noexcept(!IS_DEBUG) override;
 	void Resize(Graphics& gfx, UINT width, UINT height) noexcept(!IS_DEBUG) override;
 };

@@ -1,22 +1,22 @@
 SamplerComparisonState ssplr : register(s1);
-Texture2D smap : register(t4);
-#define PCF_RANGE 2
+TextureCube smap : register(t4);
+static const float zf = 500.0f;
+static const float zn = 0.5f;
+static const float c1 = zf / (zf - zn);
+static const float c0 = -zn * zf / (zf - zn);
+
+float CalculateShadowDepth(const in float4 shadowPos)
+{
+    // get magnitudes for each basis component
+    const float3 m = abs(shadowPos).xyz;
+    // get the length in the dominant axis
+    // (this correlates with shadow map face and derives comparison depth)
+    const float major = max(m.x, max(m.y, m.z));
+    // converting from distance in shadow light space to projected depth
+    return (c1 * major + c0) / major;
+}
+
 float PCFShadowed(const in float4 shadow_pos)
 {
-    const float3 spos = shadow_pos.xyz / shadow_pos.w;
-    if (spos.z > 1.0f || spos.z < 0.0f)
-        return 1.0f;
-    float shadow_weight = 0.0f;
-    float zBias = spos.z - 0.00005f;
-    [unroll]
-    for (int x = -PCF_RANGE; x <= PCF_RANGE; x++)
-    {
-        [unroll]
-        for (int y = -PCF_RANGE; y <= PCF_RANGE; y++)
-        {
-            shadow_weight += smap.SampleCmpLevelZero(ssplr, spos.xy, zBias, int2(x, y));
-        }
-    }
-    shadow_weight /= pow(PCF_RANGE * 2 + 1, 2);
-   return shadow_weight;
+    return smap.SampleCmpLevelZero(ssplr, shadow_pos.xyz, CalculateShadowDepth(shadow_pos));
 }

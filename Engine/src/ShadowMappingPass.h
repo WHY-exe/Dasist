@@ -7,6 +7,9 @@
 #include "VertexShader.h"
 #include "NullPixelShader.h"
 #include "Camera.h"
+#include "ShadowRasterizer.h"
+#include "CubeTexture.h"
+#include "Viewport.h"
 namespace Rgph
 {
 	class ShadowMappingPass : public RenderQueuePass
@@ -16,13 +19,41 @@ namespace Rgph
 			:
 			RenderQueuePass(std::move(name))
 		{
-			depthStencil = std::make_unique<DepthStencilAsShaderInput>(gfx, 4u, DepthStencil::Usage::DepthForShadow);
-			AddBind(VertexShader::Resolve(gfx, L"res\\cso\\Solid_VS.cso"));
+			m_pDCTex = std::make_shared<DepthCubeTexure>(gfx, size, 4u);
+			AddBind(VertexShader::Resolve(gfx, L"res\\cso\\Shadow_VS.cso"));
 			AddBind(NullPixelShader::Resolve(gfx));
 			AddBind(Stencil::Resolve(gfx, Stencil::Mod::Off));
 			AddBind(Blender::Resolve(gfx, false));
-			AddBindSink<Bindable>("shadowRasterizer");
-			RegisterSource(DirectBindableSource<DepthStencil>::Make("ShadowMap", depthStencil));
+			AddBind(std::make_shared<Viewport>(gfx, (float)size, (float)size));
+			AddBind(std::make_shared<ShadowRasterizer>(gfx, 50, 2.0f, 0.1f));
+			RegisterSource(DirectBindableSource<DepthCubeTexure>::Make("ShadowMap", m_pDCTex));
+			DirectX::XMStoreFloat4x4(
+				&m_projection,
+				DirectX::XMMatrixPerspectiveLH(
+					1.0f, 1.0f, 0.5f, 500.0f
+				)
+			);
+			// +x
+			DirectX::XMStoreFloat3(&m_camDirections[0], DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f));
+			DirectX::XMStoreFloat3(&m_camUpDirections[0], DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
+			// -x
+			DirectX::XMStoreFloat3(&m_camDirections[1], DirectX::XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f));
+			DirectX::XMStoreFloat3(&m_camUpDirections[1], DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
+			// +y
+			DirectX::XMStoreFloat3(&m_camDirections[2], DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
+			DirectX::XMStoreFloat3(&m_camUpDirections[2], DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f));
+			// -y
+			DirectX::XMStoreFloat3(&m_camDirections[3], DirectX::XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f));
+			DirectX::XMStoreFloat3(&m_camUpDirections[3], DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f));
+			// +z
+			DirectX::XMStoreFloat3(&m_camDirections[4], DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f));
+			DirectX::XMStoreFloat3(&m_camUpDirections[4], DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
+			// -z
+			DirectX::XMStoreFloat3(&m_camDirections[5], DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f));
+			DirectX::XMStoreFloat3(&m_camUpDirections[5], DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
+
+			SetDepthBuffer(m_pDCTex->GetDepthTarget(0));
+
 		}
 		void BindCamera(std::shared_ptr<Camera> cam)
 		{
@@ -30,21 +61,35 @@ namespace Rgph
 		}
 		void Execute(Graphics& gfx) const noexcept(!IS_DEBUG) override
 		{
-			depthStencil->Clear(gfx);
-			// TODO : resize the depth map when the window's size is changing
-			SIGNAL(
-				gfx.sizeSignalSM,
-				depthStencil->Resize(gfx, gfx.GetWindowWidth(), gfx.GetWindowHeight())
-			);
-			m_pShadowCamera->BindtoGFX(gfx);
-			RenderQueuePass::Execute(gfx);
+			using namespace DirectX;
+			auto camPos = m_pShadowCamera->GetPos();
+			const auto cam_pos_vec = XMLoadFloat3(&camPos);
+			gfx.SetProjection(XMLoadFloat4x4(&m_projection));
+			for (UINT i = 0; i < 6; i++)
+			{
+				auto d = m_pDCTex->GetDepthTarget(i);
+				d->Clear(gfx);
+				SetDepthBuffer(std::move(d));
+				const auto lookAt = cam_pos_vec + XMLoadFloat3(&m_camDirections[i]);
+				gfx.SetCamera(XMMatrixLookAtLH(cam_pos_vec, lookAt, XMLoadFloat3(&m_camUpDirections[i])));
+				RenderQueuePass::Execute(gfx);
+			}
 		}
 		void DumpShadowMap(Graphics& gfx, const std::string& path)
 		{
 			depthStencil->ToSurface(gfx).SaveAsFile(path);
 		}
 	private:
+		void SetDepthBuffer(std::shared_ptr<DepthStencil> ds) const
+		{
+			const_cast<ShadowMappingPass*>(this)->depthStencil = std::move(ds);
+		}
+		static constexpr UINT size = 10000u;
 		std::shared_ptr<Camera> m_pShadowCamera;
+		std::shared_ptr<DepthCubeTexure> m_pDCTex;
+		DirectX::XMFLOAT4X4 m_projection;
+		std::array<DirectX::XMFLOAT3, 6> m_camDirections;
+		std::array<DirectX::XMFLOAT3, 6> m_camUpDirections;
 	};
 
 }

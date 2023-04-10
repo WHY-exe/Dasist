@@ -139,6 +139,9 @@
     <Filter Include="Drawable\Indicator">
       <UniqueIdentifier>{d79b2560-afe6-48ea-aa40-628c0277e14f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Bindable\Viewport">
+      <UniqueIdentifier>{1b2ffbb6-a686-4292-8855-7b0628f08fb8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Job.cpp">
@@ -657,6 +660,9 @@
     <ClInclude Include="src\SkyBoxCbuf.h">
       <Filter>Bindable\ConstantBuffer4Shader\VSCB</Filter>
     </ClInclude>
+    <ClInclude Include="src\Viewport.h">
+      <Filter>Bindable\Viewport</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\PS.hlsl">
@@ -714,6 +720,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="shader\Skybox_PS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\Shadow_VS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

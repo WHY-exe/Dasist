@@ -27,7 +27,7 @@ namespace Rgph{
 			};
 			AddBind(std::make_shared<CubeTexture>(gfx, "res\\Skybox\\", pathes));
 			AddBind(Stencil::Resolve(gfx, Stencil::Mod::DepthFirst));
-			AddBind(Sampler::Resolve(gfx, Sampler::Type::Bilinear));
+			AddBind(Sampler::Resolve(gfx, Sampler::Type::Bilinear, true));
 			AddBind(Rasterizer::Resolve(gfx, true));
 			AddBind(std::make_shared<SkyBoxCbuf>(gfx));
 			AddBind(PixelShader::Resolve(gfx, L"res\\cso\\Skybox_PS.cso"));

@@ -198,8 +198,15 @@
     <ClInclude Include="src\Stencil.h" />
     <ClInclude Include="src\Step.h" />
     <ClInclude Include="src\WireFramePass.h" />
+    <ClInclude Include="src\Viewport.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="shader\Shadow_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
     <None Include="shader\PSShadow.hlsli">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

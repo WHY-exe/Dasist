@@ -13,9 +13,10 @@ void ShadowCamCbuf::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 
 void ShadowCamCbuf::Update(Graphics& gfx) noexcept
 {
+	auto pos = m_pCamera->GetPos();
 	const Transform tf{
 		DirectX::XMMatrixTranspose(
-			m_pCamera->GetCameraMatrix() * m_pCamera->GetPerspectiveViewMX()
+			DirectX::XMMatrixTranslation(-pos.x,-pos.y,-pos.z)
 		)
 	};
 	m_vcbuf->Update(gfx, tf);

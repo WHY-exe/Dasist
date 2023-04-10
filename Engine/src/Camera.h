@@ -19,6 +19,7 @@ public:
 	bool GetTetherdState() const noexcept;
 	void SetDeleteState(bool should_delete) noexcept;
 	bool ShouldDelete() const noexcept;
+	DirectX::XMFLOAT3 GetPos() const noexcept;
 	void SetPos(float x, float y, float z);
 	void SetPos(DirectX::XMFLOAT3 pos);
 	void Rotate(float dx, float dy) noexcept;

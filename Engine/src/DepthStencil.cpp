@@ -81,6 +81,27 @@ DepthStencil::DepthStencil(Graphics& gfx, bool bindShaderResource, Usage usage)
 {
 }
 
+DepthStencil::DepthStencil(Graphics& gfx, Microsoft::WRL::ComPtr<ID3D11Texture2D> pTex, UINT face)
+{
+    IMPORT_INFOMAN(gfx);
+
+    D3D11_TEXTURE2D_DESC texDesc = {};
+    pTex->GetDesc(&texDesc);
+    m_width = texDesc.Width;
+    m_height = texDesc.Height;
+
+    D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+    dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    dsvDesc.Flags = 0u;
+    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+    dsvDesc.Texture2DArray.MipSlice = 0u;
+    dsvDesc.Texture2DArray.ArraySize = 1u;
+    dsvDesc.Texture2DArray.FirstArraySlice = face;
+    GFX_THROW_INFO(
+        GetDevice(gfx)->CreateDepthStencilView(pTex.Get(), &dsvDesc, &m_pDSV)
+    );
+}
+
 void DepthStencil::BindAsBuffer(Graphics& gfx) noexcept(!IS_DEBUG)
 {
     GetContext(gfx)->OMSetRenderTargets(0u, nullptr, m_pDSV.Get());
@@ -245,6 +266,13 @@ DepthStencilAsTraget::DepthStencilAsTraget(Graphics& gfx)
     DepthStencil(gfx,false, Usage::DepthStencil)
 {
 }
+
+DepthStencilAsTraget::DepthStencilAsTraget(Graphics& gfx, Microsoft::WRL::ComPtr<ID3D11Texture2D> pTex, UINT face)
+    :
+    DepthStencil(gfx, std::move(pTex), face)
+{
+}
+
 
 void DepthStencilAsTraget::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 {

@@ -26,7 +26,7 @@ namespace Rgph
 			AddBind(Stencil::Resolve(gfx, Stencil::Mod::Off));
 			AddBind(Blender::Resolve(gfx, false));
 			AddBind(std::make_shared<Viewport>(gfx, size, size));
-			AddBind(std::make_shared<ShadowRasterizer>(gfx, 50, 2.0f, 0.1f));
+			AddBindSink<Bindable>("shadowRasterizer");
 			RegisterSource(DirectBindableSource<DepthCubeTexure>::Make("ShadowMap", m_pDCTex));
 			DirectX::XMStoreFloat4x4(
 				&m_projection,

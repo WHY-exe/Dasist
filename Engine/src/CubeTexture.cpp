@@ -85,7 +85,7 @@ DepthCubeTexure::DepthCubeTexure(Graphics& gfx, UINT size, UINT slot)
 			pTex.Get(), &srvDesc, &m_pCubeTex
 		)
 	);
-	for (size_t i = 0; i < 6; i++)
+	for (UINT i = 0; i < 6; i++)
 	{
 		m_depthTargets.push_back(std::make_shared<DepthStencilAsTraget>(gfx, pTex, i));
 	}

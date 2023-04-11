@@ -33,14 +33,31 @@ namespace Rgph
 			AppendPass( std::move( pass ) );
 		}
 		{
+			shadowRasterizer = std::make_shared<ShadowRasterizer>(gfx, 100, 10.0f, 0.01f);
+			AddGlobalSource(DirectBindableSource<ShadowRasterizer>::Make("shadowRasterizer", shadowRasterizer));
+
+		}
+		{
 			auto pass = std::make_unique<ShadowMappingPass>( gfx, "shadowMapping" );
+			pass->SetSinkLinkage("shadowRasterizer", "$.shadowRasterizer");
 			AppendPass(std::move(pass));
+		}
+		{
+			DCBuf::RawLayout l;
+			l.Add<DCBuf::DataType::Integer>("pcfLevel");
+			l.Add<DCBuf::DataType::Float>("depthBias");
+			DCBuf::Buffer buffer(std::move(l));
+			buffer["pcfLevel"] = 0;
+			buffer["depthBias"] = 0.00005f;
+			shadowControl = std::make_shared<CachingPixelConstantBuffer>(gfx, buffer, 3u);
+			AddGlobalSource(DirectBindableSource<CachingPixelConstantBuffer>::Make("shadowControl", shadowControl));
 		}
 		{
 			auto pass = std::make_unique<LambertianPass>( gfx,"lambertian" );
 			pass->SetSinkLinkage( "ShadowMap", "shadowMapping.ShadowMap" );
 			pass->SetSinkLinkage( "renderTarget", "clearRT.buffer");
 			pass->SetSinkLinkage( "depthStencil", "clearDS.buffer" );
+			pass->SetSinkLinkage("shadowControl", "$.shadowControl");
 			AppendPass( std::move( pass ) );
 		}
 		{
@@ -142,7 +159,7 @@ namespace Rgph
 		blurKernel->SetBuffer(k);
 	}
 
-	void BlurOutlineRenderGraph::RenderWidgets(Graphics& gfx)
+	void BlurOutlineRenderGraph::RenderBlurWidgets(Graphics& gfx)
 	{
 		if (ImGui::Begin("Kernel"))
 		{
@@ -193,6 +210,33 @@ namespace Rgph
 				{
 					SetKernelBox(radius);
 				}
+			}
+		}
+		ImGui::End();
+	}
+	void BlurOutlineRenderGraph::RenderShadowWigets(Graphics& gfx)
+	{
+		if (ImGui::Begin("Shadows"))
+		{
+			float clamp     = shadowRasterizer->GetClamp();
+			int	  depthBias = shadowRasterizer->GetDepthBias();
+			float slopBias  = shadowRasterizer->GetSlopeBias();
+
+			auto ctrl = shadowControl->GetBuffer();
+			bool pcfChange = ImGui::SliderInt("PCF Level", &ctrl["pcfLevel"], 0, 4);
+			bool biasChange = ImGui::SliderFloat("Depth Bias", &ctrl["depthBias"], 0.0f, 0.1f, "%.6f", ImGuiSliderFlags_Logarithmic);
+
+			bool  clampChange     = ImGui::SliderFloat("Clamp", &clamp, 0.0001f, 0.5f, "%.4f", ImGuiSliderFlags_Logarithmic);
+			bool  depthBiasChange = ImGui::SliderInt("PreBias", &depthBias, 0, 10000, "%.0f", ImGuiSliderFlags_Logarithmic);
+			bool  slopBiasChange  = ImGui::SliderFloat("Slop Bias", &slopBias, 0, 300.0f, "%.4f");
+
+			if (pcfChange || biasChange )
+			{
+				shadowControl->SetBuffer(ctrl);
+			}
+			if (clampChange || depthBiasChange || slopBiasChange)
+			{
+				shadowRasterizer->ResetShadowBiasParams(gfx, depthBias, slopBias, clamp);
 			}
 		}
 		ImGui::End();

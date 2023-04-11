@@ -87,7 +87,8 @@ void App::DoFrame()
 	probe.SpwanControlWindow(scene);
 	cams.SpawControlWindow();
 	lights.SpwanControlWindow();
-	m_rg.RenderWidgets(m_gfx);
+	m_rg.RenderBlurWidgets(m_gfx);
+	m_rg.RenderShadowWigets(m_gfx);
 	//
 	m_gfx.EndFrame();
 	m_rg.Reset();

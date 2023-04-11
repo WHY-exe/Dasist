@@ -15,7 +15,8 @@ namespace Rgph
 	{
 	public:
 		BlurOutlineRenderGraph( Graphics& gfx );		
-		void RenderWidgets(Graphics& gfx);
+		void RenderBlurWidgets(Graphics& gfx);
+		void RenderShadowWigets(Graphics& gfx);
 		void DumpShadowMap(Graphics& gfx, const std::string& path);
 		void BindMainCamera(const Camera& cam) noexcept(!IS_DEBUG);
 		void BindShadowCamera(const LightContainer& lights) noexcept(!IS_DEBUG);
@@ -35,6 +36,7 @@ namespace Rgph
 		float sigma = 5.0f;
 		std::shared_ptr<CachingPixelConstantBuffer> blurKernel;
 		std::shared_ptr<CachingPixelConstantBuffer> blurDirection;
+		std::shared_ptr<CachingPixelConstantBuffer> shadowControl;
 		std::shared_ptr<ShadowRasterizer> shadowRasterizer;
 	};
 }

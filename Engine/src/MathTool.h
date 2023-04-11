@@ -42,6 +42,7 @@ namespace math_tool {
 		i = 0x5f3759df - (i >> 1);
 		y = *(float*)&i;
 		y = y * (1.5f - x2 * y * y);
+		y = y * (1.5f - x2 * y * y);
 		return y;
 	};
 	inline float sqrt(float num)

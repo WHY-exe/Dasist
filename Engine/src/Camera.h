@@ -24,6 +24,7 @@ public:
 	void SetPos(DirectX::XMFLOAT3 pos);
 	void Rotate(float dx, float dy) noexcept;
 	void Translate(float dx, float dy, float dz);
+	void DisableIndicator() noexcept;
 	bool MouseStatus() const noexcept;
 	void UpdateDefaultValues(class Graphics& gfx) noexcept;
 	void ShowControlCameraWidget() noexcept(!IS_DEBUG);

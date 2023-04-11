@@ -14,7 +14,7 @@ void ShadowRasterizer::ResetShadowBiasParams(Graphics& gfx, int depthBias, float
 	IMPORT_INFOMAN(gfx);
 	D3D11_RASTERIZER_DESC raDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
 	raDesc.DepthBiasClamp = m_clamp;
-	raDesc.SlopeScaledDepthBias = m_depthBias;
+	raDesc.SlopeScaledDepthBias = m_slopeBias;
 	raDesc.DepthBias = m_depthBias;
 	GFX_THROW_INFO(GetDevice(gfx)->CreateRasterizerState(&raDesc, &m_pRSState));
 }

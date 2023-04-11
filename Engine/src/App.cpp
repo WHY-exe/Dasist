@@ -23,11 +23,6 @@ App::App()
 	op1.szModelName = "sponza";
 	scene.AddModel(m_gfx, op1);
 	DISABLE_SIGNAL(scene.signalModelAdded);
-	for (auto& i : lights.GetContainer())
-	{
-		cams.Add(i->ShareCamera());
-	}
-	DISABLE_SIGNAL(cams.signalCamAdded);
 	//Scene::RenderOption op2;
 	//op2.szModelPath = "res\\model\\Lumie\\Lumie.pmx";
 	//op2.szModelName = "lumie";
@@ -133,10 +128,6 @@ void App::DoWinLogic()
 	if (m_wnd.kbd.KeyIsPressed('F'))
 	{
 		cams.GetCamera().Translate(0.0f, -10.0f, 0.0f);
-	}
-	if (m_wnd.kbd.KeyIsPressed(VK_RETURN))
-	{
-		m_rg.DumpShadowMap(m_gfx, "Shadow.png");
 	}
 
 	while (auto d = m_wnd.mouse.ReadRawDelta())

@@ -1,6 +1,6 @@
 SamplerComparisonState ssplr : register(s1);
 TextureCube smap : register(t4);
-static const float zf = 500.0f;
+static const float zf = 3000.0f;
 static const float zn = 0.5f;
 static const float c1 = zf / (zf - zn);
 static const float c0 = -zn * zf / (zf - zn);

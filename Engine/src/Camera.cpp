@@ -115,6 +115,12 @@ void Camera::Translate(float dx, float dy, float dz)
 	}
 }
 
+void Camera::DisableIndicator() noexcept
+{
+	m_enCamIndi = false;
+	m_enFOVIndi = false;
+}
+
 bool Camera::MouseStatus() const noexcept
 {
 	return m_hideMouse;

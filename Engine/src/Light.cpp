@@ -40,6 +40,7 @@ PointLight::PointLight(Graphics& gfx, int index)
 {
 	m_pos = {0.0f, 500.0f, 0.0f};
 	m_indicator.SetScale(10.0f);
+	m_pCamera->DisableIndicator();
 }
 
 void PointLight::Update() noexcept

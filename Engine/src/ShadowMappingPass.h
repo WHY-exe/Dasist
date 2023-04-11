@@ -10,6 +10,7 @@
 #include "ShadowRasterizer.h"
 #include "CubeTexture.h"
 #include "Viewport.h"
+#include "MathTool.h"
 namespace Rgph
 {
 	class ShadowMappingPass : public RenderQueuePass
@@ -24,13 +25,13 @@ namespace Rgph
 			AddBind(NullPixelShader::Resolve(gfx));
 			AddBind(Stencil::Resolve(gfx, Stencil::Mod::Off));
 			AddBind(Blender::Resolve(gfx, false));
-			AddBind(std::make_shared<Viewport>(gfx, (float)size, (float)size));
+			AddBind(std::make_shared<Viewport>(gfx, size, size));
 			AddBind(std::make_shared<ShadowRasterizer>(gfx, 50, 2.0f, 0.1f));
 			RegisterSource(DirectBindableSource<DepthCubeTexure>::Make("ShadowMap", m_pDCTex));
 			DirectX::XMStoreFloat4x4(
 				&m_projection,
-				DirectX::XMMatrixPerspectiveLH(
-					1.0f, 1.0f, 0.5f, 500.0f
+				DirectX::XMMatrixPerspectiveFovLH(
+					PI / 2.0f, 1.0f, 0.5f, 3000.0f
 				)
 			);
 			// +x
@@ -75,16 +76,16 @@ namespace Rgph
 				RenderQueuePass::Execute(gfx);
 			}
 		}
-		void DumpShadowMap(Graphics& gfx, const std::string& path)
-		{
-			depthStencil->ToSurface(gfx).SaveAsFile(path);
-		}
+		//void DumpShadowMap(Graphics& gfx, const std::string& path)
+		//{
+		//	depthStencil->ToSurface(gfx).SaveAsFile(path);
+		//}
 	private:
 		void SetDepthBuffer(std::shared_ptr<DepthStencil> ds) const
 		{
 			const_cast<ShadowMappingPass*>(this)->depthStencil = std::move(ds);
 		}
-		static constexpr UINT size = 10000u;
+		static constexpr UINT size = 1000u;
 		std::shared_ptr<Camera> m_pShadowCamera;
 		std::shared_ptr<DepthCubeTexure> m_pDCTex;
 		DirectX::XMFLOAT4X4 m_projection;

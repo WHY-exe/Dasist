@@ -64,7 +64,7 @@ DepthCubeTexure::DepthCubeTexure(Graphics& gfx, UINT size, UINT slot)
 	texDesc.Height = size;	 // after all, it's cube texture
 	texDesc.MipLevels = 1;
 	texDesc.ArraySize = 6;
-	texDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32_TYPELESS;;
+	texDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32_TYPELESS;
 	texDesc.SampleDesc.Count = 1;
 	texDesc.SampleDesc.Quality = 0;
 	texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -74,6 +74,7 @@ DepthCubeTexure::DepthCubeTexure(Graphics& gfx, UINT size, UINT slot)
 
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTex;
 	GFX_THROW_INFO(GetDevice(gfx)->CreateTexture2D(&texDesc, nullptr, &pTex));
+
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;

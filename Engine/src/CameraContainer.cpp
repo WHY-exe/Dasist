@@ -27,13 +27,6 @@ void CameraContainer::Bind(Graphics& gfx) noexcept(!IS_DEBUG)
 	SIGNAL(gfx.sizeSignalPrj, SIGNAL_FUNCTION);
 #undef SIGNAL_FUNCTION
 	m_Container[m_active_cam_idx]->BindtoGFX(gfx);
-	for (auto i = m_Container.begin(); i != m_Container.end(); i++)
-	{
-		if ((*i)->ShouldDelete() && i != m_Container.begin() + m_active_cam_idx)
-			m_Container.erase(i);
-		else if((*i)->ShouldDelete() && i == m_Container.begin() + m_active_cam_idx)
-			DeleteCurCamera();
-	}
 }
 
 void CameraContainer::SpawControlWindow() noexcept(!IS_DEBUG)

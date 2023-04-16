@@ -66,5 +66,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Device>			m_pDevice;
 	Microsoft::WRL::ComPtr<IDXGISwapChain>			m_pSwapChain;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		m_pContext;
+	//Microsoft::WRL::ComPtr<ID3D11DeviceContext>		m_pDeferredContext;
 	std::shared_ptr<class RenderTarget> m_pTarget;
 };

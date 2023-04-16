@@ -42,19 +42,22 @@ float ShadowLoop(const in float4 spos, uniform int pcf_level)
 
 
 float PCFShadowed(const in float4 shadow_pos)
-{
+{    
     float shadowLevel = 0.0f;
     if (CalculateShadowDepth(shadow_pos) > 1.0f || CalculateShadowDepth(shadow_pos) < 0.0f)
     {
-        return 1.0f;
-    }
-    [unroll]
-    for (uint level = 0; level <= 4; level++)
+        shadowLevel = 1.0f;
+    }  
+    else
     {
-        if (level == pcfLevel)
+        [unroll]
+        for (uint level = 0; level <= 4; level++)
         {
-            shadowLevel = ShadowLoop(shadow_pos, level);
-        }
+            if (level == pcfLevel)
+            {
+                shadowLevel = ShadowLoop(shadow_pos, level);
+            }
+        }  
     }
     return shadowLevel;
 }

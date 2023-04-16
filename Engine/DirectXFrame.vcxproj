@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\DeferredBuffer.cpp" />
     <ClCompile Include="src\SkyBoxCbuf.cpp" />
     <ClCompile Include="src\CubeTexture.cpp" />
     <ClCompile Include="src\LightContainer.cpp" />
@@ -95,6 +96,8 @@
     <ClCompile Include="src\Step.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\DeferredBuffer.h" />
+    <ClInclude Include="src\DeferredShadingPass.h" />
     <ClInclude Include="src\SkyBoxCbuf.h" />
     <ClInclude Include="src\CubeTexture.h" />
     <ClInclude Include="src\ShadowRasterizer.h" />

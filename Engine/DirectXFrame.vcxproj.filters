@@ -364,6 +364,9 @@
     <ClCompile Include="src\SkyBoxCbuf.cpp">
       <Filter>Bindable\ConstantBuffer4Shader\VSCB</Filter>
     </ClCompile>
+    <ClCompile Include="src\DeferredBuffer.cpp">
+      <Filter>BufferResource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Job.h">
@@ -662,6 +665,12 @@
     </ClInclude>
     <ClInclude Include="src\Viewport.h">
       <Filter>Bindable\Viewport</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DeferredShadingPass.h">
+      <Filter>RenderGraphc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DeferredBuffer.h">
+      <Filter>BufferResource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -44,7 +44,7 @@ cbuffer GlobalLightCBuf : register(b1)
 };
 
 LightComponent GetLight(    
-    float3 VertexPos,
+    float3 vtxViewPos,
     float3 VertexNormal,
     float3 lightViewPos,
     float3 AmbientColor,
@@ -60,7 +60,7 @@ LightComponent GetLight(
 {
     LightComponent lc;
     // vector of the obj to the light source
-    const float3 vToLight = lightViewPos - VertexPos;
+    const float3 vToLight = lightViewPos - vtxViewPos;
 	// distance between the obj to the light source
     const float distToLight = length(vToLight);
 	// Norm vector of the obj to the light source
@@ -68,14 +68,15 @@ LightComponent GetLight(
 	// the vector take part in the dot product caculation is the unity vector
 	// so the result is the cos(theta) between the two vector
     float3 Diffuse = DiffuseColor * DiffuseIntensity * max(0.0f, dot(dirToLight, VertexNormal));
-
-    // the reflection vector
+    
     // traditonal phong lighting
-    const float3 r = 2.0f * VertexNormal * dot(vToLight, VertexNormal) - vToLight;
-    float3 Specular = Diffuse * SpecularIntensity * pow(max(0.0f, dot(normalize(-r), normalize(VertexPos))), SpecularPow);
+    // the reflection vector
+    //const float3 r = 2.0f * VertexNormal * dot(vToLight, VertexNormal) - vToLight;
+    //float3 Specular = Diffuse * SpecularIntensity * pow(max(0.0f, dot(normalize(-r), normalize(vtxViewPos))), SpecularPow);
+    
     // blinn phong lighting
-    //const float3 h = vToLight + VertexPos;
-    //float3 Specular = DiffuseColor * SpecularIntensity * pow(max(0.0f, dot(normalize(VertexNormal), normalize(h))), SpecularPow);
+    const float3 h = vToLight - vtxViewPos;
+    float3 Specular = Diffuse * SpecularIntensity * pow(max(0.0f, dot(normalize(VertexNormal), normalize(h))), SpecularPow);
     if (enableAtt)
     {
         const float att = 1.0f / (AttConst + AttLinear * distToLight + AttQuad * (distToLight * distToLight));
@@ -117,7 +118,7 @@ LightComponent GetLight(LightAttri la, float3 VertexPos, float3 VertexNormal)
                  VertexPos, VertexNormal, la.lightViewPos, la.AmbientColor,
                  la.DiffuseColor, la.DiffuseIntensity, la.SpecularIntensity, la.SpecularPow);
 };
-LightComponent SetLightingPixelResult(float SpecularPow, float SpecularIntensity, float3 VertexPos, float3 VertexNormal, float4 shadowpos, float alpha = 1.0f)
+LightComponent SetLightingPixelResult(float SpecularPow, float SpecularIntensity, float3 vtxViewPos, float3 VertexNormal, float4 shadowpos, float alpha = 1.0f)
 {
     LightComponent result_in;
     result_in.Diffuse = float3(0.0f, 0.0f, 0.0f);   
@@ -133,7 +134,7 @@ LightComponent SetLightingPixelResult(float SpecularPow, float SpecularIntensity
                 float shadow_weight = PCFShadowed(shadowpos);
                 if (shadow_weight)
                 {
-                    LightComponent light = GetLight(GetLightAttriAt(i, SpecularPow, SpecularIntensity), VertexPos, VertexNormal);
+                    LightComponent light = GetLight(GetLightAttriAt(i, SpecularPow, SpecularIntensity), vtxViewPos, VertexNormal);
                     result_in.Ambient  += light.Ambient  * shadow_weight;
                     result_in.Diffuse  += light.Diffuse  * shadow_weight;
                     result_in.Specular += light.Specular * shadow_weight;
@@ -141,7 +142,7 @@ LightComponent SetLightingPixelResult(float SpecularPow, float SpecularIntensity
             }
             else
             {
-                LightComponent light = GetLight(GetLightAttriAt(i, SpecularPow, SpecularIntensity), VertexPos, VertexNormal);
+                LightComponent light = GetLight(GetLightAttriAt(i, SpecularPow, SpecularIntensity), vtxViewPos, VertexNormal);
                 result_in.Ambient += light.Ambient;
                 result_in.Diffuse += light.Diffuse;
                 result_in.Specular += light.Specular;

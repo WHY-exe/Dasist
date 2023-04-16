@@ -54,6 +54,8 @@ Graphics::Graphics(HWND hWnd, int nWinWidth = 0, int nWinHeight = 0)
         nullptr,
         &m_pContext
     ));
+    // create deffered context
+    //GFX_THROW_INFO(m_pDevice->CreateDeferredContext(0, &m_pDeferredContext));
     Microsoft::WRL::ComPtr<ID3D11Texture2D> pBackResource;
     GFX_THROW_INFO(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), &pBackResource));
     m_pTarget = std::shared_ptr<RenderTarget>{ new RenderTargetAsOutputTarget(*this, pBackResource.Get()) };

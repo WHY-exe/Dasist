@@ -33,7 +33,7 @@ namespace Rgph
 			AppendPass( std::move( pass ) );
 		}
 		{
-			shadowRasterizer = std::make_shared<ShadowRasterizer>(gfx, 100, 10.0f, 0.01f);
+			shadowRasterizer = std::make_shared<ShadowRasterizer>(gfx, 100, 30.0f, 0.01f);
 			AddGlobalSource(DirectBindableSource<ShadowRasterizer>::Make("shadowRasterizer", shadowRasterizer));
 
 		}

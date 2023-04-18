@@ -46,7 +46,7 @@ DeferredBuffer::DeferredBuffer(Graphics& gfx, UINT width, UINT height)
     texDesc.Height = height;
     texDesc.MipLevels = 1u;
     texDesc.ArraySize = 1u;
-    texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+    texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     texDesc.SampleDesc.Count = 1u;
     texDesc.SampleDesc.Quality = 0u;
     texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -109,7 +109,7 @@ DeferredBufferAsShaderInput::DeferredBufferAsShaderInput(Graphics& gfx, UINT wid
     texDesc.Height = height;
     texDesc.MipLevels = 1u;
     texDesc.ArraySize = 1u;
-    texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+    texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     texDesc.SampleDesc.Count = 1u;
     texDesc.SampleDesc.Quality = 0u;
     texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -119,7 +119,7 @@ DeferredBufferAsShaderInput::DeferredBufferAsShaderInput(Graphics& gfx, UINT wid
     GFX_THROW_INFO(GetDevice(gfx)->CreateTexture2D(&texDesc, nullptr, &pTexture));
 
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-    srvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MipLevels = 1u;
     srvDesc.Texture2D.MostDetailedMip = 0u;

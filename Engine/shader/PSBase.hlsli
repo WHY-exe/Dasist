@@ -16,13 +16,16 @@ struct VSOut
 };
 cbuffer OBJCBuf : register(b2)
 {
-    float4 ambient;
+    float4 ambient;  
+    bool enNormal;
+    float normalMapWeight;
+    bool enSpec;
     float4 spec_color;
     float specular_intensity;
     float specular_pow;
     bool hasAmbient;
     bool hasGloss;
-    bool enNormal;
+
 };
 
 

@@ -286,8 +286,11 @@ void Scene::Node::Accept(MaterialProbe& probe) noexcept(!IS_DEBUG)
 	probe.SetSelectStatus(m_selected);
 	for (auto& i : m_pMeshes)
 	{
+		probe.SetCurMeshName(i->GetName());
 		if(probe.IsSelected())
+		{ 
 			ImGui::TextColored({ 0.8f, 0.8f, 0.8f, 1.0f }, i->GetName().c_str());
+		}		
 		i->Accept(probe);
 	}
 }

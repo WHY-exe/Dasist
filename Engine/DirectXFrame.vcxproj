@@ -98,6 +98,7 @@
   <ItemGroup>
     <ClInclude Include="src\DeferredBuffer.h" />
     <ClInclude Include="src\DeferredShadingPass.h" />
+    <ClInclude Include="src\DepthPrePass.h" />
     <ClInclude Include="src\SkyBoxCbuf.h" />
     <ClInclude Include="src\CubeTexture.h" />
     <ClInclude Include="src\ShadowRasterizer.h" />

@@ -10,13 +10,25 @@ bool Scene::MaterialProbe::VisitBuffer(DCBuf::Buffer& material_data)
 	if (m_selected)
 	{
 		auto dcheck = [&dirty](bool change) {dirty = dirty || change; };
-		ImGui::Text("Material");
+		if (auto v = material_data["normalMapWeight"]; v.Exists())
+		{
+			dcheck(ImGui::SliderFloat(("normalMapWeight##" + m_cur_mesh_name).c_str(), &v, 0.0f, 3.0f));
+		}
+		if (auto v = material_data["SpecIntensity"]; v.Exists())
+		{
+			dcheck(ImGui::SliderFloat(("SpecIntensity##" + m_cur_mesh_name).c_str(), &v, 0.0f, 3.0f));
+		}
 		if (auto v = material_data["enNormal"]; v.Exists())
 		{
-			dcheck(ImGui::Checkbox("Normal Map", &v));
+			dcheck(ImGui::Checkbox(("Normal Map##" + m_cur_mesh_name).c_str(), &v));
 		}
 	}
 	return dirty;
+}
+
+void Scene::MaterialProbe::SetCurMeshName(std::string cur_mesh_name) noexcept
+{
+	m_cur_mesh_name = std::move(cur_mesh_name);
 }
 
 void Scene::MaterialProbe::SetSelectStatus(bool status) noexcept
@@ -37,7 +49,7 @@ void Scene::MaterialProbe::OnSetTechnique()
 		{ 
 			ImGui::TextColored({ 0.8f, 0.8f, 0.8f, 1.0f }, m_pTech->GetTechName().c_str());
 			bool active = m_pTech->IsActive();
-			ImGui::Checkbox(("Tech Active##"s + m_pTech->GetTechName()).c_str(), &active);
+			ImGui::Checkbox(("Tech Active##"s + m_pTech->GetTechName() + m_cur_mesh_name).c_str(), &active);
 			m_pTech->SetActiveState(active);
 		}
 	}
@@ -118,6 +130,7 @@ bool Scene::TNodeProbe::VisitNode(Node& node) noexcept(!IS_DEBUG)
 				DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
 				DirectX::XMMatrixTranslation(x, y, z));
 		}
+	
 	}
 	node.Accept(m_matProbe);
 	return dirty;

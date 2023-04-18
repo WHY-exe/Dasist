@@ -1,16 +1,19 @@
 #pragma once
 #include "Probe.h"
 #include <DirectXMath.h>
+#include <string>
 namespace Scene {
 	class MaterialProbe: public Probe
 	{
 	public:
 		bool VisitBuffer(class DCBuf::Buffer& material_data) override;
+		void SetCurMeshName(std::string cur_mesh_name) noexcept;
 		void SetSelectStatus(bool status) noexcept;
 		bool IsSelected() const noexcept;
 	protected:
 		void OnSetTechnique() override;
 	private:
+		std::string m_cur_mesh_name;
 		bool m_selected = false;
 	};
 

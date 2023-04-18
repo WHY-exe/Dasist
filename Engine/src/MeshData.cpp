@@ -115,13 +115,16 @@ void MeshData::SetMaterial(Graphics& gfx, const aiMesh& mesh, const aiMaterial* 
 	{
 		using namespace std::string_literals;
 		DCBuf::RawLayout cBufferLayout;
-		cBufferLayout.Add<DCBuf::Float4>("Ambient");
+		cBufferLayout.Add<DCBuf::Float4>("Ambient");		
+		cBufferLayout.Add<DCBuf::Bool>("enNormal");
+		cBufferLayout.Add<DCBuf::Float>("normalMapWeight");
+		cBufferLayout.Add<DCBuf::Bool>("enSpec");
 		cBufferLayout.Add<DCBuf::Float4>("SpecColor");
 		cBufferLayout.Add<DCBuf::Float>("SpecIntensity");
 		cBufferLayout.Add<DCBuf::Float>("SpecPow");
 		cBufferLayout.Add<DCBuf::Bool>("hasAmbient");
 		cBufferLayout.Add<DCBuf::Bool>("hasGloss");
-		cBufferLayout.Add<DCBuf::Bool>("enNormal");
+
 		m_DynamicConstData = DCBuf::Buffer(std::move(cBufferLayout));
 
 		bool hasAlphaGloss = false;
@@ -185,5 +188,6 @@ void MeshData::SetMaterial(Graphics& gfx, const aiMesh& mesh, const aiMaterial* 
 		m_DynamicConstData["hasAmbient"] = m_texInfo.m_amTex.get() ? true : false;
 		m_DynamicConstData["hasGloss"] = hasAlphaGloss;
 		m_DynamicConstData["enNormal"] = true;
+		m_DynamicConstData["normalMapWeight"] = 1.0f;
 	}
 }

@@ -666,11 +666,14 @@
     <ClInclude Include="src\Viewport.h">
       <Filter>Bindable\Viewport</Filter>
     </ClInclude>
-    <ClInclude Include="src\DeferredShadingPass.h">
-      <Filter>RenderGraphc</Filter>
-    </ClInclude>
     <ClInclude Include="src\DeferredBuffer.h">
       <Filter>BufferResource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DeferredShadingPass.h">
+      <Filter>RenderGraphc\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DepthPrePass.h">
+      <Filter>RenderGraphc\Pass\PassBase</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -212,7 +212,7 @@ void Camera::ShowControlCameraWidget() noexcept(!IS_DEBUG)
 	ImGui::Text("FOV");
 	check_dirty(proj_dirty, ImGui::SliderFloat("ViewWidth", &m_viewWidth, -0, 2000.0f, "%.1f"));
 	check_dirty(proj_dirty, ImGui::SliderFloat("ViewHeight", &m_viewHeight, -0, 2000.0f, "%.1f"));
-	check_dirty(proj_dirty, ImGui::SliderFloat("NearZ", &m_NearZ, 0.1f, 80.0f, "%.1f"));
+	check_dirty(proj_dirty, ImGui::SliderFloat("NearZ", &m_NearZ, 0.1f, 80.0f, "%.3f", ImGuiSliderFlags_Logarithmic));
 	check_dirty(proj_dirty, ImGui::SliderFloat("FarZ", &m_FarZ, 0.1f, 3000.0f, "%.1f"));
 	if (proj_dirty)
 	{

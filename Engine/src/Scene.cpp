@@ -178,7 +178,7 @@ bool Scene::Node::HasChild() const noexcept
 	return m_pChilds.empty();
 }
 
-const DirectX::XMFLOAT4X4& Scene::Node::GetAppliedTransform() const noexcept
+Scene::TransformParams& Scene::Node::GetAppliedTransform() noexcept
 {
 	return m_AppliedTransform;
 }
@@ -186,8 +186,12 @@ const DirectX::XMFLOAT4X4& Scene::Node::GetAppliedTransform() const noexcept
 
 void Scene::Node::Submit(DirectX::FXMMATRIX accumulateTransform, size_t channel) const noexcept
 {
+	DirectX::XMMATRIX appliedTransform = 
+		DirectX::XMMatrixRotationRollPitchYaw(m_AppliedTransform.rot.x, m_AppliedTransform.rot.y, m_AppliedTransform.rot.z) *
+		DirectX::XMMatrixScaling(m_AppliedTransform.scale.x, m_AppliedTransform.scale.y, m_AppliedTransform.scale.z) *
+		DirectX::XMMatrixTranslation(m_AppliedTransform.pos.x, m_AppliedTransform.pos.y, m_AppliedTransform.pos.z);
 	const auto build =
-		DirectX::XMLoadFloat4x4(&m_AppliedTransform) *
+		appliedTransform *
 		DirectX::XMLoadFloat4x4(&m_BaseTransform) * 
 		accumulateTransform;
 	for (const auto pm : m_pMeshes)
@@ -217,7 +221,11 @@ Scene::Node::Node(int id, const std::wstring& NodeName, std::vector<Mesh*> pMesh
 	m_szNodeName(UTF8_TO_ANSI_STR(NodeName))
 {
 	DirectX::XMStoreFloat4x4(&m_BaseTransform, transform);
-	DirectX::XMStoreFloat4x4(&m_AppliedTransform, DirectX::XMMatrixIdentity());
+	DirectX::XMFLOAT4X4 id_mtx;
+	DirectX::XMStoreFloat4x4(&id_mtx, DirectX::XMMatrixIdentity());
+	m_AppliedTransform.pos = math_tool::ExtraTranslation(id_mtx);
+	m_AppliedTransform.rot = math_tool::ExtraEulerAngle(id_mtx);
+	m_AppliedTransform.scale = math_tool::ExtraScaling(id_mtx);
 }
 
 bool Scene::Node::ParentSelected() const noexcept
@@ -243,18 +251,17 @@ void Scene::Node::AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG)
 	m_pChilds.emplace_back(std::move(child));
 }
 
-void Scene::Node::SetAppliedTransform(DirectX::XMMATRIX transform)
-{
-	DirectX::XMStoreFloat4x4(&m_AppliedTransform, transform);
-}
-
 void Scene::Node::SetAccumulateTransform(DirectX::XMMATRIX accu_tf) noexcept(!IS_DEBUG)
 {
+	DirectX::XMMATRIX appliedTransform =
+		DirectX::XMMatrixRotationRollPitchYaw(m_AppliedTransform.rot.x, m_AppliedTransform.rot.y, m_AppliedTransform.rot.z) *
+		DirectX::XMMatrixScaling(m_AppliedTransform.scale.x, m_AppliedTransform.scale.y, m_AppliedTransform.scale.z) *
+		DirectX::XMMatrixTranslation(m_AppliedTransform.pos.x, m_AppliedTransform.pos.y, m_AppliedTransform.pos.z);
 	const auto build =
-		DirectX::XMLoadFloat4x4(&m_AppliedTransform) *
+		appliedTransform *
 		DirectX::XMLoadFloat4x4(&m_BaseTransform) *
 		accu_tf;
-	for (const auto pm : m_pMeshes)
+	for (const auto& pm : m_pMeshes)
 	{
 		pm->SetTransform(build);
 	}
@@ -268,9 +275,12 @@ void Scene::Node::Accept(TNodeProbe& probe) noexcept(!IS_DEBUG)
 {
 	if (probe.VisitNode(*this))
 	{
-		SetAppliedTransform(probe.GetTransformMatrix());
+		DirectX::XMMATRIX appliedTransform =
+			DirectX::XMMatrixRotationRollPitchYaw(m_AppliedTransform.rot.x, m_AppliedTransform.rot.y, m_AppliedTransform.rot.z) *
+			DirectX::XMMatrixScaling(m_AppliedTransform.scale.x, m_AppliedTransform.scale.y, m_AppliedTransform.scale.z) *
+			DirectX::XMMatrixTranslation(m_AppliedTransform.pos.x, m_AppliedTransform.pos.y, m_AppliedTransform.pos.z);
 		const auto build =
-			DirectX::XMLoadFloat4x4(&m_AppliedTransform) *
+			appliedTransform *
 			DirectX::XMLoadFloat4x4(&m_BaseTransform);
 		SetAccumulateTransform(build);
 	}

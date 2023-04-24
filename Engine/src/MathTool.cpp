@@ -2,19 +2,38 @@
 #include <cmath>
 namespace math_tool
 {
+	int gcd(int a, int b)
+	{
+		int r;
+		r = a % b;
+		while (r != 0)
+		{
+			a = b;
+			b = r;
+			r = a % b;
+		}
+		return b;
+	}
+	// usually you would only use it for extracting rotation from id matrix
 	DirectX::XMFLOAT3 ExtraEulerAngle(const DirectX::XMFLOAT4X4 matrix)
 	{
 		DirectX::XMFLOAT3 result;
-		result.x = asin(-matrix._32);
-		if (cos(result.x) > 0.0001f)
+		result.x = asinf(-matrix._32);
+		if (sinf(result.x) > 0.99f)
 		{
-			result.y = atan2f(matrix._31, matrix._33);
-			result.z = atan2f(matrix._12, matrix._22);
+			result.y = 0.0f;
+			result.z = atan2f(matrix._21, matrix._11);
+
 		}
-		else
+		else if(sinf(result.x) < -0.99f)
 		{
 			result.y = 0.0f;
 			result.z = atan2f(-matrix._21, matrix._11);
+		}
+		else
+		{
+			result.y = atan2f(matrix._31, matrix._33);
+			result.z = atan2f(matrix._12, matrix._22);
 		}
 		return result;
 	}

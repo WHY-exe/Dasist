@@ -81,56 +81,33 @@ bool Scene::TNodeProbe::VisitNode(Node& node) noexcept(!IS_DEBUG)
 	if (isActive)
 	{
 		auto dcheck = [&dirty](bool change) {dirty = dirty || change; };
-		const auto& nodeTransform = node.GetAppliedTransform();
-		const auto euler_angle = math_tool::ExtraEulerAngle(nodeTransform);
-		const auto translation = math_tool::ExtraTranslation(nodeTransform);
-		const auto scaling = math_tool::ExtraScaling(nodeTransform);
-
-		float scalin_x = scaling.x;
-		float scalin_y = scaling.y;
-		float scalin_z = scaling.z;
-		float pitch = euler_angle.x;
-		float yaw = euler_angle.y;
-		float roll = euler_angle.z;
-		float x = translation.x;
-		float y = translation.y;
-		float z = translation.z;
+		auto& tf = node.GetAppliedTransform();
 
 		ImGui::Text("Position");
-		dcheck(ImGui::SliderFloat("X", &x, -80.0f, 80.0f, "%.1f"));
-		dcheck(ImGui::SliderFloat("Y", &y, -80.0f, 80.0f, "%.1f"));
-		dcheck(ImGui::SliderFloat("Z", &z, -80.0f, 80.0f, "%.1f"));
+		dcheck(ImGui::SliderFloat("X", &tf.pos.x, -80.0f, 80.0f, "%.1f"));
+		dcheck(ImGui::SliderFloat("Y", &tf.pos.y, -80.0f, 80.0f, "%.1f"));
+		dcheck(ImGui::SliderFloat("Z", &tf.pos.z, -80.0f, 80.0f, "%.1f"));
 		ImGui::Text("Angle");
-		dcheck(ImGui::SliderAngle("AngleX", &roll, -180.0f, 180.0f, "%.1f"));
-		dcheck(ImGui::SliderAngle("AngleY", &yaw, -180.0f, 180.0f, "%.1f"));
-		dcheck(ImGui::SliderAngle("AngleZ", &pitch, -180.0f, 180.0f, "%.1f"));	
-		ImGui::Text("Scale");
-		dcheck(ImGui::SliderFloat("Scalin_x", &scalin_x, 0.0f, 2.0f, "%.3f"));
-		dcheck(ImGui::SliderFloat("Scalin_y", &scalin_y, 0.0f, 2.0f, "%.3f"));
-		dcheck(ImGui::SliderFloat("Scalin_z", &scalin_z, 0.0f, 2.0f, "%.3f"));
-
+		dcheck(ImGui::SliderAngle("AngleX", &tf.rot.x, -180.0f, 180.0f, "%.1f"));
+		dcheck(ImGui::SliderAngle("AngleY", &tf.rot.y, -180.0f, 180.0f,"%.1f"));
+		dcheck(ImGui::SliderAngle("AngleZ", &tf.rot.z, -180.0f, 180.0f, "%.1f"));
+		ImGui::Text("Scale_XYZ");
+		dcheck(ImGui::SliderFloat("Scalin_x", &tf.scale.x, 0.0f, 10.0f, "%.3f"));
+		dcheck(ImGui::SliderFloat("Scalin_y", &tf.scale.y, 0.0f, 10.0f, "%.3f"));
+		dcheck(ImGui::SliderFloat("Scalin_z", &tf.scale.z, 0.0f, 10.0f, "%.3f"));
 		if (ImGui::Button("Reset", ImVec2(50, 40)))
 		{
 			dirty = true;
-			scalin_x = 1.0f;
-			scalin_y = 1.0f;
-			scalin_z = 1.0f;
-			pitch = 0.0f;
-			yaw = 0.0f;
-			roll = 0.0f;
-			x = 0.0f;
-			y = 0.0f;
-			z = 0.0f;
+			tf.scale.x = 1.0f;
+			tf.scale.y = 1.0f;
+			tf.scale.z = 1.0f;
+			tf.rot.x = 0.0f;
+			tf.rot.y = 0.0f;
+			tf.rot.z = 0.0f;
+			tf.pos.x = 0.0f;
+			tf.pos.y = 0.0f;
+			tf.pos.z = 0.0f;
 		}
-		if (dirty)
-		{
-			DirectX::XMStoreFloat4x4(
-				&m_transformation,
-				DirectX::XMMatrixScaling(scalin_x, scalin_y, scalin_z) *
-				DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
-				DirectX::XMMatrixTranslation(x, y, z));
-		}
-	
 	}
 	node.Accept(m_matProbe);
 	return dirty;

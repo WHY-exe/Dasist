@@ -43,12 +43,14 @@ namespace math_tool {
 		y = *(float*)&i;
 		y = y * (1.5f - x2 * y * y);
 		y = y * (1.5f - x2 * y * y);
+		y = y * (1.5f - x2 * y * y);
 		return y;
 	};
 	inline float sqrt(float num)
 	{
 		return 1.0f / rsqrt(num);
 	};
+	int gcd(int a, int b);
 	DirectX::XMFLOAT3 ExtraEulerAngle(const DirectX::XMFLOAT4X4 matrix);
 	DirectX::XMFLOAT3 ExtraTranslation(const DirectX::XMFLOAT4X4 matrix);
 	DirectX::XMFLOAT3 ExtraScaling(const DirectX::XMFLOAT4X4 matrix);

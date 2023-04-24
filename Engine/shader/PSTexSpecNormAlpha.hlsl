@@ -19,10 +19,10 @@ float4 main(VSOut vso) : SV_Target
     if (dot(ViewNormal, vso.ViewPos.xyz) > 0.0f)
         ViewNormal = -ViewNormal;
     LightComponent result = { { 0, 0, 0 }, { 0, 0, 0 }, { 0.3, 0.3, 0.3 }};
-    float4 matAmbient = ambient;
+    float4 matDiffuse = dmap.Sample(splr, vso.tc);
+    float4 matAmbient = matDiffuse;
     if (hasAmbient)
         matAmbient = amap.Sample(splr, vso.tc);
-    float4 matDiffuse = dmap.Sample(splr, vso.tc);
     float4 matSpec = spec_color;
     result = SetLightingPixelResult(SpecularPower, specular_intensity, vso.ViewPos, ViewNormal, vso.shadowCamPos);
     return float4(

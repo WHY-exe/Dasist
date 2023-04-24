@@ -14,6 +14,12 @@
 #include "MeshData.h"
 namespace Scene
 {
+	struct TransformParams
+	{
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 rot;
+		DirectX::XMFLOAT3 scale;
+	};
 	struct ModelSetting 
 	{
 		std::string szModelPath;
@@ -43,14 +49,13 @@ namespace Scene
 		const std::string& GetName() const noexcept;
 		bool HasChild() const noexcept;		
 		bool ParentSelected() const noexcept;
-		const DirectX::XMFLOAT4X4& GetAppliedTransform() const noexcept;		
+		TransformParams& GetAppliedTransform() noexcept;
 		void Accept(TNodeProbe& probe) noexcept(!IS_DEBUG);
 		void Accept(MaterialProbe& probe) noexcept(!IS_DEBUG);
 		void AcceptToShowTree(NodeProbe& probe) noexcept(!IS_DEBUG);
 	private:
 		void AddChild(std::unique_ptr<Node> child) noexcept(!IS_DEBUG);
 		void SetAccumulateTransform(DirectX::XMMATRIX accu_tf) noexcept(!IS_DEBUG);
-		void SetAppliedTransform(DirectX::XMMATRIX transform);
 	private:
 		int m_id;
 		bool m_selected = false;
@@ -59,7 +64,7 @@ namespace Scene
 		std::vector<std::unique_ptr<Node>> m_pChilds;
 		std::string m_szNodeName;
 		DirectX::XMFLOAT4X4 m_BaseTransform;
-		DirectX::XMFLOAT4X4 m_AppliedTransform;
+		TransformParams m_AppliedTransform;
 	};
 
 	class Model
